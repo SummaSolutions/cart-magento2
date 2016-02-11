@@ -11,7 +11,7 @@ define(
         rendererList.push(
             {
                 type: 'mercadopago_standard',
-                component: 'MercadoPago_Core/js/view/standard/renderer'
+                component: 'MercadoPago_Core/js/view/method-renderer/standard-method'
             }
         );
 

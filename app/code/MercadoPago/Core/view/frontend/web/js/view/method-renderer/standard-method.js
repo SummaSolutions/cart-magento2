@@ -6,7 +6,7 @@ define(
         'use strict';
         return Component.extend({
             defaults: {
-                template: 'MercadoPago_Core/payment/classic'
+                template: 'MercadoPago_Core/payment/standard'
             },
 
         });
