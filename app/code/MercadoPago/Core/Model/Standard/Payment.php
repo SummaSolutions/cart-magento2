@@ -2,6 +2,7 @@
 
 namespace MercadoPago\Core\Model\Standard;
 
+
 class Payment
     extends \Magento\Payment\Model\Method\AbstractMethod
 {
@@ -19,5 +20,6 @@ class Payment
     protected $_canVoid = true;
     protected $_canFetchTransactionInfo = true;
     protected $_canReviewPayment = true;
+
 
 }

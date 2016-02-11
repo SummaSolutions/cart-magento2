@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Checkout\Modеl\CompositeConfigProvider">
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="mercadopago_core_standard_provider" xsi:type="object">StandardConfigProvider</item>
+                <item name="mercadopago_core_standard_provider" xsi:type="object">MercadoPago\Core\Model\StandardConfigProvider</item>
             </argument>
         </arguments>
     </type>

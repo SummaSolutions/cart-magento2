@@ -13,22 +13,22 @@ class StandardConfigProvider
     protected $methodCode = Standard\Payment::CODE;
 
 
-//    /**
-//     * @param PaymentHelper $paymentHelper
-//     */
-//    public function __construct(
-//        PaymentHelper $paymentHelper
-//    )
-//    {
-//        $this->method = $paymentHelper->getMethodInstance($this->methodCode);
-//    }
+    /**
+     * @param PaymentHelper $paymentHelper
+     */
+    public function __construct(
+        PaymentHelper $paymentHelper
+    )
+    {
+        $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
+    }
 
     public function getConfig()
     {
-        return $this->method->isAvailable() ? [
+        return $this->methodInstance->isAvailable() ? [
             'payment' => [
                 $this->methodCode => [
-//                    'key' => $value,
+                    'actionUrl' => 'http://www.yahoo.com'
                 ],
             ],
         ] : [];
