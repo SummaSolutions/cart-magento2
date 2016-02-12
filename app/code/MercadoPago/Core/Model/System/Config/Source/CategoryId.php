@@ -3,12 +3,26 @@ namespace MercadoPago\Core\Model\System\Config\Source;
 
 class CategoryId implements \Magento\Framework\Option\ArrayInterface
 {
+    protected $coreHelperFactory;
+
+    /**
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
+     */
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
+    ) {
+        $this->scopeConfig = $scopeConfig;
+        $this->coreHelperFactory = $coreHelperFactory;
+    }
+
     public function toOptionArray()
     {
-        //Mage::helper('mercadopago')->log("Get Categories... ", 'mercadopago.log');
+        $this->coreHelperFactory->create()->log("Get Categories... ", 'mercadopago.log');
 
         $response = \MercadoPago_Lib_RestClient::get("/item_categories");
-        //Mage::helper('mercadopago')->log("API item_categories", 'mercadopago.log', $response);
+        $this->coreHelperFactory->create()->log("API item_categories", 'mercadopago.log', $response);
 
         $response = $response['response'];
 
