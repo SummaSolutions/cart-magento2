@@ -28,7 +28,7 @@ class StandardConfigProvider
         return $this->methodInstance->isAvailable() ? [
             'payment' => [
                 $this->methodCode => [
-                    'actionUrl' => 'http://www.yahoo.com'
+                    'actionUrl' => 'http://mercadopago2.local/mercadopago/standard/pay'
                 ],
             ],
         ] : [];
