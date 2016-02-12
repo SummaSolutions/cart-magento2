@@ -89,7 +89,7 @@ class Payment
 
         if ($response['status'] == 200 || $response['status'] == 201) {
             $payment = $response['response'];
-            if (Mage::getStoreConfigFlag('payment/mercadopago_standard/sandbox_mode')) {
+            if ($this->_scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {
                 $init_point = $payment['sandbox_init_point'];
             } else {
                 $init_point = $payment['init_point'];
@@ -199,7 +199,7 @@ class Payment
             $arr['auto_return'] = "approved";
         }
 
-        $sponsor_id = $this->scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $sponsor_id = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $this->_helperData->log("Sponsor_id", 'mercadopago-standard.log', $sponsor_id);
         if (!empty($sponsor_id)) {
             $this->_helperData->log("Sponsor_id identificado", 'mercadopago-standard.log', $sponsor_id);
@@ -279,6 +279,42 @@ class Payment
         }
 
         return $excludedMethods;
+    }
+
+    protected function _getShipmentsParams($order)
+    {
+        $params = [];
+        $shippingCost = $order->getBaseShippingAmount();
+        $shippingAddress = $order->getShippingAddress();
+        $method = $order->getShippingMethod();
+        //TODO JOIN WITH MERCADOENVIOS
+//        if ($this->mercadoEnviosHelper->isMercadoEnviosMethod($method)) {
+//            $zipCode = $shippingAddress->getPostcode();
+//            $defaultShippingId = substr($method, strpos($method, '_') + 1);
+//            $params = [
+//                'mode'                    => 'me2',
+//                'zip_code'                => $zipCode,
+//                'default_shipping_method' => intval($defaultShippingId),
+//                'dimensions'              => $this->mercadoEnviosHelper->getDimensions($order->getAllItems())
+//            ];
+//            if ($shippingCost == 0) {
+//                $params['free_methods'] = [['id' => intval($defaultShippingId)]];
+//            }
+//        }
+        if (!empty($shippingCost)) {
+            $params['cost'] = (float)$order->getBaseShippingAmount();
+        }
+
+        $params['receiver_address'] = [
+            "floor"         => "-",
+            "zip_code"      => $shippingAddress->getPostcode(),
+            "street_name"   => $shippingAddress->getStreet()[0] . " - " . $shippingAddress->getCity() . " - " . $shippingAddress->getCountryId(),
+            "apartment"     => "-",
+            "street_number" => ""
+        ];
+
+        return $params;
+
     }
 
 }
