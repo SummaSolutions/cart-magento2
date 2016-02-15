@@ -184,9 +184,9 @@ class Payment
         ];
 
         $arr['back_urls'] = [
-            'success'=> $this->_urlBuilder->getUrl('mercadopago/success'),
-            'pending'=> $this->_urlBuilder->getUrl('mercadopago/success'),
-            'failure'=> $this->_urlBuilder->getUrl('mercadopago/success')
+            'success'=> $this->_urlBuilder->getUrl('mercadopago/standard/success'),
+            'pending'=> $this->_urlBuilder->getUrl('mercadopago/standard/success'),
+            'failure'=> $this->_urlBuilder->getUrl('mercadopago/standard/success')
         ];
 
         $arr['notification_url'] = $this->_urlBuilder->getUrl("mercadopago/notifications/standard");
