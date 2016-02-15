@@ -10,7 +10,8 @@ class Pay
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory
-    ) {
+    )
+    {
         $this->_paymentFactory = $paymentFactory;
         parent::__construct($context);
     }
@@ -20,6 +21,9 @@ class Pay
 
         $standard = $this->_paymentFactory->create();
         $array_assign = $standard->postPago();
-        $this->resultRedirectFactory->create()->setPath($array_assign['init_point']);
+        $resultRedirect = $this->resultRedirectFactory->create();
+        $resultRedirect->setUrl($array_assign['init_point']);
+
+        return $resultRedirect;
     }
 }

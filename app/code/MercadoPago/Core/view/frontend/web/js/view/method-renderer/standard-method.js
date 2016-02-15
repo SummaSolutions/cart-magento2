@@ -6,7 +6,7 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'ko',
-        'Magento_Paypal/js/model/iframe',
+        'MercadoPago_Core/js/model/iframe',
         'Magento_Checkout/js/model/full-screen-loader'
     ],
     function (Component, ko, iframe, fullScreenLoader) {
@@ -14,7 +14,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Magento_Paypal/payment/iframe-methods',
+                template: 'MercadoPago_Core/payment/standard',
                 paymentReady: false
             },
             redirectAfterPlaceOrder: false,
@@ -38,6 +38,15 @@ define(
                          return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
                      }
                  }
+                return '';
+            },
+
+            getBannerUrl: function () {
+                if (this.isInAction()) {
+                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                        return window.checkoutConfig.payment['mercadopago_standard']['bannerUrl'];
+                    }
+                }
                 return '';
             },
             /**

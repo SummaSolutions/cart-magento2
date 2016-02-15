@@ -7,6 +7,7 @@ class Payment
     extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const CODE = 'mercadopago_standard';
+    const ACTION_URL = 'http://mercadopago2.local/mercadopago/standard/pay';
 
     protected $_code = self::CODE;
 
@@ -107,7 +108,7 @@ class Payment
             $this->_helperData->log("Array preference ok", 'mercadopago-standard.log');
         } else {
             $array_assign = [
-                "message" => Mage::helper('mercadopago')->__('An error has occurred. Please refresh the page.'),
+                "message" => __('An error has occurred. Please refresh the page.'),
                 "json"    => json_encode($response),
                 "status"  => 400
             ];
@@ -315,6 +316,10 @@ class Payment
 
         return $params;
 
+    }
+
+    public function getBannerCheckoutUrl() {
+        return $this->getConfigData('banner_checkout');
     }
 
 }
