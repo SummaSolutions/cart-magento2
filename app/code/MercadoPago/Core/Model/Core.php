@@ -105,7 +105,7 @@ class Core
 
     public function getInfoPaymentByOrder($order_id)
     {
-        $order = $this->_getOrder();
+        $order = $this->_getOrder($order_id);
         $payment = $order->getPayment();
         $info_payments = array();
         $fields = array(

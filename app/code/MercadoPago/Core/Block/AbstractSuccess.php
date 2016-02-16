@@ -9,15 +9,28 @@ class AbstractSuccess
     /**
      * @var \MercadoPago\Core\Model\Factory
      */
-    protected $coreFactory;
+    protected $_coreFactory;
+
+    protected $_orderFactory;
+
+    protected $_checkoutSession;
+
+    protected $_urlBuilder;
+
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \MercadoPago\Core\Model\CoreFactory $coreFactory,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\UrlInterface $urlBuilder,
         array $data = []
     )
     {
-        $this->coreFactory = $coreFactory;
+        $this->_coreFactory = $coreFactory;
+        $this->_orderFactory = $orderFactory;
+        $this->_checkoutSession = $checkoutSession;
+        $this->_urlBuilder = $urlBuilder;
         parent::__construct(
             $context,
             $data
@@ -35,8 +48,8 @@ class AbstractSuccess
 
     public function getOrder()
     {
-        $orderIncrementId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
-        $order = Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
+        $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
+        $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
 
         return $order;
     }
@@ -71,20 +84,22 @@ class AbstractSuccess
 
     public function getInfoPayment()
     {
-        $order_id = Mage::getSingleton('checkout/session')->getLastRealOrderId();
-        $info_payments = $this->coreFactory->create()->getInfoPaymentByOrder($order_id);
+        $order_id = $this->_checkoutSession->getLastRealOrderId();
+        $info_payments = $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
 
         return $info_payments;
     }
 
     public function getMessageByStatus($status, $status_detail, $payment_method, $amount, $installment)
     {
-        return $this->coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $amount, $installment);
+        return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $amount, $installment);
     }
 
     public function getOrderUrl()
     {
-        //TODO: url lto $this->_getOrder()
-        return '';
+        $params = ['order_id' => $this->_checkoutSession->getLastRealOrderId()];
+        $url = $this->_urlBuilder->getUrl('sales/order/view',$params);
+
+        return $url;
     }
 }

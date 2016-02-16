@@ -37,10 +37,10 @@ class Success
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
-
-        $handle = $order->getPayment()->getMethod();
+        if (!empty($order->getId())) {
+            $handle = $order->getPayment()->getMethod();
+        }
         $handle .= '_success';
-
         return $handle;
     }
 }

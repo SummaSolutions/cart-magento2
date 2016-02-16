@@ -4,7 +4,7 @@ $total = $this->getTotal();
 $payment = $this->getPayment();
 
 //monta link para o pedido
-$link_to_order = __('Your order %s has been successfully generated.', '<a href="'. $this->getOrderUrl() . '">' . $order->getIncrementId() .'</a>');
+$link_to_order = __('Your order %1 has been successfully generated.',  '<a href="'. $this->getOrderUrl() . '">' . $order->getIncrementId() .'</a>');
 
 $payment_method = $this->getPaymentMethod();
 $info_payment = $this->getInfoPayment();
@@ -16,7 +16,7 @@ $info_payment = $this->getInfoPayment();
     if(!isset($info_payment['status']['value'])){
         //caso não exista informações sobre o pagamento
         ?>
-        <h2 class="mercadopago-title"><?php echo $this->__('Thank you for your purchase!'); ?></h2>
+        <h2 class="mercadopago-title"><?php echo __('Thank you for your purchase!'); ?></h2>
         <p><?php echo $link_to_order; ?></p>
         <?php
     }else{
@@ -36,7 +36,7 @@ $info_payment = $this->getInfoPayment();
 
         <p><?php echo $link_to_order; ?></p>
 
-        <h5 class="mercadopago-title-info-payment"><?php echo $this->__('Payment information'); ?></h5>
+        <h5 class="mercadopago-title-info-payment"><?php echo __('Payment information'); ?></h5>
 
         <?php foreach($info_payment as $info): ?>
             <p><?php echo $info['text']; ?></p>
