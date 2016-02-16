@@ -29,7 +29,8 @@ class StandardConfigProvider
             'payment' => [
                 $this->methodCode => [
                     'actionUrl' => \MercadoPago\Core\Model\Standard\Payment::ACTION_URL,
-                    'bannerUrl' => $this->methodInstance->getBannerCheckoutUrl()
+                    'bannerUrl' => $this->methodInstance->getConfigData('banner_checkout'),
+                    'type_checkout'  => $this->methodInstance->getConfigData('type_checkout')
                 ],
             ],
         ] : [];
