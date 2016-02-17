@@ -7,7 +7,8 @@ define(
         'Magento_Checkout/js/view/payment/default',
         'ko',
         'MercadoPago_Core/js/model/iframe',
-        'Magento_Checkout/js/model/full-screen-loader'
+        'Magento_Checkout/js/model/full-screen-loader',
+        'MPcheckout',
     ],
     function (Component, ko, iframe, fullScreenLoader) {
         'use strict';
@@ -33,11 +34,11 @@ define(
              * @returns {String}
              */
             getActionUrl: function () {
-                 if (this.isInAction()) {
-                     if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
-                         return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
-                     }
-                 }
+                if (this.isInAction()) {
+                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                        return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
+                    }
+                }
                 return '';
             },
 
@@ -49,6 +50,7 @@ define(
                 }
                 return '';
             },
+
             /**
              * Places order in pending payment status.
              */
@@ -61,15 +63,15 @@ define(
                     this.isInAction(true);
                     // capture all click events
                     document.addEventListener('click', iframe.stopEventPropagation, true);
+                    $MPC.openCheckout ({
+                        url:  this.getActionUrl(),
+                        mode: "modal",
+                        onreturn: function(data) {
+                            // execute_my_onreturn (Apenas modelo)
+                        }
+                    });
                 }
             },
-            /**
-             * Hide loader when iframe is fully loaded.
-             * @returns {void}
-             */
-            iframeLoaded: function() {
-                fullScreenLoader.stopLoader();
-            }
         });
     }
 );

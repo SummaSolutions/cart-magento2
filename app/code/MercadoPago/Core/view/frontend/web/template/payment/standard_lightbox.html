@@ -39,21 +39,5 @@
                 </button>
             </div>
         </div>
-        <div data-bind="visible: isInAction()">
-            <script type="text/javascript" src="https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js"></script>
-
-            <!-- Abra o Checkout -->
-            <script type="text/javascript">
-                $MPC.openCheckout ({
-                    url: getActionUrl(),
-                    mode: "modal",
-                    onreturn: function(data) {
-                        // execute_my_onreturn (Apenas modelo)
-                    }
-                });
-            </script>
-
-            <a data-bind="attr: {href: getActionUrl()}" name="MP-Checkout" class="blue-M-Rn" mp-mode="modal">Pagar</a>
-        </div>
     </div>
 </div>

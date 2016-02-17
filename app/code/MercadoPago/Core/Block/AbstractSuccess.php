@@ -15,7 +15,6 @@ class AbstractSuccess
 
     protected $_checkoutSession;
 
-    protected $_urlBuilder;
 
 
     public function __construct(
@@ -23,14 +22,12 @@ class AbstractSuccess
         \MercadoPago\Core\Model\CoreFactory $coreFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Framework\UrlInterface $urlBuilder,
         array $data = []
     )
     {
         $this->_coreFactory = $coreFactory;
         $this->_orderFactory = $orderFactory;
         $this->_checkoutSession = $checkoutSession;
-        $this->_urlBuilder = $urlBuilder;
         parent::__construct(
             $context,
             $data
