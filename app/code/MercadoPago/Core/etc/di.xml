@@ -2,4 +2,19 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="MercadoPago\Core\Helper\Message\MessageInterface" type="MercadoPago\Core\Helper\StatusOrderMessage" />
+    <type name="MercadoPago\Core\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="MercadoPago\Core\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">mercadopago</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">MercadoPago\Core\Logger\Handler\System</item>
+            </argument>
+        </arguments>
+    </type>
+
+
 </config>
