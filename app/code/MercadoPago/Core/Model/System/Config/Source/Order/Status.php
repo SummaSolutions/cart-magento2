@@ -1,7 +1,8 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source\Order;
 
-class Status extends \Magento\Sales\Model\Config\Source\Order\Status
+class Status
+    extends \Magento\Sales\Model\Config\Source\Order\Status
 {
     /**
      * @var string[]

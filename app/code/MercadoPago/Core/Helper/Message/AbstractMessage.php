@@ -2,7 +2,8 @@
 namespace MercadoPago\Core\Helper\Message;
 
 
-abstract class AbstractMessage implements MessageInterface
+abstract class AbstractMessage
+    implements MessageInterface
 {
     public abstract function getMessageMap();
 

@@ -1,5 +1,6 @@
 <?php
 namespace MercadoPago\Core\Helper;
+
 use Magento\Framework\View\LayoutFactory;
 
 
@@ -17,16 +18,16 @@ class Data
     const TYPE = 'magento';
 
     /**
-     * @var \MercadoPago\Core\Helper\
-     */
-    protected $coreHelper;
-
-    /**
      * @var \MercadoPago\Core\Helper\Message\MessageInterface
      */
     protected $messageInterface;
 
-    protected $coreHelperFactory;
+    /**
+     * MercadoPago Logging instance
+     *
+     * @var \MercadoPago\Core\Logger\Logger
+     */
+    protected $_mpLogger;
 
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
@@ -35,23 +36,30 @@ class Data
         \Magento\Payment\Model\Method\Factory $paymentMethodFactory,
         \Magento\Store\Model\App\Emulation $appEmulation,
         \Magento\Payment\Model\Config $paymentConfig,
-        \Magento\Framework\App\Config\Initial $initialConfig
-    ) {
+        \Magento\Framework\App\Config\Initial $initialConfig,
+        \MercadoPago\Core\Logger\Logger $logger
+    )
+    {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->messageInterface = $messageInterface;
+        $this->_mpLogger = $logger;
     }
-    public function log($message, $file = "mercadopago.log", $array = null)
-    {
-        //pega a configuração de log no admin, essa variavel vem como true por padrão
-        $action_log = $this->scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-        //caso tenha um array, transforma em json para melhor visualização
+    public function log($message, $name = "mercadopago", $array = null)
+    {
+        //load admin configuration value, default is true
+        $actionLog = $this->scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (!$actionLog) {
+            return;
+        }
+        //if extra data is provided, it's encoded for better visualization
         if (!is_null($array)) {
             $message .= " - " . json_encode($array);
         }
 
         //set log
-        $this->_logger->info($message, []);
+        $this->_mpLogger->setName($name);
+        $this->_mpLogger->debug($message);
     }
 
     public function getApiInstance()
@@ -72,6 +80,7 @@ class Data
         }
 
         $api->set_type(self::TYPE);
+
         //$api->set_so((string) Mage::getConfig()->getModuleConfig("MercadoPago_Core")->version); //TODO get module version
 
         return $api;
@@ -105,6 +114,7 @@ class Data
     {
         $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
         return $this->getApiInstance($clientId, $clientSecret)->get_access_token();
     }
 
@@ -149,7 +159,7 @@ class Data
      * @param string $status
      */
     public function _getAssignedState($status)
-    {
+    {   //TODO modify model loading
         $item = Mage::getResourceModel('sales/order_status_collection')
             ->joinStates()
             ->addFieldToFilter('main_table.status', $status);
@@ -169,7 +179,7 @@ class Data
 
     public function setOrderSubtotals($data, $order)
     {
-        if (isset($data['total_paid_amount'])){
+        if (isset($data['total_paid_amount'])) {
             $balance = $this->_getMultiCardValue($data['total_paid_amount']);
         } else {
             $balance = $data['transaction_details']['total_paid_amount'];
@@ -211,11 +221,12 @@ class Data
         return $payment;
     }
 
-    protected function _getMultiCardValue($fullValue) {
+    protected function _getMultiCardValue($fullValue)
+    {
         $finalValue = 0;
         $values = explode('|', $fullValue);
         foreach ($values as $value) {
-            $value = (float) str_replace(' ', '', $value);
+            $value = (float)str_replace(' ', '', $value);
             $finalValue = $finalValue + $value;
         }
 

@@ -1,28 +1,31 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
-class CategoryId implements \Magento\Framework\Option\ArrayInterface
+class CategoryId
+    implements \Magento\Framework\Option\ArrayInterface
 {
-    protected $coreHelperFactory;
+    protected $coreHelper;
+    protected $scopeConfig;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
+     * @param \MercadoPago\Core\Helper\Data                      $coreHelperFactory
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
-    ) {
+        \MercadoPago\Core\Helper\Data $coreHelper
+    )
+    {
         $this->scopeConfig = $scopeConfig;
-        $this->coreHelperFactory = $coreHelperFactory;
+        $this->coreHelper = $coreHelper;
     }
 
     public function toOptionArray()
     {
-        $this->coreHelperFactory->create()->log("Get Categories... ", 'mercadopago.log');
+        $this->coreHelper->log("Get Categories... ", 'mercadopago');
 
         $response = \MercadoPago_Lib_RestClient::get("/item_categories");
-        $this->coreHelperFactory->create()->log("API item_categories", 'mercadopago.log', $response);
+        $this->coreHelper->log("API item_categories", 'mercadopago', $response);
 
         $response = $response['response'];
 
@@ -41,6 +44,7 @@ class CategoryId implements \Magento\Framework\Option\ArrayInterface
 
         //force order by key
         ksort($cat);
+
         return $cat;
     }
 

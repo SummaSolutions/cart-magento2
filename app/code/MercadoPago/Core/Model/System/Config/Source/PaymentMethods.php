@@ -1,7 +1,8 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
-class PaymentMethods implements \Magento\Framework\Option\ArrayInterface
+class PaymentMethods
+    implements \Magento\Framework\Option\ArrayInterface
 {
     const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
     const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
@@ -16,7 +17,8 @@ class PaymentMethods implements \Magento\Framework\Option\ArrayInterface
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
-    ) {
+    )
+    {
         $this->scopeConfig = $scopeConfig;
         $this->coreHelperFactory = $coreHelperFactory;
     }
@@ -41,11 +43,11 @@ class PaymentMethods implements \Magento\Framework\Option\ArrayInterface
             $access_token = $meHelper->getApiInstance($clientId, $clientSecret)->get_access_token();
         }
 
-        $meHelper->log("Get payment methods by country... ", 'mercadopago.log');
-        $meHelper->log("API payment methods: " . "/v1/payment_methods?access_token=" . $access_token, 'mercadopago.log');
+        $meHelper->log("Get payment methods by country... ", 'mercadopago');
+        $meHelper->log("API payment methods: " . "/v1/payment_methods?access_token=" . $access_token, 'mercadopago');
         $response = \MercadoPago_Lib_RestClient::get("/v1/payment_methods?access_token=" . $access_token);
 
-        $meHelper->log("API payment methods", 'mercadopago.log', $response);
+        $meHelper->log("API payment methods", 'mercadopago', $response);
 
         $response = $response['response'];
 

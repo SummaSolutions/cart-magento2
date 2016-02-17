@@ -1,25 +1,13 @@
 <?php
-/**
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL).
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-*
-* @category   	Payment Gateway
-* @package    	MercadoPago
-* @author      	Gabriel Matsuoka (gabriel.matsuoka@gmail.com)
-* @copyright  	Copyright (c) MercadoPago [http://www.mercadopago.com]
-* @license    	http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
 namespace MercadoPago\Core\Observer;
+
 use Magento\Framework\Event\ObserverInterface;
 
-class ConfigObserver implements ObserverInterface
+class ConfigObserver
+    implements ObserverInterface
 {
     private $banners = [
-        "mercadopago_custom" => [
+        "mercadopago_custom"       => [
             "mla" => "http://imgmp.mlstatic.com/org-img/banners/ar/medios/online/468X60.jpg",
             "mlb" => "http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg",
             "mco" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
@@ -31,7 +19,7 @@ class ConfigObserver implements ObserverInterface
             "mco" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
             "mlm" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png"
         ],
-        "mercadopago_standard" => [
+        "mercadopago_standard"     => [
             "mla" => "http://imgmp.mlstatic.com/org-img/banners/ar/medios/online/468X60.jpg",
             "mlb" => "http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg",
             "mco" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
@@ -39,9 +27,10 @@ class ConfigObserver implements ObserverInterface
             "mlv" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg"
         ]
     ];
-    
-    private $available_transparent_credit_cart =  ['mla', 'mlb', 'mlm'];
+
+    private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm'];
     private $available_transparent_ticket = ['mla', 'mlb', 'mlm'];
+    const LOG_NAME = 'mercadopago';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -64,7 +53,8 @@ class ConfigObserver implements ObserverInterface
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \MercadoPago\Core\Helper\Data $coreHelper,
         \Magento\Config\Model\ResourceModel\Config $configResource
-    ) {
+    )
+    {
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->coreHelper = $coreHelper;
@@ -72,6 +62,7 @@ class ConfigObserver implements ObserverInterface
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
      * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -92,60 +83,60 @@ class ConfigObserver implements ObserverInterface
 
     public function availableCheckout()
     {
-        //verifica se o pais selecionado possui integracao para utilizar os checkouts transparents
+        //checks if selected country is integrated with transparent checkout
 
         $country = $this->scopeConfig->getValue('payment/mercadopago/country');
-        
+
         if (!in_array($country, $this->available_transparent_credit_cart)) {
             $this->configResource->saveConfig('payment/mercadopago_custom/active', 0, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
         }
-        
+
         if (!in_array($country, $this->available_transparent_ticket)) {
             $this->configResource->saveConfig('payment/mercadopago_customticket/active', 0, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
         }
     }
-    
+
     public function checkBanner($type_checkout)
     {
         //get country
         $country = $this->scopeConfig->getValue('payment/mercadopago/country');
-        if (!isset($this->banners[$type_checkout][$country])){
+        if (!isset($this->banners[$type_checkout][$country])) {
             return;
         }
         $default_banner = $this->banners[$type_checkout][$country];
-        
+
         $current_banner = $this->scopeConfig->getValue('payment/' . $type_checkout . '/banner_checkout');
-        
-        $this->coreHelper->log("Type Checkout Path: " . $type_checkout, 'mercadopago.log');
-        $this->coreHelper->log("Current Banner: " . $current_banner, 'mercadopago.log');
-        $this->coreHelper->log("Default Banner: " . $default_banner, 'mercadopago.log');
-        
+
+        $this->coreHelper->log("Type Checkout Path: " . $type_checkout, self::LOG_NAME);
+        $this->coreHelper->log("Current Banner: " . $current_banner, self::LOG_NAME);
+        $this->coreHelper->log("Default Banner: " . $default_banner, self::LOG_NAME);
+
         if (in_array($current_banner, $this->banners[$type_checkout])) {
-            $this->coreHelper->log("Banner default need update...", 'mercadopago.log');
-            
+            $this->coreHelper->log("Banner default need update...", self::LOG_NAME);
+
             if ($default_banner != $current_banner) {
                 $this->configResource->saveConfig('payment/' . $type_checkout . '/banner_checkout', $default_banner, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
-                
-                $this->coreHelper->log('payment/' . $type_checkout . '/banner_checkout setted ' . $default_banner, 'mercadopago.log');
+
+                $this->coreHelper->log('payment/' . $type_checkout . '/banner_checkout setted ' . $default_banner, self::LOG_NAME);
             }
         }
     }
-    
-    
+
+
     public function setSponsor()
     {
-        $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id'), 'mercadopago.log');
-        
+        $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id'), self::LOG_NAME);
+
         $sponsor_id = "";
-        $this->coreHelper->log("Valid user test", 'mercadopago.log');
-        
+        $this->coreHelper->log("Valid user test", self::LOG_NAME);
+
         $access_token = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
-        $this->coreHelper->log("Get access_token: " . $access_token, 'mercadopago.log');
-        
+        $this->coreHelper->log("Get access_token: " . $access_token, self::LOG_NAME);
+
         $mp = $this->coreHelper->getApiInstance($access_token);
         $user = $mp->get("/users/me");
-        $this->coreHelper->log("API Users response", 'mercadopago.log', $user);
-        
+        $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
+
         if ($user['status'] == 200 && !in_array("test_user", $user['response']['tags'])) {
 
             switch ($user['response']['site_id']) {
@@ -162,29 +153,31 @@ class ConfigObserver implements ObserverInterface
                     $sponsor_id = "";
                     break;
             }
-            
-            $this->coreHelper->log("Sponsor id setted", 'mercadopago.log', $sponsor_id);
+
+            $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsor_id);
         }
 
         $this->configResource->saveConfig('payment/mercadopago/sponsor_id', $sponsor_id, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
-        $this->coreHelper->log("Sponsor saved", 'mercadopago.log', $sponsor_id);
+        $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsor_id);
     }
 
-    protected function validateAccessToken() {
+    protected function validateAccessToken()
+    {
         $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
         if (!empty($accessToken)) {
             if (!$this->coreHelper->isValidAccessToken($accessToken)) {
-                throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
+                throw new \Magento\Framework\Exception\LocalizedException(__('MercadoPago - Custom Checkout: Invalid access token'));
             }
         }
     }
 
-    protected function validateClientCredentials() {
+    protected function validateClientCredentials()
+    {
         $clientId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID);
         $clientSecret = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET);
-        if (!empty($clientId) &&  !empty($clientSecret)) {
-            if (!$this->coreHelper->isValidClientCredentials($clientId,$clientSecret)){
-                throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Classic Checkout: Invalid client id or client secret'));
+        if (!empty($clientId) && !empty($clientSecret)) {
+            if (!$this->coreHelper->isValidClientCredentials($clientId, $clientSecret)) {
+                throw new \Magento\Framework\Exception\LocalizedException(__('MercadoPago - Classic Checkout: Invalid client id or client secret'));
             }
         }
     }

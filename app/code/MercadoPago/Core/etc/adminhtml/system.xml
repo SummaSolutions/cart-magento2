@@ -64,7 +64,15 @@
                 </field>
                 <field id="access_token" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Access Token</label>
-                    <comment><![CDATA[<a href="https://www.mercadopago.com/mlb/account/credentials" target="_blank">Click here to get your Access Token</a>]]></comment>
+                    <comment><![CDATA[
+                                <span>Click to get your Access Token for: </span>
+                                <a href="https://www.mercadopago.com/mla/account/credentials" target="_blank">Argentina</a>
+                                <a href="https://www.mercadopago.com/mlb/account/credentials" target="_blank">Brazil</a><br>
+                                <a href="https://www.mercadopago.com/mco/account/credentials" target="_blank">Colombia</a>
+                                <a href="https://www.mercadopago.com/mlm/account/credentials" target="_blank">Mexico</a>
+                                <a href="https://www.mercadopago.com/mlv/account/credentials" target="_blank">Venezuela</a>
+                                ]]>
+                    </comment>
                 </field>
                 <group id="custom_checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Custom Checkout- Credit Card</label>

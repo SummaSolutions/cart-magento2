@@ -1,7 +1,8 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
-class Country implements \Magento\Framework\Option\ArrayInterface
+class Country
+    implements \Magento\Framework\Option\ArrayInterface
 {
     public function toOptionArray()
     {
@@ -27,6 +28,7 @@ class Country implements \Magento\Framework\Option\ArrayInterface
                 return $country['code'];
             }
         }
+
         return '';
     }
 }
