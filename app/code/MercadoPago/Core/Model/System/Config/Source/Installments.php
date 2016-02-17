@@ -1,9 +1,19 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
+/**
+ * Class Installments
+ *
+ * @package MercadoPago\Core\Model\System\Config\Source
+ */
 class Installments
     implements \Magento\Framework\Option\ArrayInterface
 {
+
+    /**
+     * Return available installments array
+     * @return array
+     */
     public function toOptionArray()
     {
         $installment = [];

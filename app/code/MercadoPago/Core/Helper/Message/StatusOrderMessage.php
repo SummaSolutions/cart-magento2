@@ -1,9 +1,11 @@
 <?php
-namespace MercadoPago\Core\Helper;
+namespace MercadoPago\Core\Helper\Message;
 
-
+/**
+ * Map Payment Messages with the Payment response
+ */
 class StatusOrderMessage
-    extends \MercadoPago\Core\Helper\Message\AbstractMessage
+    extends AbstractMessage
 {
     protected $messagesMap = [
             "approved"     => 'Automatic notification of the MercadoPago: The payment was approved.',

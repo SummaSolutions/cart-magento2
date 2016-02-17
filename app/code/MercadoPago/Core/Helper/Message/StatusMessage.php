@@ -1,9 +1,11 @@
 <?php
-namespace MercadoPago\Core\Helper;
+namespace MercadoPago\Core\Helper\Message;
 
-
+/**
+ * Payment response user friendly messages
+ */
 class StatusMessage
-    extends \MercadoPago\Core\Helper\Message\AbstractMessage
+    extends AbstractMessage
 {
     protected $messagesMap = [
             "approved"   => [

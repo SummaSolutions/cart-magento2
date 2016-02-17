@@ -45,6 +45,13 @@ class Data
         $this->_mpLogger = $logger;
     }
 
+
+    /**
+     * Log custom message using MercadoPago logger instance
+     * @param        $message
+     * @param string $name
+     * @param null   $array
+     */
     public function log($message, $name = "mercadopago", $array = null)
     {
         //load admin configuration value, default is true
@@ -62,6 +69,11 @@ class Data
         $this->_mpLogger->debug($message);
     }
 
+    /**
+     * Return MercadoPago Api instance given AccessToken or ClientId and Secret
+     * @return \MercadoPago_Lib_Api
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getApiInstance()
     {
         $params = func_num_args();
@@ -87,6 +99,13 @@ class Data
 
     }
 
+    /**
+     * AccessToken valid?
+     * @param $accessToken
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function isValidAccessToken($accessToken)
     {
         $mp = $this->getApiInstance($accessToken);
@@ -98,6 +117,14 @@ class Data
         return true;
     }
 
+    /**
+     * ClientId and Secret valid?
+     * @param $clientId
+     * @param $clientSecret
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function isValidClientCredentials($clientId, $clientSecret)
     {
         $mp = $this->getApiInstance($clientId, $clientSecret);
@@ -110,6 +137,12 @@ class Data
         return true;
     }
 
+    /**
+     * Return access token
+     * @return mixed
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getAccessToken()
     {
         $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -118,6 +151,12 @@ class Data
         return $this->getApiInstance($clientId, $clientSecret)->get_access_token();
     }
 
+    /**
+     * Return order status mapping based on current configuration
+     * @param $status
+     *
+     * @return mixed
+     */
     public function getStatusOrder($status)
     {
         switch ($status) {
@@ -167,6 +206,13 @@ class Data
         return array_pop($item->getItems())->getState();
     }
 
+    /**
+     * Return raw message for payment detail
+     * @param $status
+     * @param $payment
+     *
+     * @return \Magento\Framework\Phrase|string
+     */
     public function getMessage($status, $payment)
     {
         $rawMessage = __($this->messageInterface->getMessage($status));
@@ -177,6 +223,11 @@ class Data
         return $rawMessage;
     }
 
+    /**
+     * Calculate and set order MercadoPago specific subtotals based on data values
+     * @param $data
+     * @param $order
+     */
     public function setOrderSubtotals($data, $order)
     {
         if (isset($data['total_paid_amount'])) {
@@ -206,6 +257,7 @@ class Data
     }
 
     /**
+     * Modify payment array adding specific fields
      * @param $payment
      *
      * @return mixed
@@ -221,6 +273,12 @@ class Data
         return $payment;
     }
 
+    /**
+     * Return sum of fields separated with |
+     * @param $fullValue
+     *
+     * @return int
+     */
     protected function _getMultiCardValue($fullValue)
     {
         $finalValue = 0;

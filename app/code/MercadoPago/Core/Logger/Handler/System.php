@@ -2,7 +2,9 @@
 namespace MercadoPago\Core\Logger\Handler;
 
 use Monolog\Logger;
-
+/**
+ * MercadoPago logger handler
+ */
 class System
     extends \Magento\Framework\Logger\Handler\Base
 {

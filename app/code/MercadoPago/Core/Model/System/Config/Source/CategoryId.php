@@ -1,6 +1,11 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
+/**
+ * Class CategoryId
+ *
+ * @package MercadoPago\Core\Model\System\Config\Source
+ */
 class CategoryId
     implements \Magento\Framework\Option\ArrayInterface
 {
@@ -9,7 +14,7 @@ class CategoryId
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \MercadoPago\Core\Helper\Data                      $coreHelperFactory
+     * @param \MercadoPago\Core\Helper\Data                      $coreHelper
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -20,6 +25,10 @@ class CategoryId
         $this->coreHelper = $coreHelper;
     }
 
+    /**
+     * Return key sorted shop item categories
+     * @return array
+     */
     public function toOptionArray()
     {
         $this->coreHelper->log("Get Categories... ", 'mercadopago');

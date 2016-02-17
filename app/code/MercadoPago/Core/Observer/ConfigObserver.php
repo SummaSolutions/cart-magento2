@@ -3,6 +3,11 @@ namespace MercadoPago\Core\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class ConfigObserver
+ *
+ * @package MercadoPago\Core\Observer
+ */
 class ConfigObserver
     implements ObserverInterface
 {
@@ -24,7 +29,8 @@ class ConfigObserver
             "mlb" => "http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg",
             "mco" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
             "mlc" => "https://secure.mlstatic.com/developers/site/cloud/banners/cl/468x60.gif",
-            "mlv" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg"
+            "mlv" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg",
+            "mlm" => "http://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_468X60.JPG"
         ]
     ];
 
@@ -49,6 +55,13 @@ class ConfigObserver
      */
     protected $configResource;
 
+    /**
+     * ConfigObserver constructor.
+     *
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \MercadoPago\Core\Helper\Data                      $coreHelper
+     * @param \Magento\Config\Model\ResourceModel\Config         $configResource
+     */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \MercadoPago\Core\Helper\Data $coreHelper,
@@ -61,6 +74,7 @@ class ConfigObserver
     }
 
     /**
+     * Updates configuration values based every time MercadoPago configuration section is saved
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
@@ -81,10 +95,11 @@ class ConfigObserver
 
     }
 
+    /**
+     * Disables custom checkout if selected country is not available
+     */
     public function availableCheckout()
     {
-        //checks if selected country is integrated with transparent checkout
-
         $country = $this->scopeConfig->getValue('payment/mercadopago/country');
 
         if (!in_array($country, $this->available_transparent_credit_cart)) {
@@ -96,6 +111,10 @@ class ConfigObserver
         }
     }
 
+    /**
+     * Check if banner checkout img needs to be updated based on selected country
+     * @param $type_checkout
+     */
     public function checkBanner($type_checkout)
     {
         //get country
@@ -123,6 +142,10 @@ class ConfigObserver
     }
 
 
+    /**
+     * Set configuration value sponsor_id based on current credentials
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function setSponsor()
     {
         $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id'), self::LOG_NAME);
@@ -161,6 +184,10 @@ class ConfigObserver
         $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsor_id);
     }
 
+    /**
+     * Validate current accessToken
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function validateAccessToken()
     {
         $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
@@ -171,6 +198,10 @@ class ConfigObserver
         }
     }
 
+    /**
+     * Validate current clientId and clientSecret
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function validateClientCredentials()
     {
         $clientId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID);

@@ -1,6 +1,8 @@
 <?php
 namespace MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset;
-
+/**
+ * Config form FieldSet renderer
+ */
 class Payment
     extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
