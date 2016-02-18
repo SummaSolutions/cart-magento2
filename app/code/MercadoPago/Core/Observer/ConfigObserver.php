@@ -173,6 +173,10 @@ class ConfigObserver
         $access_token = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
         $this->coreHelper->log("Get access_token: " . $access_token, self::LOG_NAME);
 
+        if (!$access_token) {
+            return;
+        }
+
         $mp = $this->coreHelper->getApiInstance($access_token);
         $user = $mp->get("/users/me");
         $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
