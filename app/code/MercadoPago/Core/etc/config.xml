@@ -40,9 +40,9 @@
             </mercadopago_customticket>
 
             <mercadopago_standard>
-                <active>0</active>
-                <!--<model>mercadopago/standard_payment</model>-->
-                <!-- nome do modulo na exibição para o comprador -->
+                <active>1</active>
+                <model>MercadoPago\Core\Model\Standard\Payment</model>
+                <order_status>pending</order_status>
                 <title>MercadoPago</title>
                 <allowspecific>0</allowspecific>
                 <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
@@ -53,6 +53,7 @@
                 <iframe_width>900</iframe_width>
                 <iframe_height>700</iframe_height>
                 <sandbox_mode>0</sandbox_mode>
+				<group>offline</group>
             </mercadopago_standard>
         </payment>
     </default>
