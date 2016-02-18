@@ -1,16 +1,10 @@
-/**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 define(
     [
         'Magento_Checkout/js/view/payment/default',
-        'ko',
-        'MercadoPago_Core/js/model/iframe',
-        'Magento_Checkout/js/model/full-screen-loader',
         'MPcheckout',
     ],
-    function (Component, ko, iframe, fullScreenLoader) {
+    function (Component) {
         'use strict';
 
         return Component.extend({
@@ -19,7 +13,6 @@ define(
                 paymentReady: false
             },
             redirectAfterPlaceOrder: false,
-            isInAction: iframe.isInAction,
             initObservable: function () {
                 this._super()
                     .observe('paymentReady');
@@ -30,23 +23,19 @@ define(
                 return this.paymentReady();
             },
             /**
-             * Get action url for payment method iframe.
+             * Get action url for payment method.
              * @returns {String}
              */
             getActionUrl: function () {
-                if (this.isInAction()) {
-                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
-                        return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
-                    }
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
                 }
                 return '';
             },
 
             getBannerUrl: function () {
-                if (this.isInAction()) {
-                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
-                        return window.checkoutConfig.payment['mercadopago_standard']['bannerUrl'];
-                    }
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['bannerUrl'];
                 }
                 return '';
             },
@@ -60,15 +49,11 @@ define(
                     self.paymentReady(true);
                 };
                 if (this.placeOrder()) {
-                    this.isInAction(true);
+                    jQuery('#checkout').trigger('processStop')
                     // capture all click events
-                    document.addEventListener('click', iframe.stopEventPropagation, true);
-                    $MPC.openCheckout ({
-                        url:  this.getActionUrl(),
-                        mode: "modal",
-                        onreturn: function(data) {
-                            // execute_my_onreturn (Apenas modelo)
-                        }
+                    $MPC.openCheckout({
+                        url: this.getActionUrl(),
+                        mode: "modal"
                     });
                 }
             },

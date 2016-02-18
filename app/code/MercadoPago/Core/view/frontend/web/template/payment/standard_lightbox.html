@@ -29,11 +29,11 @@
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
-        <div class="actions-toolbar" data-bind="visible: !isInAction()">
+        <div class="actions-toolbar">
             <div class="primary">
                 <button data-role="review-save"
                         type="submit"
-                        data-bind="click: placePendingPaymentOrder, attr: {title: $t('Continue')}, css: {disabled: !isPlaceOrderActionAllowed()}"
+                        data-bind="click: placePendingPaymentOrder, attr: {title: $t('Pay')}"
                         class="button action primary checkout">
                     <span data-bind="i18n: 'Continue'"></span>
                 </button>
