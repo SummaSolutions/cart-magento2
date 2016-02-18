@@ -2,6 +2,11 @@
 namespace MercadoPago\Core\Helper\Message;
 
 
+/**
+ * Class AbstractMessage
+ *
+ * @package MercadoPago\Core\Helper\Message
+ */
 abstract class AbstractMessage
     implements MessageInterface
 {
