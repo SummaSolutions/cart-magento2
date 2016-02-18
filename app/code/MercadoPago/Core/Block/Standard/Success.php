@@ -1,6 +1,11 @@
 <?php
 namespace MercadoPago\Core\Block\Standard;
 
+/**
+ * Class Success
+ *
+ * @package MercadoPago\Core\Block\Standard
+ */
 
 class Success
     extends \MercadoPago\Core\Block\AbstractSuccess

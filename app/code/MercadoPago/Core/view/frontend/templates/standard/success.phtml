@@ -3,7 +3,6 @@ $order = $this->getOrder();
 $total = $this->getTotal();
 $payment = $this->getPayment();
 
-//monta link para o pedido
 $link_to_order = __('Your order %1 has been successfully generated.',  '<a href="'. $this->getOrderUrl() . '">' . $order->getIncrementId() .'</a>');
 
 $payment_method = $this->getPaymentMethod();
@@ -12,23 +11,20 @@ $info_payment = $this->getInfoPayment();
 
 <div id="box-mercadopago">
 
-    <?php
-    if(!isset($info_payment['status']['value'])){
-        //caso não exista informações sobre o pagamento
-        ?>
-        <h2 class="mercadopago-title"><?php echo __('Thank you for your purchase!'); ?></h2>
+    <?php if(!isset($info_payment['status']['value'])): ?>
+        <h2 class="mercadopago-title">
+            <?php echo __('Thank you for your purchase!'); ?>
+        </h2>
         <p><?php echo $link_to_order; ?></p>
+    <?php else: ?>
         <?php
-    }else{
-        //caso exista informações sobre o pagamento
-        $message_status = $this->getMessageByStatus(
-            $info_payment['status']['value'],
-            $info_payment['status_detail']['value'],
-            $info_payment['payment_method']['value'],
-            $info_payment['installment']['value'],
-            $this->getTotal()
-        );
-
+            $message_status = $this->getMessageByStatus(
+                $info_payment['status']['value'],
+                $info_payment['status_detail']['value'],
+                $info_payment['payment_method']['value'],
+                $info_payment['installment']['value'],
+                $this->getTotal()
+            );
         ?>
         <h2 class="mercadopago-title"><?php echo $message_status['title']; ?></h2>
 
@@ -42,9 +38,7 @@ $info_payment = $this->getInfoPayment();
             <p><?php echo $info['text']; ?></p>
         <?php endforeach; ?>
 
-        <?php
-    }
-    ?>
+    <?php endif?>
 
 </div>
 
