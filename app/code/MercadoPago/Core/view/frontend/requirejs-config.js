@@ -7,7 +7,6 @@ var config = {
     map: {
         '*': {
             MPcheckout: 'https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js',
-            //lightBox  : 'MercadoPago_Core/js/show_lightbox'
         }
     }
 };

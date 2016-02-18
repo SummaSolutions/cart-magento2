@@ -23,6 +23,13 @@ define(
                     component: 'MercadoPago_Core/js/view/method-renderer/standard-method-lightbox'
                 }
             );
+        } else if (type_checkout == 'redirect') {
+            rendererList.push(
+                {
+                    type: 'mercadopago_standard',
+                    component: 'MercadoPago_Core/js/view/method-renderer/standard-method-redirect'
+                }
+            );
         }
 
         return Component.extend({});

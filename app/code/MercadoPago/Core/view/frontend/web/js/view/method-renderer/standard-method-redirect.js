@@ -1,4 +1,3 @@
-
 define(
     [
         'Magento_Checkout/js/view/payment/default',
@@ -9,7 +8,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'MercadoPago_Core/payment/standard_lightbox',
+                template: 'MercadoPago_Core/payment/standard_redirect',
                 paymentReady: false
             },
             redirectAfterPlaceOrder: false,
@@ -44,17 +43,8 @@ define(
              * Places order in pending payment status.
              */
             placePendingPaymentOrder: function () {
-                var self = this;
-                this.afterPlaceOrder = function () {
-                    self.paymentReady(true);
-                };
                 if (this.placeOrder()) {
-                    jQuery('#checkout').trigger('processStop');
-                    // capture all click events
-                    $MPC.openCheckout({
-                        url: this.getActionUrl(),
-                        mode: "modal"
-                    });
+                    window.location = this.getActionUrl();
                 }
             },
         });
