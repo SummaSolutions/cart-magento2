@@ -89,22 +89,14 @@ class Core
     protected $_coreHelper;
 
     /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
+
+	/**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_orderFactory;
-
-    /**
-     * @var
-     */
-    protected $_accessToken;
-    /**
-     * @var
-     */
-    protected $_clientId;
-    /**
-     * @var
-     */
-    protected $_clientSecret;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory
@@ -127,14 +119,20 @@ class Core
      */
     protected $_orderSender;
 
-
     /**
-     * Construct Core
-     *
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \MercadoPago\Core\Helper\Data              $coreHelper
-     * @param \Magento\Sales\Model\OrderFactory          $orderFactory
+     * @var
      */
+    protected $_accessToken;
+    /**
+     * @var
+     */
+    protected $_clientId;
+    /**
+     * @var
+     */
+    protected $_clientSecret;
+
+
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,
@@ -147,10 +145,10 @@ class Core
         \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     )
     {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
@@ -496,7 +494,7 @@ class Core
      * @param $preference
      *
      * @return array
-     * @throws \Api\V1\Exception
+     * @throws \MercadoPago\Core\Model\Api\V1\Exception
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postPaymentV1($preference)
@@ -517,7 +515,7 @@ class Core
             return $response;
         } else {
             $e = "";
-            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(); //TODO mercadopago exception
+            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(new \Magento\Framework\Phrase($e), $this->_scopeConfig);
             if (count($response['response']['cause']) > 0) {
                 foreach ($response['response']['cause'] as $error) {
                     $e .= $exception->getUserMessage($error) . " ";
@@ -529,7 +527,7 @@ class Core
             $this->_coreHelper->log("erro post pago: " . $e, 'mercadopago-custom.log');
             $this->_coreHelper->log("response post pago: ", 'mercadopago-custom.log', $response);
 
-            $exception->setMessage($e);
+            //$exception->; TODO change exception functionality
             throw $exception;
         }
     }
