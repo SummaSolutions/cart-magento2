@@ -2,11 +2,11 @@
 namespace MercadoPago\Core\Model\System\Config\Source;
 
 /**
- * Class CategoryId
+ * Class Category
  *
  * @package MercadoPago\Core\Model\System\Config\Source
  */
-class CategoryId
+class Category
     implements \Magento\Framework\Option\ArrayInterface
 {
     protected $coreHelper;
