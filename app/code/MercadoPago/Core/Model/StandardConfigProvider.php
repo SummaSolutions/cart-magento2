@@ -28,7 +28,7 @@ class StandardConfigProvider
         return $this->methodInstance->isAvailable() ? [
             'payment' => [
                 $this->methodCode => [
-                    'actionUrl' => \MercadoPago\Core\Model\Standard\Payment::ACTION_URL,
+                    'actionUrl' => $this->methodInstance->getActionUrl(),
                     'bannerUrl' => $this->methodInstance->getConfigData('banner_checkout'),
                     'type_checkout'  => $this->methodInstance->getConfigData('type_checkout')
                 ],

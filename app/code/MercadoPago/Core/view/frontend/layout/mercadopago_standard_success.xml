@@ -4,6 +4,9 @@
         <css src="MercadoPago_Core::style-success.css"/>
     </head>
     <body>
+        <referenceContainer name="page.messages">
+            <block class="Magento\Framework\View\Element\Messages" name="messages" as="messages"/>
+        </referenceContainer>
         <referenceContainer name="content">
             <block class="MercadoPago\Core\Block\Standard\Success" name="mercadopago_standard_success" cacheable="false"/>
         </referenceContainer>

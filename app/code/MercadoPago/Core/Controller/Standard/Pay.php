@@ -2,9 +2,17 @@
 
 namespace Mercadopago\Core\Controller\Standard;
 
+/**
+ * Class Pay
+ *
+ * @package Mercadopago\Core\Controller\Standard
+ */
 class Pay
     extends \Magento\Framework\App\Action\Action
 {
+    /**
+     * @var \MercadoPago\Core\Model\Standard\PaymentFactory
+     */
     protected $_paymentFactory;
 
     public function __construct(
