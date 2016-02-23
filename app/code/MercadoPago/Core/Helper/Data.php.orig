@@ -27,14 +27,16 @@ class Data
      */
     protected $_messageInterface;
 
+<<<<<<< HEAD
     protected $_moduleContext;
-
-	/**
+=======
+    /**
      * MercadoPago Logging instance
      *
      * @var \MercadoPago\Core\Logger\Logger
      */
     protected $_mpLogger;
+>>>>>>> ivan_develop
 
     /**
      * Data constructor.
@@ -56,14 +58,24 @@ class Data
         \Magento\Store\Model\App\Emulation $appEmulation,
         \Magento\Payment\Model\Config $paymentConfig,
         \Magento\Framework\App\Config\Initial $initialConfig,
-        \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
-		\MercadoPago\Core\Logger\Logger $logger
+<<<<<<< HEAD
+        \Magento\Framework\Setup\ModuleContextInterface $moduleContext
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_moduleContext = $moduleContext;
-		$this->_mpLogger = $logger;
+    }
+
+    public function log($message, $file = "mercadopago.log", $array = null)
+    {
+=======
+        \MercadoPago\Core\Logger\Logger $logger
+    )
+    {
+        parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
+        $this->messageInterface = $messageInterface;
+        $this->_mpLogger = $logger;
     }
 
 
@@ -81,10 +93,18 @@ class Data
             return;
         }
         //if extra data is provided, it's encoded for better visualization
+>>>>>>> ivan_develop
         if (!is_null($array)) {
             $message .= " - " . json_encode($array);
         }
 
+<<<<<<< HEAD
+        $this->_logger->info($message, []);
+    }
+
+    /**
+     * Return an instance of MercadoPago_Lib_Api logged with configured credentials
+=======
         //set log
         $this->_mpLogger->setName($name);
         $this->_mpLogger->debug($message);
@@ -92,6 +112,7 @@ class Data
 
     /**
      * Return MercadoPago Api instance given AccessToken or ClientId and Secret
+>>>>>>> ivan_develop
      * @return \MercadoPago_Lib_Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -113,14 +134,24 @@ class Data
         }
 
         $api->set_type(self::TYPE);
+<<<<<<< HEAD
         $api->set_so((string)$this->_moduleContext->getVersion());
+=======
+
+        //$api->set_so((string) Mage::getConfig()->getModuleConfig("MercadoPago_Core")->version); //TODO get module version
+>>>>>>> ivan_develop
 
         return $api;
 
     }
 
     /**
+<<<<<<< HEAD
+     * Checks if access token configured is valid
+     *
+=======
      * AccessToken valid?
+>>>>>>> ivan_develop
      * @param $accessToken
      *
      * @return bool
@@ -138,7 +169,12 @@ class Data
     }
 
     /**
+<<<<<<< HEAD
+     * Checks if client id and client secret configured are valid
+     *
+=======
      * ClientId and Secret valid?
+>>>>>>> ivan_develop
      * @param $clientId
      * @param $clientSecret
      *
@@ -158,8 +194,12 @@ class Data
     }
 
     /**
+<<<<<<< HEAD
      * Return the access token proved by api
      *
+=======
+     * Return access token
+>>>>>>> ivan_develop
      * @return mixed
      * @throws \Exception
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -173,7 +213,12 @@ class Data
     }
 
     /**
+<<<<<<< HEAD
+     * Return Status order configured for each magento status
+     *
+=======
      * Return order status mapping based on current configuration
+>>>>>>> ivan_develop
      * @param $status
      *
      * @return mixed
@@ -228,7 +273,10 @@ class Data
     }
 
     /**
+<<<<<<< HEAD
+=======
      * Return raw message for payment detail
+>>>>>>> ivan_develop
      * @param $status
      * @param $payment
      *
@@ -245,7 +293,10 @@ class Data
     }
 
     /**
+<<<<<<< HEAD
+=======
      * Calculate and set order MercadoPago specific subtotals based on data values
+>>>>>>> ivan_develop
      * @param $data
      * @param $order
      */
@@ -295,7 +346,10 @@ class Data
     }
 
     /**
+<<<<<<< HEAD
+=======
      * Return sum of fields separated with |
+>>>>>>> ivan_develop
      * @param $fullValue
      *
      * @return int

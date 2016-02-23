@@ -1,9 +1,11 @@
 <?php
-namespace MercadoPago\Core\Helper;
+namespace MercadoPago\Core\Helper\Message;
 
-
+/**
+ * Map Payment Messages with the Credit Card Payment response detail
+ */
 class StatusDetailMessage
-    extends \MercadoPago\Core\Helper\Message\AbstractMessage
+    extends AbstractMessage
 {
     protected $messagesMap = [
             "cc_rejected_bad_filled_card_number"   => 'Check the card number.',
@@ -22,10 +24,6 @@ class StatusDetailMessage
             "cc_rejected_other_reason"             => '%s did not process the payment.',
     ];
 
-    /**
-     * Return self message map array
-     * @return array
-     */
     public function getMessageMap()
     {
         return $this->messagesMap;

@@ -1,8 +1,18 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
-class Country implements \Magento\Framework\Option\ArrayInterface
+/**
+ * Class Country
+ *
+ * @package MercadoPago\Core\Model\System\Config\Source
+ */
+class Country
+    implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * Return available country array
+     * @return array
+     */
     public function toOptionArray()
     {
         $country = [];
@@ -19,14 +29,4 @@ class Country implements \Magento\Framework\Option\ArrayInterface
         return $country;
     }
 
-    public function getCodeByValue($value)
-    {
-        $countries = $this->toOptionArray();
-        foreach ($countries as $country) {
-            if ($value == $country['value']) {
-                return $country['code'];
-            }
-        }
-        return '';
-    }
 }

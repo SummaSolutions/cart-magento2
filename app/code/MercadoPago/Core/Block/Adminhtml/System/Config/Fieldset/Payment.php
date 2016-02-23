@@ -1,21 +1,25 @@
 <?php
 namespace MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset;
-
-class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
+/**
+ * Config form FieldSet renderer
+ */
+class Payment
+    extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
 
     /**
-     * @param \Magento\Backend\Block\Context $context
+     * @param \Magento\Backend\Block\Context      $context
      * @param \Magento\Backend\Model\Auth\Session $authSession
-     * @param \Magento\Framework\View\Helper\Js $jsHelper
-     * @param array $data
+     * @param \Magento\Framework\View\Helper\Js   $jsHelper
+     * @param array                               $data
      */
     public function __construct(
         \Magento\Backend\Block\Context $context,
         \Magento\Backend\Model\Auth\Session $authSession,
         \Magento\Framework\View\Helper\Js $jsHelper,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $authSession, $jsHelper, $data);
     }
 
@@ -23,6 +27,7 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
      * Add custom css class
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
      * @return string
      */
     protected function _getFrontendClass($element)
@@ -34,6 +39,7 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
      * Return header title part of html for payment solution
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
      * @return string
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
@@ -58,6 +64,7 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
      * Return header comment part of html for payment solution
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -70,6 +77,7 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
      * Get collapsed state on-load
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
      * @return false
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

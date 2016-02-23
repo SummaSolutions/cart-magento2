@@ -2,6 +2,6 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="admin_system_config_changed_section_payment">
-        <observer name="mercadopago_config_validate_observer" instance="MercadoPago\Core\Model\ConfigObserver"/>
+        <observer name="mercadopago_config_validate_observer" instance="MercadoPago\Core\Observer\ConfigObserver"/>
     </event>
 </config>

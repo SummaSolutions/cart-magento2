@@ -9,7 +9,7 @@
                 </field>
                 <field id="category_id" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Category of your store</label>
-                    <source_model>MercadoPago\Core\Model\System\Config\Source\CategoryId</source_model>
+                    <source_model>MercadoPago\Core\Model\System\Config\Source\Category</source_model>
                 </field>
                 <field id="order_status_approved" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Choose the status of approved orders</label>
@@ -57,16 +57,24 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="mercadopago_custom_checkout" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="mercadopago_custom" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>MercadoPago - Custom Checkout</label>
                 <field id="public_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key</label>
                 </field>
                 <field id="access_token" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Access Token</label>
-                    <comment><![CDATA[<a href="https://www.mercadopago.com/mlb/account/credentials" target="_blank">Click here to get your Access Token</a>]]></comment>
+                    <comment><![CDATA[
+                                <span>Click to get your Access Token for: </span>
+                                <a href="https://www.mercadopago.com/mla/account/credentials" target="_blank">Argentina</a>
+                                <a href="https://www.mercadopago.com/mlb/account/credentials" target="_blank">Brazil</a><br>
+                                <a href="https://www.mercadopago.com/mco/account/credentials" target="_blank">Colombia</a>
+                                <a href="https://www.mercadopago.com/mlm/account/credentials" target="_blank">Mexico</a>
+                                <a href="https://www.mercadopago.com/mlv/account/credentials" target="_blank">Venezuela</a>
+                                ]]>
+                    </comment>
                 </field>
-                <group id="mercadopago_custom" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="custom_checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Custom Checkout- Credit Card</label>
                     <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
                     <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -78,53 +86,53 @@
                         <label>Payment Title</label>
                         <config_path>payment/mercadopago_custom/title</config_path>
                     </field>
-                    <field id="statement_descriptor" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="statement_descriptor" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Statement Descriptor</label>
                         <comment>Check availability for your country</comment>
                         <config_path>payment/mercadopago_custom/statement_descriptor</config_path>
                     </field>
-                    <field id="binary_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="binary_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Binary Mode</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_custom/binary_mode</config_path>
                     </field>
-                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Banner Checkout</label>
                         <config_path>payment/mercadopago_custom/banner_checkout</config_path>
                     </field>
-                    <field id="sort_order" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="sort_order" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Checkout Position</label>
                         <frontend_class>validate-number</frontend_class>
-                        <config_path>payment/mercadopago_custom_checkout/sort_order</config_path>
+                        <config_path>payment/mercadopago_custom/sort_order</config_path>
                     </field>
-                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Marketing - Coupon MercadoPago</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_custom/coupon_mercadopago</config_path>
                     </field>
                 </group>
-                <group id="mercadopago_customticket" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="customticket_checkout" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Custom Checkout - Ticket</label>
                     <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
-                    <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_customticket/active</config_path>
                     </field>
-                    <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment Title</label>
                         <config_path>payment/mercadopago_customticket/title</config_path>
                     </field>
-                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Banner Checkout</label>
                         <config_path>payment/mercadopago_customticket/banner_checkout</config_path>
                     </field>
-                    <field id="sort_order" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="sort_order" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Checkout Position</label>
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/mercadopago_customticket/sort_order</config_path>
                     </field>
-                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Marketing - Coupon MercadoPago</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_customticket/coupon_mercadopago</config_path>
@@ -136,7 +144,7 @@
                 <group id="checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Classic Checkout</label>
                     <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
-                    <field id="active" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="active" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enabled</label>
                         <comment>For the operation of the Checkout Standard is necessary to configure the Credentials 'CLIENT_ID' and 'CLIENT_SECRET' below</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -168,12 +176,12 @@
                         <source_model>MercadoPago\Core\Model\System\Config\Source\TypeCheckout</source_model>
                         <config_path>payment/mercadopago_standard/type_checkout</config_path>
                     </field>
-                    <field id="auto_return" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="auto_return" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto Redirect</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_standard/auto_return</config_path>
                     </field>
-                    <field id="excluded_payment_methods" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="excluded_payment_methods" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Exclude Payment Methods</label>
                         <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethods</source_model>
                         <config_path>payment/mercadopago_standard/excluded_payment_methods</config_path>
@@ -183,17 +191,17 @@
                         <source_model>MercadoPago\Core\Model\System\Config\Source\Installments</source_model>
                         <config_path>payment/mercadopago_standard/installments</config_path>
                     </field>
-                    <field id="iframe_width" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="iframe_width" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Width Checkout Iframe</label>
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/mercadopago_standard/iframe_width</config_path>
                     </field>
-                    <field id="iframe_height" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="iframe_height" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Height Checkout Iframe</label>
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/mercadopago_standard/iframe_height</config_path>
                     </field>
-                    <field id="sandbox_mode" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="sandbox_mode" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Sandbox Mode</label>
                         <comment>Enable to test checkout with real credit cards. For further information check this link: <![CDATA[<a href="https://www.mercadopago.com.ar/developers/en/solutions/payments/basic-checkout/test/basic-sandbox/" target="_blank">Basic Checkout Sandbox</a>]]></comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+<<<<<<< HEAD
     <preference for="MercadoPago\Core\Helper\Message\MessageInterface" type="MercadoPago\Core\Helper\StatusOrderMessage" />
     <preference for="Magento\Framework\Setup\ModuleContextInterface" type="Magento\Setup\Model\ModuleContext" />
     <type name="Magento\Setup\Model\ModuleContext">
@@ -8,7 +9,9 @@
             <argument name="version" xsi:type="string">2.0.0</argument>
         </arguments>
     </type>
-	<type name="MercadoPago\Core\Logger\Handler">
+=======
+    <preference for="MercadoPago\Core\Helper\Message\MessageInterface" type="MercadoPago\Core\Helper\Message\StatusOrderMessage" />
+    <type name="MercadoPago\Core\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
@@ -21,4 +24,7 @@
             </argument>
         </arguments>
     </type>
+
+
+>>>>>>> ivan_develop
 </config>
