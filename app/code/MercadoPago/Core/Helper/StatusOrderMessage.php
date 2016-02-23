@@ -16,6 +16,10 @@ class StatusOrderMessage
             "chargeback"   => 'Automatic notification of the MercadoPago: One chargeback was initiated for this payment.',
     ];
 
+    /**
+     * Return self message map array
+     * @return array
+     */
     public function getMessageMap()
     {
         return $this->messagesMap;

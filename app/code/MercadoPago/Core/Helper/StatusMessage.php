@@ -42,6 +42,10 @@ class StatusMessage
             ]
     ];
 
+    /**
+     * Return self message map array
+     * @return array
+     */
     public function getMessageMap()
     {
         return $this->messagesMap;

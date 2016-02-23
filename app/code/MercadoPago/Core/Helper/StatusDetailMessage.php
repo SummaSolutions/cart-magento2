@@ -22,6 +22,10 @@ class StatusDetailMessage
             "cc_rejected_other_reason"             => '%s did not process the payment.',
     ];
 
+    /**
+     * Return self message map array
+     * @return array
+     */
     public function getMessageMap()
     {
         return $this->messagesMap;
