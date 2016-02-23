@@ -6,7 +6,7 @@
 var config = {
     map: {
         '*': {
-            MPcheckout: 'https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js',
+            MPcheckout: 'https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js'
         }
     }
 };

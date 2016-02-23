@@ -5,6 +5,13 @@ namespace MercadoPago\Core\Model;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Payment\Helper\Data as PaymentHelper;
 
+/**
+ * Return configs to Standard Method
+ *
+ * Class StandardConfigProvider
+ *
+ * @package MercadoPago\Core\Model
+ */
 class StandardConfigProvider
     implements ConfigProviderInterface
 {

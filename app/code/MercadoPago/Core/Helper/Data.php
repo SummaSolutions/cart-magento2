@@ -1,5 +1,6 @@
 <?php
 namespace MercadoPago\Core\Helper;
+
 use Magento\Framework\View\LayoutFactory;
 
 
@@ -17,16 +18,11 @@ class Data
     const TYPE = 'magento';
 
     /**
-     * @var \MercadoPago\Core\Helper\
-     */
-    protected $coreHelper;
-
-    /**
      * @var \MercadoPago\Core\Helper\Message\MessageInterface
      */
-    protected $messageInterface;
+    protected $_messageInterface;
 
-    protected $coreHelperFactory;
+    protected $_moduleContext;
 
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
@@ -35,25 +31,29 @@ class Data
         \Magento\Payment\Model\Method\Factory $paymentMethodFactory,
         \Magento\Store\Model\App\Emulation $appEmulation,
         \Magento\Payment\Model\Config $paymentConfig,
-        \Magento\Framework\App\Config\Initial $initialConfig
-    ) {
+        \Magento\Framework\App\Config\Initial $initialConfig,
+        \Magento\Framework\Setup\ModuleContextInterface $moduleContext
+    )
+    {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
-        $this->messageInterface = $messageInterface;
+        $this->_messageInterface = $messageInterface;
+        $this->_moduleContext = $moduleContext;
     }
+
     public function log($message, $file = "mercadopago.log", $array = null)
     {
-        //pega a configuração de log no admin, essa variavel vem como true por padrão
-        $action_log = $this->scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-        //caso tenha um array, transforma em json para melhor visualização
         if (!is_null($array)) {
             $message .= " - " . json_encode($array);
         }
 
-        //set log
         $this->_logger->info($message, []);
     }
 
+    /**
+     * Return an instance of MercadoPago_Lib_Api logged with configured credentials
+     * @return \MercadoPago_Lib_Api
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getApiInstance()
     {
         $params = func_num_args();
@@ -72,12 +72,20 @@ class Data
         }
 
         $api->set_type(self::TYPE);
-        //$api->set_so((string) Mage::getConfig()->getModuleConfig("MercadoPago_Core")->version); //TODO get module version
+        $api->set_so((string)$this->_moduleContext->getVersion());
 
         return $api;
 
     }
 
+    /**
+     * Checks if access token configured is valid
+     *
+     * @param $accessToken
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function isValidAccessToken($accessToken)
     {
         $mp = $this->getApiInstance($accessToken);
@@ -89,6 +97,15 @@ class Data
         return true;
     }
 
+    /**
+     * Checks if client id and client secret configured are valid
+     *
+     * @param $clientId
+     * @param $clientSecret
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function isValidClientCredentials($clientId, $clientSecret)
     {
         $mp = $this->getApiInstance($clientId, $clientSecret);
@@ -101,13 +118,28 @@ class Data
         return true;
     }
 
+    /**
+     * Return the access token proved by api
+     *
+     * @return mixed
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getAccessToken()
     {
         $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
         return $this->getApiInstance($clientId, $clientSecret)->get_access_token();
     }
 
+    /**
+     * Return Status order configured for each magento status
+     *
+     * @param $status
+     *
+     * @return mixed
+     */
     public function getStatusOrder($status)
     {
         switch ($status) {
@@ -157,9 +189,15 @@ class Data
         return array_pop($item->getItems())->getState();
     }
 
+    /**
+     * @param $status
+     * @param $payment
+     *
+     * @return \Magento\Framework\Phrase|string
+     */
     public function getMessage($status, $payment)
     {
-        $rawMessage = __($this->messageInterface->getMessage($status));
+        $rawMessage = __($this->_messageInterface->getMessage($status));
         $rawMessage .= __('<br/> Payment id: %s', $payment['id']);
         $rawMessage .= __('<br/> Status: %s', $payment['status']);
         $rawMessage .= __('<br/> Status Detail: %s', $payment['status_detail']);
@@ -167,9 +205,13 @@ class Data
         return $rawMessage;
     }
 
+    /**
+     * @param $data
+     * @param $order
+     */
     public function setOrderSubtotals($data, $order)
     {
-        if (isset($data['total_paid_amount'])){
+        if (isset($data['total_paid_amount'])) {
             $balance = $this->_getMultiCardValue($data['total_paid_amount']);
         } else {
             $balance = $data['transaction_details']['total_paid_amount'];
@@ -211,11 +253,17 @@ class Data
         return $payment;
     }
 
-    protected function _getMultiCardValue($fullValue) {
+    /**
+     * @param $fullValue
+     *
+     * @return int
+     */
+    protected function _getMultiCardValue($fullValue)
+    {
         $finalValue = 0;
         $values = explode('|', $fullValue);
         foreach ($values as $value) {
-            $value = (float) str_replace(' ', '', $value);
+            $value = (float)str_replace(' ', '', $value);
             $finalValue = $finalValue + $value;
         }
 

@@ -1,7 +1,3 @@
-/**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
 define(
     [
         'Magento_Checkout/js/view/payment/default',
@@ -14,7 +10,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'MercadoPago_Core/payment/standard',
+                template: 'MercadoPago_Core/payment/standard-iframe',
                 paymentReady: false
             },
             redirectAfterPlaceOrder: false,
@@ -33,11 +29,11 @@ define(
              * @returns {String}
              */
             getActionUrl: function () {
-                 if (this.isInAction()) {
-                     if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
-                         return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
-                     }
-                 }
+                if (this.isInAction()) {
+                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                        return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
+                    }
+                }
                 return '';
             },
 
@@ -67,7 +63,7 @@ define(
              * Hide loader when iframe is fully loaded.
              * @returns {void}
              */
-            iframeLoaded: function() {
+            iframeLoaded: function () {
                 fullScreenLoader.stopLoader();
             }
         });

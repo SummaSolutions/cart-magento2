@@ -1,4 +1,3 @@
-
 define(
     [
         'Magento_Checkout/js/view/payment/default',

@@ -1,11 +1,21 @@
 <?php
 namespace MercadoPago\Core\Model;
 
-
+/**
+ * Core Model of MP plugin, used by all payment methods
+ *
+ * Class Core
+ *
+ * @package MercadoPago\Core\Model
+ */
 class Core
     extends \Magento\Payment\Model\Method\AbstractMethod
 {
-    protected $_code = 'mercadopago';
+
+    /**
+     * Define path of access token config
+     */
+    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom_checkout/access_token';
 
     protected $_isGateway = true;
     protected $_canOrder = true;
@@ -19,8 +29,6 @@ class Core
     protected $_canUseCheckout = true;
     protected $_canFetchTransactionInfo = true;
     protected $_canReviewPayment = true;
-
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom_checkout/access_token';
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -37,6 +45,9 @@ class Core
      */
     protected $_scopeConfig;
 
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
     protected $_orderFactory;
 
 
@@ -44,12 +55,10 @@ class Core
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,
         \Magento\Sales\Model\OrderFactory $orderFactory
-//        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
-//        $this->scopeConfig = $scopeConfig;
         $this->_orderFactory = $orderFactory;
     }
 
@@ -103,6 +112,13 @@ class Core
         return $this->_orderFactory->create()->loadByIncrementId($incrementId);
     }
 
+    /**
+     * Return array with data of payment of order loaded with order_id param
+     *
+     * @param $order_id
+     *
+     * @return array
+     */
     public function getInfoPaymentByOrder($order_id)
     {
         $order = $this->_getOrder($order_id);
@@ -134,6 +150,11 @@ class Core
         return $info_payments;
     }
 
+    /**
+     * @param $status
+     *
+     * @return string
+     */
     protected function validStatusTwoPayments($status)
     {
         $array_status = explode(" | ", $status);
@@ -157,6 +178,17 @@ class Core
         return $status_final;
     }
 
+    /**
+     * Return array message depending on status
+     *
+     * @param $status
+     * @param $status_detail
+     * @param $payment_method
+     * @param $installment
+     * @param $amount
+     *
+     * @return array
+     */
     public function getMessageByStatus($status, $status_detail, $payment_method, $installment, $amount)
     {
         $status = $this->validStatusTwoPayments($status);
@@ -185,6 +217,14 @@ class Core
         return $message;
     }
 
+    /**
+     * Return array with info of customer
+     *
+     * @param $customer
+     * @param $order
+     *
+     * @return array
+     */
     protected function getCustomerInfo($customer, $order)
     {
         $email = htmlentities($customer->getEmail());
@@ -205,6 +245,13 @@ class Core
         return array('email' => $email, 'first_name' => $first_name, 'last_name' => $last_name);
     }
 
+    /**
+     * Return info about items of order
+     *
+     * @param $order
+     *
+     * @return array
+     */
     protected function getItemsInfo($order)
     {
         $dataItems = array();
@@ -238,6 +285,14 @@ class Core
 
     }
 
+    /**
+     * Return info of a coupon applied
+     *
+     * @param $coupon
+     * @param $coupon_code
+     *
+     * @return array
+     */
     protected function getCouponInfo($coupon, $coupon_code)
     {
         $infoCoupon = array();
@@ -253,6 +308,13 @@ class Core
         return $infoCoupon;
     }
 
+    /**
+     * Return array with preference data by default to custom method
+     *
+     * @param array $payment_info
+     *
+     * @return array
+     */
     public function makeDefaultPreferencePaymentV1($payment_info = array())
     {
         $quote = $this->_getQuote();
@@ -263,7 +325,6 @@ class Core
         $billing_address = $quote->getBillingAddress()->getData();
         $customerInfo = $this->getCustomerInfo($customer, $order);
 
-        /* INIT PREFERENCE */
         $preference = array();
 
         $preference['notification_url'] = Mage::getBaseUrl(\Magento\Store\Model\Store::URL_TYPE_LINK) . "mercadopago/notifications/custom";
@@ -328,7 +389,15 @@ class Core
         return $preference;
     }
 
-
+    /**
+     * Return response of api to a preference
+     *
+     * @param $preference
+     *
+     * @return array
+     * @throws \Api\V1\Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function postPaymentV1($preference)
     {
 
@@ -362,6 +431,14 @@ class Core
         }
     }
 
+    /**
+     * Return info of payment returned by MP api
+     *
+     * @param $payment_id
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getPayment($payment_id)
     {
         $clienId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -371,6 +448,14 @@ class Core
         return $mp->get_payment($payment_id);
     }
 
+    /**
+     *  Return info of payment returned by MP api
+     *
+     * @param $payment_id
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getPaymentV1($payment_id)
     {
         $this->access_token = $this->scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -379,6 +464,14 @@ class Core
         return $mp->get("/v1/payments/" . $payment_id);
     }
 
+    /**
+     * Return info of order returned by MP api
+     *
+     * @param $merchant_order_id
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getMerchantOrder($merchant_order_id)
     {
         $clientId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -388,6 +481,10 @@ class Core
         return $mp->get("/merchant_orders/" . $merchant_order_id);
     }
 
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getPaymentMethods()
     {
         $this->access_token = $this->scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -399,6 +496,9 @@ class Core
         return $payment_methods;
     }
 
+    /**
+     * @return mixed|string
+     */
     public function getEmailCustomer()
     {
         $customer = Mage::getSingleton('customer/session')->getCustomer();
@@ -412,7 +512,9 @@ class Core
         return $email;
     }
 
-
+    /**
+     * @return float
+     */
     public function getAmount()
     {
         $quote = $this->_getQuote();
@@ -422,6 +524,14 @@ class Core
 
     }
 
+    /**
+     * Check if an applied coupon is valid
+     *
+     * @param $id
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function validCoupon($id)
     {
         $this->access_token = $this->scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -444,6 +554,12 @@ class Core
         return $details_discount;
     }
 
+    /**
+     * @param      $payment
+     * @param null $stateObject
+     *
+     * @return array
+     */
     public function setStatusOrder($payment, $stateObject = null)
     {
         $helper = $this->_coreHelper;
@@ -503,6 +619,11 @@ class Core
         }
     }
 
+    /**
+     * Set info in order
+     *
+     * @param $data
+     */
     public function updateOrder($data)
     {
         $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');

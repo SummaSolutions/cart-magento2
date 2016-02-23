@@ -2,11 +2,22 @@
 
 namespace MercadoPago\Core\Model\Standard;
 
-
+/**
+ * Class Payment
+ *
+ * @package MercadoPago\Core\Model\Standard
+ */
 class Payment
     extends \Magento\Payment\Model\Method\AbstractMethod
 {
+    /**
+     * Define payment method code
+     */
     const CODE = 'mercadopago_standard';
+
+    /**
+     * define URL to go when an order is placed
+     */
     const ACTION_URL = 'mercadopago/standard/pay';
 
     protected $_code = self::CODE;
@@ -22,18 +33,35 @@ class Payment
     protected $_canFetchTransactionInfo = true;
     protected $_canReviewPayment = true;
 
+    /**
+     * @var \MercadoPago\Core\Helper\Data
+     */
     protected $_helperData;
-    protected $_helperImage;
-    protected $_checkoutSession;
-    protected $_customerSession;
-    protected $_orderFactory;
-    protected $_urlBuilder;
 
     /**
-     * Core event manager proxy
-     *
-     * @var \Magento\Framework\Event\ManagerInterface
+     * @var \Magento\Catalog\Helper\Image
      */
+    protected $_helperImage;
+
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $_checkoutSession;
+
+    /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $_customerSession;
+
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
+    protected $_orderFactory;
+
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
+    protected $_urlBuilder;
 
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
@@ -76,6 +104,12 @@ class Payment
         $this->_urlBuilder = $urlBuilder;
     }
 
+    /**
+     * Return array with data of payment in MP site
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function postPago()
     {
         $client_id = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -120,6 +154,11 @@ class Payment
         return $array_assign;
     }
 
+    /**
+     * Return array with data to send to MP api
+     *
+     * @return array
+     */
     public function makePreference()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
@@ -219,6 +258,13 @@ class Payment
         return $arr;
     }
 
+    /**
+     * Return array with data of items of order
+     *
+     * @param $order
+     *
+     * @return array
+     */
     protected function getItems($order)
     {
         $items = [];
@@ -240,6 +286,12 @@ class Payment
         return $items;
     }
 
+    /**
+     * Calculate discount of magento site and set data in arr param
+     *
+     * @param $arr
+     * @param $order
+     */
     protected function _calculateDiscountAmount(&$arr, $order)
     {
         if ($order->getDiscountAmount() < 0) {
@@ -253,6 +305,10 @@ class Payment
         }
     }
 
+    /**
+     * @param $arr
+     * @param $order
+     */
     protected function _calculateBaseTaxAmount(&$arr, $order)
     {
         if ($order->getBaseTaxAmount() > 0) {
@@ -266,6 +322,13 @@ class Payment
         }
     }
 
+    /**
+     * Return total price of all items
+     *
+     * @param $items
+     *
+     * @return int
+     */
     protected function getTotalItems($items)
     {
         $total = 0;
@@ -276,6 +339,9 @@ class Payment
         return $total;
     }
 
+    /**
+     * @return array
+     */
     protected function getExcludedPaymentsMethods()
     {
         $excludedMethods = [];
@@ -290,6 +356,13 @@ class Payment
         return $excludedMethods;
     }
 
+    /**
+     * Return info of shipping address
+     *
+     * @param $shippingAddress
+     *
+     * @return array
+     */
     protected function getReceiverAddress($shippingAddress)
     {
         return [
@@ -301,12 +374,17 @@ class Payment
         ];
     }
 
-
+    /**
+     * @return mixed
+     */
     public function getBannerCheckoutUrl()
     {
         return $this->getConfigData('banner_checkout');
     }
 
+    /**
+     * @return string
+     */
     public function getActionUrl()
     {
         return $this->_urlBuilder->getUrl(self::ACTION_URL);

@@ -3,7 +3,7 @@
     <default>
         <payment>
             <mercadopago_standard>
-                <active>1</active>
+                <active>0</active>
                 <model>MercadoPago\Core\Model\Standard\Payment</model>
                 <order_status>pending</order_status>
                 <title>MercadoPago</title>
