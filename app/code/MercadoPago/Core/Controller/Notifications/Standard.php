@@ -2,6 +2,11 @@
 namespace Mercadopago\Core\Controller\Notifications;
 
 
+/**
+ * Class Standard
+ *
+ * @package Mercadopago\Core\Controller\Notifications
+ */
 class Standard
     extends \Magento\Framework\App\Action\Action
 
@@ -21,6 +26,14 @@ class Standard
     const LOG_NAME = 'standard_notification';
 
 
+    /**
+     * Standard constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context           $context
+     * @param \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory
+     * @param \MercadoPago\Core\Helper\Data                   $coreHelper
+     * @param \MercadoPago\Core\Model\Core                    $coreModel
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory,
@@ -34,6 +47,9 @@ class Standard
         parent::__construct($context);
     }
 
+    /**
+     * Controller Action
+     */
     public function execute()
     {
         $request = $this->getRequest();
@@ -73,18 +89,12 @@ class Standard
         $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
     }
 
-    protected function _getDataPayments($merchantOrder)
-    {
-        $data = array();
-        foreach ($merchantOrder['payments'] as $payment) {
-            $response = $this->coreModel->getPayment($payment['id']);
-            $payment = $response['response']['collection'];
-            $data = $this->_formatArrayPayment($data, $payment);
-        }
-
-        return $data;
-    }
-
+    /**
+     * Check if status is final in case of multiple card payment
+     * @param $dataStatus
+     *
+     * @return bool|mixed|string
+     */
     protected function _getStatusFinal($dataStatus)
     {
         $status_final = "";
@@ -103,6 +113,32 @@ class Standard
         return $status_final;
     }
 
+    /**
+     * Collect data from notification content
+     * @param $merchantOrder
+     *
+     * @return array
+     */
+    protected function _getDataPayments($merchantOrder)
+    {
+        $data = array();
+        foreach ($merchantOrder['payments'] as $payment) {
+            $response = $this->coreModel->getPayment($payment['id']);
+            $payment = $response['response']['collection'];
+            $data = $this->_formatArrayPayment($data, $payment);
+        }
+
+        return $data;
+    }
+
+
+    /**
+     * Collect data from notification content to update order info
+     * @param $data
+     * @param $payment
+     *
+     * @return mixed
+     */
     protected function _formatArrayPayment($data, $payment)
     {
         $this->coreHelper->log("Format Array", self::LOG_NAME);
