@@ -10,11 +10,12 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
-use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
-use Bex\Behat\Magento2InitExtension\Fixtures\BaseFixture;
-use Behat\MinkExtension\Context\RawMinkContext;
+use Bex\Behat\Magento2InitExtension\Fixtures\BaseMinkFixture;
+use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Exception\ExpectationException;
+use Bex\Behat\Magento2InitExtension\Fixtures\MagentoConfigManager;
 
 /**
  * Behat test suite context.
@@ -22,34 +23,34 @@ use Behat\MinkExtension\Context\RawMinkContext;
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class FeatureContext
-    extends BaseFixture
+    extends BaseMinkFixture
     implements Context, SnippetAcceptingContext
 {
 
-    protected $_minkObject;
+    protected $_configManager;
 
-    /*************************************UTILS FUNCTIONS***************************************************************/
-    protected function getMink() {
-        if (empty($this->minkObject())) {
-            $this->_minkObject = new RawMinkContext();
+    protected function getConfigManager() {
+        if (empty($this->_configManager)){
+            $this->_configManager = new MagentoConfigManager();
         }
-        return $this->_minkObject;
+        return $this->_configManager;
     }
 
     /**
-     * Returns Mink session.
+     * @param $cssClass
      *
-     * @param string|null $name name of the session OR active session will be used
-     *
-     * @return Session
+     * @return \Behat\Mink\Element\NodeElement|mixed|null
+     * @throws ElementNotFoundException
      */
-    public function getSession($name = null)
+    public function findElement($cssClass)
     {
-        return $this->getMink()->getSession($name);
-    }
+        $page = $this->getSession()->getPage();
+        $element = $page->find('css', $cssClass);
+        if (null === $element) {
+            throw new ElementNotFoundException($this->getSession()->getDriver(), 'Element', 'css', $cssClass);
+        }
 
-    public function locatePath($path) {
-        return $this->getMink()->locatePath($path);
+        return $element;
     }
 
     /*********************************************************FEATURE FUNCTIONS**************************************/
@@ -61,7 +62,7 @@ class FeatureContext
     {
         $customer = $this->getMagentoObject('Magento\Customer\Model\Customer');
         $storeManager = $this->getMagentoObject(Magento\Store\Model\StoreManagerInterface::class);
-        $store = $storeManager->getWebsites(true)->getDefaultStore();
+        $store = $storeManager->getWebsite()->getDefaultStore();
         $websiteId = $store->getWebsiteId();
         $customer->setWebsiteId($websiteId);
         $customer->loadByEmail($arg1);
@@ -96,7 +97,7 @@ class FeatureContext
             $login->setValue($email);
             $pwd->setValue($password);
             $submit->click();
-            $this->getMink()->findElement('div.welcome');
+            $this->findElement('div .welcome');
         }
     }
 
@@ -106,7 +107,7 @@ class FeatureContext
     public function iEmptyCart()
     {
         $this->iAmOnPage('checkout/cart/');
-        $removeButton = $this->getSession()->getPage()->find('css','action-delete');
+        $removeButton = $this->getSession()->getPage()->find('css', '.action-delete');
         if ($removeButton) {
             $removeButton->press();
             $this->iEmptyCart();
@@ -120,5 +121,75 @@ class FeatureContext
     {
         $this->getSession()->visit($this->locatePath($arg1));
     }
+
+    /**
+     * @Given I press :cssClass element
+     */
+    public function iPressElement($cssClass)
+    {
+        $this->getSession()->wait(10000);
+        $button = $this->findElement($cssClass);
+        $button->press();
+    }
+
+    /**
+     * @When I select shipping method :arg1
+     */
+    public function iSelectShippingMethod($method)
+    {
+        $page = $this->getSession()->getPage();
+        $page->fillField('shipping_method', $method);
+    }
+
+    /**
+     * @Then I should see MercadoPago Standard available
+     */
+    public function iShouldSeeMercadopagoStandardAvailable()
+    {
+        $this->getSession()->wait(10000);
+        $this->findElement('#mercadopago_standard');
+    }
+
+    /**
+     * @When I fill the shipping address
+     */
+    public function iFillTheShippingAddress()
+    {
+        $page = $this->getSession()->getPage();
+
+        try {
+            $page->find('css', '[name="city"]');
+        } catch (ElementNotFoundException $e) {
+            return;
+        }
+        $page->fillField('street[0]', 'Street 123');
+        $page->fillField('city', 'City');
+        $page->selectFieldOption('country_id', 'AR');
+        $page->fillField('postcode', '7000');
+        $page->fillField('telephone', '123456');
+    }
+
+    /**
+     * @Given Setting Config :arg1 is :arg2
+     */
+    public function settingConfig($arg1, $arg2)
+    {
+        $this->getConfigManager()->changeConfigs([['path'=>$arg1, 'value'=>$arg2]]);
+    }
+
+    /**
+     * @Then I should not see MercadoPago Standard available
+     *
+     */
+    public function iShouldNotSeeMercadopagoStandardAvailable()
+    {
+        $this->getSession()->wait(10000);
+        if ($this->getSession()->getPage()->find('css', '#mercadopago_standard')) {
+            throw new ExpectationException('I saw payment method available', $this->getSession()->getDriver());
+        }
+
+        return;
+    }
+
 
 }
