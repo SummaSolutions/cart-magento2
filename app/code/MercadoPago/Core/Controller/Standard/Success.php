@@ -58,13 +58,13 @@ class Success
      */
     public function getCheckoutHandle()
     {
+        $handle = '';
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
         if (!empty($order->getId())) {
             $handle = $order->getPayment()->getMethod();
         }
         $handle .= '_success';
-
         return $handle;
     }
 }

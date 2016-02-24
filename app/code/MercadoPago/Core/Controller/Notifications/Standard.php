@@ -99,7 +99,8 @@ class Standard
         $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
     }
 
-    /**
+    
+ 	/**
      * Check if status is final in case of multiple card payment
      * @param $dataStatus
      *
