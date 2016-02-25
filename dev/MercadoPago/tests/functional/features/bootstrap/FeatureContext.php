@@ -165,6 +165,15 @@ class FeatureContext
     }
 
     /**
+     * @When I select payment method :arg1
+     */
+    public function iSelectPaymentMethod($method)
+    {
+        $page = $this->getSession()->getPage();
+        $page->fillField('payment[method]', $method);
+    }
+
+    /**
      * @Then I should see MercadoPago Standard available
      */
     public function iShouldSeeMercadopagoStandardAvailable()
@@ -307,6 +316,15 @@ class FeatureContext
         if (!$this->_stringMatch($actual, $arg1)) {
             throw new ExpectationException('Element' . $arg1 . ' not found', $this->getSession()->getDriver());
         }
+    }
+
+    /**
+     * @When I wait for :arg1 seconds
+     */
+    public function iWaitForSeconds($secs)
+    {
+        $milliseconds = $secs * 1000;
+        $this->getSession()->wait($milliseconds);
     }
 
 

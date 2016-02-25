@@ -48,7 +48,9 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
-
+    And I wait for "8" seconds
+    And I select payment method "mercadopago_standard"
+    And I press "button[data-role='review-save']" element
     When I switch to the iframe "checkout_mercadopago"
     And I fill the iframe fields
 
@@ -62,6 +64,9 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
+    And I wait for "8" seconds
+    And I select payment method "mercadopago_standard"
+    And I press ".primary>.button" element
 
     When I switch to the iframe "checkout_mercadopago"
     Then I should see html "$ 50"
