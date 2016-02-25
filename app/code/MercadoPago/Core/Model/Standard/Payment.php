@@ -390,4 +390,25 @@ class Payment
         return $this->_urlBuilder->getUrl(self::ACTION_URL);
     }
 
+    /**
+     * Check whether payment method can be used
+     *
+     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @return bool
+     */
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $parent = parent::isAvailable($quote);
+        $clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $standard = (!empty($clientId) && !empty($clientSecret));
+
+        if (!$parent || !$standard) {
+            return false;
+        }
+
+        return $this->_helperData->isValidClientCredentials($clientId, $clientSecret);
+
+    }
+
 }
