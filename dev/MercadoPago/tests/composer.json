@@ -29,7 +29,8 @@
       "": [
         "../../../app",
         "../../../lib",
-        "../../../vendor/magento"
+        "../../../vendor/magento",
+        "functional/features/fixture"
       ]
     }
   }

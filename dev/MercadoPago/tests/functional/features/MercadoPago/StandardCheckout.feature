@@ -1,14 +1,15 @@
-@MercadoPago
+@MercadoPagoStandard
 Feature: A customer should be able to do a checkout with MercadoPago
 
   Background:
     Given User "test_user_58666377@testuser.com" "magento" exists
     And I am logged in as "test_user_58666377@testuser.com" "magento"
     And I empty cart
+    And I configure mercadopago standard
 
   @frontend @viewStandard
   Scenario: See MercadoPago standard option as a payment method
-    When I am on page "push-it-messenger-bag.html"
+    And I am on page "push-it-messenger-bag.html"
     And I press "#product-addtocart-button" element
     And I am on page "checkout/cart/"
     And I press "[data-role='proceed-to-checkout']" element
@@ -30,6 +31,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I press "#shipping-method-buttons-container .button" element
 
     Then I should not see MercadoPago Standard available
+    And i revert configs
 
   @frontend @Availability @ClientSecret
   Scenario: Not See MercadoPago option as a payment method when is not available client secret
@@ -43,3 +45,4 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I press "#shipping-method-buttons-container .button" element
 
     Then I should not see MercadoPago Standard available
+    And i revert configs

@@ -23,16 +23,18 @@ use Bex\Behat\Magento2InitExtension\Fixtures\MagentoConfigManager;
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class FeatureContext
-    extends BaseMinkFixture
+    extends MercadoPagoFixture
     implements Context, SnippetAcceptingContext
 {
 
     protected $_configManager;
 
-    protected function getConfigManager() {
-        if (empty($this->_configManager)){
+    protected function getConfigManager()
+    {
+        if (empty($this->_configManager)) {
             $this->_configManager = new MagentoConfigManager();
         }
+
         return $this->_configManager;
     }
 
@@ -51,6 +53,14 @@ class FeatureContext
         }
 
         return $element;
+    }
+
+    /**
+     * @Then i revert configs
+     */
+    public function resetConfigs()
+    {
+        $this->getConfigManager()->revertAllConfig();
     }
 
     /*********************************************************FEATURE FUNCTIONS**************************************/
@@ -174,8 +184,9 @@ class FeatureContext
      */
     public function settingConfig($arg1, $arg2)
     {
-        $this->getConfigManager()->changeConfigs([['path'=>$arg1, 'value'=>$arg2,'scope_type'=>'default','scope_code'=>null]]);
+        $this->getConfigManager()->changeConfigs([['path' => $arg1, 'value' => $arg2, 'scope_type' => 'default', 'scope_code' => null]]);
     }
+
 
     /**
      * @Then I should not see MercadoPago Standard available
@@ -189,6 +200,21 @@ class FeatureContext
         }
 
         return;
+    }
+
+    /**
+     * @Given I configure mercadopago standard
+     */
+    public function iConfigureMercadopagoStandard()
+    {
+        $configs = [
+            ['path' => 'payment/mercadopago/country', 'value' => 'mla', 'scope_type' => 'default', 'scope_code' => null],
+            ['path' => 'payment/mercadopago_standard/active', 'value' => '1', 'scope_type' => 'default', 'scope_code' => null],
+            ['path' => 'payment/mercadopago_standard/client_id', 'value' => '446950613712741', 'scope_type' => 'default', 'scope_code' => null],
+            ['path' => 'payment/mercadopago_standard/client_secret', 'value' => '0WX05P8jtYqCtiQs6TH1d9SyOJ04nhEv', 'scope_type' => 'default', 'scope_code' => null]
+        ];
+        $this->getConfigManager()->changeConfigs($configs);
+
     }
 
 
