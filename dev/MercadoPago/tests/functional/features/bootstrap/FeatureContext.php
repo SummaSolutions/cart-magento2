@@ -63,6 +63,19 @@ class FeatureContext
         $this->getConfigManager()->revertAllConfig();
     }
 
+    /*
+     *  Search for particular string in text
+     *
+     */
+    protected function _stringMatch($content, $string)
+    {
+        $actual = preg_replace('/\s+/u', ' ', $content);
+        $regex = '/' . preg_quote($string, '/') . '/ui';
+
+        return ((bool)preg_match($regex, $actual));
+    }
+
+
     /*********************************************************FEATURE FUNCTIONS**************************************/
 
     /**
@@ -215,6 +228,85 @@ class FeatureContext
         ];
         $this->getConfigManager()->changeConfigs($configs);
 
+    }
+
+    /**
+     * @Given /^I switch to the iframe "([^"]*)"$/
+     */
+    public function iSwitchToIframe($arg1 = null)
+    {
+        $this->getSession()->wait(10000);
+        $this->findElement('iframe[id=' . $arg1 . ']');
+        $this->getSession()->switchToIFrame($arg1);
+        $this->getSession()->wait(5000);
+    }
+
+
+    /**
+     * @When I fill the iframe fields
+     */
+    public function iFillTheIframeFields()
+    {
+        $page = $this->getSession()->getPage();
+
+        $page->selectFieldOption('pmtOption', 'visa');
+
+        $page->fillField('cardNumber', '4509 9535 6623 3704');
+        $this->getSession()->wait(3000);
+        $page->selectFieldOption('creditCardIssuerOption', '1');
+        $page->selectFieldOption('cardExpirationMonth', '01');
+        $page->selectFieldOption('cardExpirationYear', '2017');
+        $page->fillField('securityCode', '123');
+        $page->fillField('cardholderName', 'Name');
+        $page->selectFieldOption('docType', 'DNI');
+
+        $page->fillField('docNumber', '12345678');
+
+        $page->selectFieldOption('installments', '1');
+    }
+
+    /**
+     * @Given I press :cssClass input element
+     */
+    public function iPressInputElement($cssClass)
+    {
+        $button = $this->findElement($cssClass);
+        $button->click();
+    }
+
+    /**
+     * @Given I switch to the site
+     */
+    public function iSwitchToSite()
+    {
+        $this->getSession()->wait(15000);
+        $this->getSession()->switchToIFrame(null);
+    }
+
+    /**
+     * @Then I should be on :arg1
+     */
+    public function iShouldBeOn($arg1)
+    {
+        $session = $this->getSession();
+        $session->wait(10000);
+        $currentUrl = $session->getCurrentUrl();
+
+        if (strpos($currentUrl, $arg1)) {
+            return;
+        }
+        throw new ExpectationException('Wrong url: you are in ' . $currentUrl, $this->getSession()->getDriver());
+    }
+
+    /**
+     * @Then I should see html :arg1
+     */
+    public function iShouldSeeHtml($arg1)
+    {
+        $actual = $this->getSession()->getPage()->getHtml();
+        if (!$this->_stringMatch($actual, $arg1)) {
+            throw new ExpectationException('Element' . $arg1 . ' not found', $this->getSession()->getDriver());
+        }
     }
 
 

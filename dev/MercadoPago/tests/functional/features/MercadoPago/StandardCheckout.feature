@@ -5,14 +5,14 @@ Feature: A customer should be able to do a checkout with MercadoPago
     Given User "test_user_58666377@testuser.com" "magento" exists
     And I am logged in as "test_user_58666377@testuser.com" "magento"
     And I empty cart
+    And I am on page "push-it-messenger-bag.html"
+    And I press "#product-addtocart-button" element
+    And I am on page "checkout/cart/"
 
 
   @frontend @viewStandard
   Scenario: See MercadoPago standard option as a payment method
     And I configure mercadopago standard
-    And I am on page "push-it-messenger-bag.html"
-    And I press "#product-addtocart-button" element
-    And I am on page "checkout/cart/"
     And I press "[data-role='proceed-to-checkout']" element
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
@@ -23,9 +23,6 @@ Feature: A customer should be able to do a checkout with MercadoPago
   @frontend @Availability @ClientId
   Scenario: Not See MercadoPago option as a payment method when is not client id
     When Setting Config "payment/mercadopago_standard/client_id" is "0"
-    And I am on page "push-it-messenger-bag.html"
-    And I press "#product-addtocart-button" element
-    And I am on page "checkout/cart/"
     And I press "[data-role='proceed-to-checkout']" element
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
@@ -37,9 +34,6 @@ Feature: A customer should be able to do a checkout with MercadoPago
   @frontend @Availability @ClientSecret
   Scenario: Not See MercadoPago option as a payment method when is not available client secret
     When Setting Config "payment/mercadopago_standard/client_secret" is "0"
-    And I am on page "push-it-messenger-bag.html"
-    And I press "#product-addtocart-button" element
-    And I am on page "checkout/cart/"
     And I press "[data-role='proceed-to-checkout']" element
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
@@ -47,3 +41,28 @@ Feature: A customer should be able to do a checkout with MercadoPago
 
     Then I should not see MercadoPago Standard available
     And i revert configs
+
+  @checkoutSuccess
+  Scenario: Generate order with standard checkout
+    When I press "[data-role='proceed-to-checkout']" element
+    And I fill the shipping address
+    And I select shipping method "flatrate_flatrate"
+    And I press "#shipping-method-buttons-container .button" element
+
+    When I switch to the iframe "checkout_mercadopago"
+    And I fill the iframe fields
+
+    When I press "#next" input element
+    And I switch to the site
+    Then I should be on "/mercadopago/success"
+
+  @checkoutPrice
+  Scenario: Check total displayed in iframe
+    When I press "[data-role='proceed-to-checkout']" element
+    And I fill the shipping address
+    And I select shipping method "flatrate_flatrate"
+    And I press "#shipping-method-buttons-container .button" element
+
+    When I switch to the iframe "checkout_mercadopago"
+    Then I should see html "$ 50"
+
