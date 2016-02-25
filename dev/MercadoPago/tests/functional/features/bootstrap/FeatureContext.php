@@ -174,7 +174,7 @@ class FeatureContext
      */
     public function settingConfig($arg1, $arg2)
     {
-        $this->getConfigManager()->changeConfigs([['path'=>$arg1, 'value'=>$arg2]]);
+        $this->getConfigManager()->changeConfigs([['path'=>$arg1, 'value'=>$arg2,'scope_type'=>'default','scope_code'=>null]]);
     }
 
     /**
