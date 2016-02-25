@@ -1,0 +1,84 @@
+language: php
+php:
+  - 5.5
+cache:
+  apt: true
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.cache/bin
+
+env:
+  global:
+    - MAGENTO_DB_NAME=magento2
+    - MAGENTO_URL=mercadopago2.local
+    - DB=mysql
+  matrix:
+   - BEHAT_TAG=@MercadoPagoStandard
+
+addons:
+  hosts:
+    - mercadopago2.local
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y -qq postfix
+  - sh -c 'if [ "$CASHER_DIR" ]; then
+         if [ -x $HOME/.cache/bin/composer ]; then
+           $HOME/.cache/bin/composer self-update; echo '';
+         else
+           mkdir -p $HOME/.cache/bin;
+           curl --connect-timeout 30 -sS https://getcomposer.org/installer
+           | php -- --install-dir $HOME/.cache/bin/ --filename composer;
+         fi
+       fi'
+  - export PATH="$HOME/.cache/bin:$PATH"
+  - composer self-update
+
+install:
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+
+before_script:
+  - sudo service postfix stop
+    - smtp-sink -d "%d.%H.%M.%S" localhost:2500 1000 &
+    - echo -e '#!/usr/bin/env bash\nexit 0' | sudo tee /usr/sbin/sendmail
+    - >
+        echo 'sendmail_path = "/usr/sbin/sendmail -t -i "'
+        | sudo tee "/home/travis/.phpenv/versions/`php -i
+        | grep "PHP Version"
+        | head -n 1
+        | grep -o -P '\d+\.\d+\.\d+.*'`/etc/conf.d/sendmail.ini"
+
+  # enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # configure apache virtual hosts
+  - sudo cp -f .travis/travis-ci-apache /etc/apache2/sites-available/default
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - sudo service apache2 restart
+  - cp -f .travis/composer.json composer.json
+  - composer install --no-interaction
+  - mkdir tmp
+  - mysql -e "DROP DATABASE IF EXISTS ${MAGENTO_DB_NAME}; CREATE DATABASE ${MAGENTO_DB_NAME};"
+  - bin/magento setup:install --backend-frontname=admin --db-host=localhost --db-name=magento2 --db-user=travis --base-url=http://${MAGENTO_URL}/ --use-secure-admin=0 --admin-user=admin --admin-password=MercadoPago2016 --admin-email=fcapua@summasolutions.net --admin-firstname=Facundo --admin-lastname=Capua --cleanup-database --use-sample-data
+  - cd dev/MercadoPago/tests/
+  - mkdir app
+  - cd app
+  - ln -s ../../../../app/bootstrap.php bootstrap.php
+  - cd ..
+  - cp behat.yml.dist behat.yml
+  - sed -e "s?%MAGENTO_URL%?http://${MAGENTO_URL}/?g" --in-place behat.yml
+  - sed -e "s?%BROWSER_DRIVER%?firefox?g" --in-place behat.yml
+  - composer install --no-interaction
+  - "sh -e /etc/init.d/xvfb start"
+  - "export DISPLAY=:99.0"
+  - "wget http://selenium-release.storage.googleapis.com/2.47/selenium-server-standalone-2.47.1.jar"
+  - "java -jar selenium-server-standalone-2.47.1.jar -log /tmp/selenium.log > /dev/null &"
+  - sleep 5
+
+script:
+  - vendor/bin/phpmd ../../../app/code/MercadoPago text static/phpmd/ruleset.xml
+  - vendor/bin/phpcs --standard=static/phpcs/Ecg --colors ../../../app/
+  - vendor/bin/phpcpd ../../../ --exclude=dev
+  - vendor/bin/behat --config behat.yml --tags ${BEHAT_TAG} --tags="~@skip"
