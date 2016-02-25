@@ -5,10 +5,11 @@ Feature: A customer should be able to do a checkout with MercadoPago
     Given User "test_user_58666377@testuser.com" "magento" exists
     And I am logged in as "test_user_58666377@testuser.com" "magento"
     And I empty cart
-    And I configure mercadopago standard
+
 
   @frontend @viewStandard
   Scenario: See MercadoPago standard option as a payment method
+    And I configure mercadopago standard
     And I am on page "push-it-messenger-bag.html"
     And I press "#product-addtocart-button" element
     And I am on page "checkout/cart/"

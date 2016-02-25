@@ -58,7 +58,7 @@ class FeatureContext
     /**
      * @Then i revert configs
      */
-    public function resetConfigs()
+    public function iRevertConfigs()
     {
         $this->getConfigManager()->revertAllConfig();
     }
