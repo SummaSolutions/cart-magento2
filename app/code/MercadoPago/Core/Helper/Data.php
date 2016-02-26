@@ -39,14 +39,15 @@ class Data
     /**
      * Data constructor.
      *
-     * @param Message\MessageInterface              $messageInterface
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param LayoutFactory                         $layoutFactory
-     * @param \Magento\Payment\Model\Method\Factory $paymentMethodFactory
-     * @param \Magento\Store\Model\App\Emulation    $appEmulation
-     * @param \Magento\Payment\Model\Config         $paymentConfig
-     * @param \Magento\Framework\App\Config\Initial $initialConfig
-     * @param \MercadoPago\Core\Logger\Logger       $logger
+     * @param Message\MessageInterface                        $messageInterface
+     * @param \Magento\Framework\App\Helper\Context           $context
+     * @param LayoutFactory                                   $layoutFactory
+     * @param \Magento\Payment\Model\Method\Factory           $paymentMethodFactory
+     * @param \Magento\Store\Model\App\Emulation              $appEmulation
+     * @param \Magento\Payment\Model\Config                   $paymentConfig
+     * @param \Magento\Framework\App\Config\Initial           $initialConfig
+     * @param \Magento\Framework\Setup\ModuleContextInterface $moduleContext
+     * @param \MercadoPago\Core\Logger\Logger                 $logger
      */
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
