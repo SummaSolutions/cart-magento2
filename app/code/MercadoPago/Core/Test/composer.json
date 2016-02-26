@@ -27,9 +27,9 @@
   "autoload": {
     "psr-0": {
       "": [
-        "../../../app",
-        "../../../lib",
-        "../../../vendor/magento",
+        "../../../../../app",
+        "../../../../../lib",
+        "../../../../../vendor/magento",
         "functional/features/fixture"
       ]
     }

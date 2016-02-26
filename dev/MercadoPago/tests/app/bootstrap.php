@@ -1,1 +1,0 @@
-../../../../app/bootstrap.php

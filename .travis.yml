@@ -75,7 +75,7 @@ before_script:
   - sudo chown -R :www-data .
   - sudo find . -type d -exec chmod 770 {} \; && sudo find . -type f -exec chmod 660 {} \; && sudo chmod u+x bin/magento
   - bin/magento setup:install --backend-frontname=admin --db-host=localhost --db-name=magento2 --db-user=travis --base-url=http://${MAGENTO_URL}/ --use-secure-admin=0 --admin-user=admin --admin-password=MercadoPago2016 --admin-email=fcapua@summasolutions.net --admin-firstname=Facundo --admin-lastname=Capua --cleanup-database --use-sample-data
-  - cd dev/MercadoPago/tests/
+  - cd app/code/MercadoPago/Core/Test
   - cp behat.yml.dist behat.yml
   - sed -e "s?%MAGENTO_URL%?http://${MAGENTO_URL}/?g" --in-place behat.yml
   - sed -e "s?%BROWSER_DRIVER%?firefox?g" --in-place behat.yml
