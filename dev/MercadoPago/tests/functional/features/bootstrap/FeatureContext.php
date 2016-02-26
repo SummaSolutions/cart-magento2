@@ -187,18 +187,15 @@ class FeatureContext
      */
     public function iFillTheShippingAddress()
     {
-        $page = $this->getSession()->getPage();
-
-        try {
-            $page->find('css', '[name="city"]');
-        } catch (ElementNotFoundException $e) {
-            return;
+        $add = $this->findElement('.selected-item');
+        if (!$add) {
+            $page = $this->getSession()->getPage();
+            $page->fillField('street[0]', 'Street 123');
+            $page->fillField('city', 'City');
+            $page->selectFieldOption('country_id', 'AR');
+            $page->fillField('postcode', '7000');
+            $page->fillField('telephone', '123456');
         }
-        $page->fillField('street[0]', 'Street 123');
-        $page->fillField('city', 'City');
-        $page->selectFieldOption('country_id', 'AR');
-        $page->fillField('postcode', '7000');
-        $page->fillField('telephone', '123456');
     }
 
     /**

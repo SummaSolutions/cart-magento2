@@ -10,7 +10,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I am on page "checkout/cart/"
 
 
-  @frontend @viewStandard
+  @viewStandard
   Scenario: See MercadoPago standard option as a payment method
     And I configure mercadopago standard
     And I press "[data-role='proceed-to-checkout']" element
