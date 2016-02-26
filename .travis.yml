@@ -14,7 +14,8 @@ env:
     - DB=mysql
   matrix:
    - BEHAT_TAG=@MercadoPagoStandard
-
+dist: trusty
+sudo: required
 addons:
   hosts:
     - mercadopago2.local
