@@ -3,7 +3,7 @@
 namespace Mercadopago\Core\Controller\Standard;
 
 /**
- * Class Pay
+ * Class Pay action controller to pay order with MP
  *
  * @package Mercadopago\Core\Controller\Standard
  */
@@ -15,6 +15,12 @@ class Pay
      */
     protected $_paymentFactory;
 
+    /**
+     * Pay constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context           $context
+     * @param \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory
@@ -24,6 +30,11 @@ class Pay
         parent::__construct($context);
     }
 
+    /**
+     * Execute action
+     * 
+     * @return \Magento\Framework\Controller\Result\Redirect
+     */
     public function execute()
     {
 
