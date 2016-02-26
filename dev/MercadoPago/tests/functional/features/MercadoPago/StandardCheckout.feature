@@ -55,7 +55,8 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I wait for "8" seconds
     And I select payment method "mercadopago_standard"
     And I press "button[data-role='review-save']" element
-    When I switch to the iframe "checkout_mercadopago"
+    And I wait for "5" seconds
+    When I switch to the iframe "mercadopago_standard-iframe"
     And I fill the iframe fields
 
     When I press "#next" input element
@@ -73,6 +74,6 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I select payment method "mercadopago_standard"
     And I press ".primary>.button" element
 
-    When I switch to the iframe "checkout_mercadopago"
+    When I switch to the iframe "mercadopago_standard-iframe"
     Then I should see html "$ 50"
 
