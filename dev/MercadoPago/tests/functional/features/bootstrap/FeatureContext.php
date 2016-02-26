@@ -187,8 +187,9 @@ class FeatureContext
      */
     public function iFillTheShippingAddress()
     {
-        $add = $this->findElement('.selected-item');
-        if (!$add) {
+        try {
+            $this->findElement('.selected-item');
+        } catch (ElementNotFoundException $e) {
             $page = $this->getSession()->getPage();
             $page->fillField('street[0]', 'Street 123');
             $page->fillField('city', 'City');

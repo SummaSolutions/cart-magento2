@@ -14,6 +14,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
   Scenario: See MercadoPago standard option as a payment method
     And I configure mercadopago standard
     And I press "[data-role='proceed-to-checkout']" element
+    And I wait for "6" seconds
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
@@ -24,6 +25,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
   Scenario: Not See MercadoPago option as a payment method when is not client id
     When Setting Config "payment/mercadopago_standard/client_id" is "0"
     And I press "[data-role='proceed-to-checkout']" element
+    And I wait for "6" seconds
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
@@ -35,6 +37,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
   Scenario: Not See MercadoPago option as a payment method when is not available client secret
     When Setting Config "payment/mercadopago_standard/client_secret" is "0"
     And I press "[data-role='proceed-to-checkout']" element
+    And I wait for "6" seconds
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
@@ -45,6 +48,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
   @checkoutSuccess
   Scenario: Generate order with standard checkout
     When I press "[data-role='proceed-to-checkout']" element
+    And I wait for "6" seconds
     And I fill the shipping address
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
@@ -62,6 +66,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
   Scenario: Check total displayed in iframe
     When I press "[data-role='proceed-to-checkout']" element
     And I fill the shipping address
+    And I wait for "6" seconds
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
     And I wait for "8" seconds
