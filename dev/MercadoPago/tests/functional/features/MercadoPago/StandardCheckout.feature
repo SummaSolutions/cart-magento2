@@ -61,7 +61,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
 
     When I press "#next" input element
     And I switch to the site
-    Then I should be on "/mercadopago/success"
+    Then I should be on "/standard/success"
 
   @checkoutPrice
   Scenario: Check total displayed in iframe
@@ -70,7 +70,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I wait for "6" seconds
     And I select shipping method "flatrate_flatrate"
     And I press "#shipping-method-buttons-container .button" element
-    And I wait for "8" seconds
+    And I wait for "15" seconds
     And I select payment method "mercadopago_standard"
     And I press ".primary>.button" element
 
