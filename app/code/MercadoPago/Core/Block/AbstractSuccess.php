@@ -94,7 +94,7 @@ class AbstractSuccess
      */
     public function getEntityId()
     {
-        return $order = $this->getOrder()->getEntityId();
+        return $this->getOrder()->getEntityId();
     }
 
     /**
