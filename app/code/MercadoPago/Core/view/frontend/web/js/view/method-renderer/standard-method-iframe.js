@@ -29,19 +29,15 @@ define(
              * @returns {String}
              */
             getActionUrl: function () {
-                if (this.isInAction()) {
-                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
-                        return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
-                    }
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['actionUrl'];
                 }
                 return '';
             },
 
             getBannerUrl: function () {
-                if (this.isInAction()) {
-                    if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
-                        return window.checkoutConfig.payment['mercadopago_standard']['bannerUrl'];
-                    }
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['bannerUrl'];
                 }
                 return '';
             },
