@@ -5,7 +5,7 @@ namespace MercadoPago\Core\Helper\Message;
  * Map Payment Messages with the Credit Card Payment response detail
  */
 class StatusDetailMessage
-    extends AbstractMessage
+    extends \MercadoPago\Core\Helper\Message\AbstractMessage
 {
     /**
      * Map error messages
