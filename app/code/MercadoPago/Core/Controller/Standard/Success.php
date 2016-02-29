@@ -19,6 +19,11 @@ class Success
      */
     protected $_orderFactory;
 
+    /**
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Checkout\Model\Session       $checkoutSession
+     * @param \Magento\Sales\Model\OrderFactory     $orderFactory
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $checkoutSession,
@@ -35,6 +40,9 @@ class Success
 
     }
 
+    /**
+     * Execute Success action
+     */
     public function execute()
     {
         $checkoutTypeHandle = $this->getCheckoutHandle();

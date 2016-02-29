@@ -17,17 +17,61 @@ class Core
      */
     const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom_checkout/access_token';
 
+    /**
+     * {@inheritdoc}
+     */
     protected $_isGateway = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canOrder = true;
+    /**
+     * {@inheritdoc}
+     */
     protected $_canAuthorize = true;
+    /**
+     * {@inheritdoc}
+     */
     protected $_canCapture = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canCapturePartial = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canRefund = true;
+    /**
+     * {@inheritdoc}
+     */
     protected $_canRefundInvoicePartial = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canVoid = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canUseInternal = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canUseCheckout = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canFetchTransactionInfo = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canReviewPayment = true;
 
     /**
@@ -50,7 +94,13 @@ class Core
      */
     protected $_orderFactory;
 
-
+    /**
+     * Construct Core
+     *
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \MercadoPago\Core\Helper\Data              $coreHelper
+     * @param \Magento\Sales\Model\OrderFactory          $orderFactory
+     */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,

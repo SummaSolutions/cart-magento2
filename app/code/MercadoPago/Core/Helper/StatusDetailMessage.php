@@ -1,10 +1,18 @@
 <?php
 namespace MercadoPago\Core\Helper;
 
-
+/**
+ * Class StatusDetailMessage
+ *
+ * @package MercadoPago\Core\Helper
+ */
 class StatusDetailMessage
     extends \MercadoPago\Core\Helper\Message\AbstractMessage
 {
+    /**
+     * mapping error code, detailed message
+     * @var array
+     */
     protected $messagesMap = [
             "cc_rejected_bad_filled_card_number"   => 'Check the card number.',
             "cc_rejected_bad_filled_date"          => 'Check the expiration date.',

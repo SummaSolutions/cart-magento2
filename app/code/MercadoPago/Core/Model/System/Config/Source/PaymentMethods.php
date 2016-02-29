@@ -9,11 +9,33 @@ namespace MercadoPago\Core\Model\System\Config\Source;
 class PaymentMethods
     implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * path to access token config
+     *
+     * @var string
+     */
     const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
+    /**
+     * path to client id config
+     *
+     * @var string
+     */
     const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
+    /**
+     * path to client secret config
+     *
+     * @var string
+     */
     const XML_PATH_CLIENT_SECRET = 'payment/mercadopago_standard/client_secret';
-    private $scopeConfig;
 
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * @var \MercadoPago\Core\Helper\Data
+     */
     protected $coreHelper;
 
 

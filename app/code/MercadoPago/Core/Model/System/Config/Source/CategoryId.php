@@ -1,22 +1,35 @@
 <?php
 namespace MercadoPago\Core\Model\System\Config\Source;
 
-class CategoryId implements \Magento\Framework\Option\ArrayInterface
+/**
+ * Class CategoryId
+ *
+ * @package MercadoPago\Core\Model\System\Config\Source
+ */
+class CategoryId
+    implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * @var \MercadoPago\Core\Helper\DataFactory
+     */
     protected $coreHelperFactory;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
+     * @param \MercadoPago\Core\Helper\DataFactory               $coreHelperFactory
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \MercadoPago\Core\Helper\DataFactory $coreHelperFactory
-    ) {
+    )
+    {
         $this->scopeConfig = $scopeConfig;
         $this->coreHelperFactory = $coreHelperFactory;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toOptionArray()
     {
         $this->coreHelperFactory->create()->log("Get Categories... ", 'mercadopago.log');
@@ -41,6 +54,7 @@ class CategoryId implements \Magento\Framework\Option\ArrayInterface
 
         //force order by key
         ksort($cat);
+
         return $cat;
     }
 

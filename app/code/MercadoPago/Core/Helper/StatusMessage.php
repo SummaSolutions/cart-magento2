@@ -1,10 +1,19 @@
 <?php
 namespace MercadoPago\Core\Helper;
 
-
+/**
+ * Class StatusMessage
+ *
+ * @package MercadoPago\Core\Helper
+ */
 class StatusMessage
     extends \MercadoPago\Core\Helper\Message\AbstractMessage
 {
+    /**
+     * mapping between status and title, message
+     *
+     * @var array
+     */
     protected $messagesMap = [
             "approved"   => [
                 'title'   => 'Done, your payment was accredited!',

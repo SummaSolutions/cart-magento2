@@ -2,7 +2,11 @@
 namespace MercadoPago\Core\Helper;
 
 /**
+ * Class Response
+ *
  * Http codes
+ *
+ * @package MercadoPago\Core\Helper
  */
 class Response
 {
