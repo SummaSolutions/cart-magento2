@@ -15,8 +15,14 @@ use Magento\Payment\Helper\Data as PaymentHelper;
 class StandardConfigProvider
     implements ConfigProviderInterface
 {
+    /**
+     * @var \Magento\Payment\Model\MethodInterface
+     */
     protected $methodInstance;
 
+    /**
+     * @var string
+     */
     protected $methodCode = Standard\Payment::CODE;
 
 
@@ -30,6 +36,10 @@ class StandardConfigProvider
         $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
     }
 
+    /**
+     * Return standard configs
+     * @return array
+     */
     public function getConfig()
     {
         return $this->methodInstance->isAvailable() ? [

@@ -9,7 +9,13 @@ namespace MercadoPago\Core\Model\System\Config\Source;
 class Category
     implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * @var \MercadoPago\Core\Helper\Data
+     */
     protected $coreHelper;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $scopeConfig;
 
     /**

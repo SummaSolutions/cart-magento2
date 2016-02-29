@@ -27,6 +27,9 @@ class Data
      */
     protected $_messageInterface;
 
+    /**
+     * @var \Magento\Framework\Setup\ModuleContextInterface
+     */
     protected $_moduleContext;
 
 	/**

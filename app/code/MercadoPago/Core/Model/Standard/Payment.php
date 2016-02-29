@@ -20,17 +20,59 @@ class Payment
      */
     const ACTION_URL = 'mercadopago/standard/pay';
 
+    /**
+     * {@inheritdoc}
+     */
     protected $_code = self::CODE;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $_isGateway = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canOrder = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canAuthorize = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canCapture = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canCapturePartial = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canRefund = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canRefundInvoicePartial = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canVoid = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canFetchTransactionInfo = true;
+
+    /**
+     * {@inheritdoc}
+     */
     protected $_canReviewPayment = true;
 
     /**
@@ -63,6 +105,24 @@ class Payment
      */
     protected $_urlBuilder;
 
+    /**
+     * @param \MercadoPago\Core\Helper\Data                                $helperData
+     * @param \Magento\Catalog\Helper\Image                                $helperImage
+     * @param \Magento\Checkout\Model\Session                              $checkoutSession
+     * @param \Magento\Customer\Model\Session                              $customerSession
+     * @param \Magento\Sales\Model\OrderFactory                            $orderFactory
+     * @param \Magento\Framework\UrlInterface                              $urlBuilder
+     * @param \Magento\Framework\Model\Context                             $context
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory            $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory                 $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                                 $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                         $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
+     * @param array                                                        $data
+     */
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
         \Magento\Catalog\Helper\Image $helperImage,

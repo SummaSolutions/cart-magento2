@@ -1,10 +1,18 @@
 <?php
 namespace MercadoPago\Core\Helper;
 
-
+/**
+ * Class StatusOrderMessage
+ *
+ * @package MercadoPago\Core\Helper
+ */
 class StatusOrderMessage
     extends \MercadoPago\Core\Helper\Message\AbstractMessage
 {
+    /**
+     * mapping between status and message
+     * @var array
+     */
     protected $messagesMap = [
             "approved"     => 'Automatic notification of the MercadoPago: The payment was approved.',
             "refunded"     => 'Automatic notification of the MercadoPago: The payment was refunded.',
