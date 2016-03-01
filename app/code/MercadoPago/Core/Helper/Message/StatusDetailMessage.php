@@ -7,6 +7,11 @@ namespace MercadoPago\Core\Helper\Message;
 class StatusDetailMessage
     extends AbstractMessage
 {
+    /**
+     * Map error messages
+     *
+     * @var array
+     */
     protected $messagesMap = [
             "cc_rejected_bad_filled_card_number"   => 'Check the card number.',
             "cc_rejected_bad_filled_date"          => 'Check the expiration date.',
@@ -24,6 +29,11 @@ class StatusDetailMessage
             "cc_rejected_other_reason"             => '%s did not process the payment.',
     ];
 
+    /**
+     * Return array map error mesages
+     *
+     * @return array
+     */
     public function getMessageMap()
     {
         return $this->messagesMap;

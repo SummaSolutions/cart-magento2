@@ -40,17 +40,19 @@ class ConfigObserver
     ];
 
     /**
-     * available countries to custom checkout
+     * Available countries to custom checkout
+     *
      * @var array
      */
     private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm'];
 
     /**
-     * available countries to ticket checkout
+     * Available countries to custom ticket
      *
      * @var array
      */
     private $available_transparent_ticket = ['mla', 'mlb', 'mlm'];
+    
     const LOG_NAME = 'mercadopago';
 
     /**
