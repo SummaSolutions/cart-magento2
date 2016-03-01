@@ -87,7 +87,7 @@ before_script:
   - sleep 5
 
 script:
-  - vendor/bin/phpmd ../../../app/code/MercadoPago text static/phpmd/ruleset.xml
-  - vendor/bin/phpcs --standard=static/phpcs/Ecg --colors ../../../app/
-  - vendor/bin/phpcpd ../../../ --exclude=dev
+  - vendor/bin/phpmd ../../../MercadoPago text static/phpmd/ruleset.xml
+  - vendor/bin/phpcs --standard=static/phpcs/Ecg --colors ../../../../../app/
+  - vendor/bin/phpcpd ../../../../../ --exclude=dev
   - vendor/bin/behat --config behat.yml --tags ${BEHAT_TAG} --tags="~@skip"
