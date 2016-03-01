@@ -7,6 +7,11 @@ namespace MercadoPago\Core\Helper\Message;
 class StatusMessage
     extends AbstractMessage
 {
+    /**
+     * mapps messages by status
+     *
+     * @var array
+     */
     protected $messagesMap = [
             "approved"   => [
                 'title'   => 'Done, your payment was accredited!',
@@ -44,6 +49,11 @@ class StatusMessage
             ]
     ];
 
+    /**
+     * return array map
+     *
+     * @return array
+     */
     public function getMessageMap()
     {
         return $this->messagesMap;

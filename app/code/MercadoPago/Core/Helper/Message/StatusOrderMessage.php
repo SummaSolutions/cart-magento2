@@ -7,6 +7,11 @@ namespace MercadoPago\Core\Helper\Message;
 class StatusOrderMessage
     extends AbstractMessage
 {
+    /**
+     * Message by status order
+     *
+     * @var array
+     */
     protected $messagesMap = [
             "approved"     => 'Automatic notification of the MercadoPago: The payment was approved.',
             "refunded"     => 'Automatic notification of the MercadoPago: The payment was refunded.',
@@ -18,6 +23,11 @@ class StatusOrderMessage
             "chargeback"   => 'Automatic notification of the MercadoPago: One chargeback was initiated for this payment.',
     ];
 
+    /**
+     * Return array map
+     *
+     * @return array
+     */
     public function getMessageMap()
     {
         return $this->messagesMap;
