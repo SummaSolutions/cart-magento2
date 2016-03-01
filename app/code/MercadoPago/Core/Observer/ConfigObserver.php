@@ -11,6 +11,11 @@ use Magento\Framework\Event\ObserverInterface;
 class ConfigObserver
     implements ObserverInterface
 {
+    /**
+     * Urls banners depnding on country
+     *
+     * @var array
+     */
     private $banners = [
         "mercadopago_custom"       => [
             "mla" => "http://imgmp.mlstatic.com/org-img/banners/ar/medios/online/468X60.jpg",
@@ -34,8 +39,20 @@ class ConfigObserver
         ]
     ];
 
+    /**
+     * Available countries to custom checkout
+     *
+     * @var array
+     */
     private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm'];
+
+    /**
+     * Available countries to custom ticket
+     *
+     * @var array
+     */
     private $available_transparent_ticket = ['mla', 'mlb', 'mlm'];
+    
     const LOG_NAME = 'mercadopago';
 
     /**
