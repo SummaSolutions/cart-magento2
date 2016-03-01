@@ -173,19 +173,19 @@ class Core
     {
         $order = $this->_getOrder($order_id);
         $payment = $order->getPayment();
-        $info_payments = array();
-        $fields = array(
-            array("field" => "cardholderName", "title" => "Card Holder Name: %s"),
-            array("field" => "trunc_card", "title" => "Card Number: %s"),
-            array("field" => "payment_method", "title" => "Payment Method: %s"),
-            array("field" => "expiration_date", "title" => "Expiration Date: %s"),
-            array("field" => "installments", "title" => "Installments: %s"),
-            array("field" => "statement_descriptor", "title" => "Statement Descriptor: %s"),
-            array("field" => "payment_id", "title" => "Payment id (MercadoPago): %s"),
-            array("field" => "status", "title" => "Payment Status: %s"),
-            array("field" => "status_detail", "title" => "Payment Detail: %s"),
-            array("field" => "activation_uri", "title" => "Generate Ticket")
-        );
+        $info_payments = [];
+        $fields = [
+            ["field" => "cardholderName", "title" => "Card Holder Name: %s"],
+            ["field" => "trunc_card", "title" => "Card Number: %s"],
+            ["field" => "payment_method", "title" => "Payment Method: %s"],
+            ["field" => "expiration_date", "title" => "Expiration Date: %s"],
+            ["field" => "installments", "title" => "Installments: %s"],
+            ["field" => "statement_descriptor", "title" => "Statement Descriptor: %s"],
+            ["field" => "payment_id", "title" => "Payment id (MercadoPago): %s"],
+            ["field" => "status", "title" => "Payment Status: %s"],
+            ["field" => "status_detail", "title" => "Payment Detail: %s"],
+            ["field" => "activation_uri", "title" => "Generate Ticket"]
+        ];
 
         foreach ($fields as $field) {
             if ($payment->getAdditionalInformation($field['field']) != "") {
