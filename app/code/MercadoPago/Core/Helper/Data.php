@@ -145,7 +145,7 @@ class Data
         }
 
         $api->set_type(self::TYPE);
-        $api->set_so((string)$this->_moduleContext->getVersion());
+        //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
         return $api;
 

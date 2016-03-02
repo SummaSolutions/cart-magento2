@@ -52,7 +52,10 @@ class ConfigObserver
      * @var array
      */
     private $available_transparent_ticket = ['mla', 'mlb', 'mlm'];
-    
+
+    /**
+     *
+     */
     const LOG_NAME = 'mercadopago';
 
     /**

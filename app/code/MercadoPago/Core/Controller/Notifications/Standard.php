@@ -1,7 +1,6 @@
 <?php
 namespace Mercadopago\Core\Controller\Notifications;
 
-
 /**
  * Class Standard
  *
@@ -23,6 +22,9 @@ class Standard
      */
     protected $coreModel;
 
+    /**
+     *
+     */
     const LOG_NAME = 'standard_notification';
 
 

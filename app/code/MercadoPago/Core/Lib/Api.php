@@ -11,19 +11,49 @@
 
 class MercadoPago_Core_Lib_Api {
 
+    /**
+     *
+     */
     const version = "0.3.3";
 
+    /**
+     * @var mixed
+     */
     private $client_id;
+    /**
+     * @var mixed
+     */
     private $client_secret;
+    /**
+     * @var mixed
+     */
     private $ll_access_token;
+    /**
+     * @var
+     */
     private $access_data;
+    /**
+     * @var bool
+     */
     private $sandbox = FALSE;
 
+    /**
+     * @var null
+     */
     private $_platform = null;
+    /**
+     * @var null
+     */
     private $_so = null;
+    /**
+     * @var null
+     */
     private $_type = null;
 
 
+    /**
+     * MercadoPago_Core_Lib_Api constructor.
+     */
     public function __construct() {
         $i = func_num_args();
 
@@ -41,6 +71,11 @@ class MercadoPago_Core_Lib_Api {
         }
     }
 
+    /**
+     * @param null $enable
+     *
+     * @return bool
+     */
     public function sandbox_mode($enable = NULL) {
         if (!is_null($enable)) {
             $this->sandbox = $enable === TRUE;
@@ -87,6 +122,12 @@ class MercadoPago_Core_Lib_Api {
         $payment_info = MercadoPago_Core_Lib_RestClient::get($uri_prefix."/collections/notifications/" . $id . "?access_token=" . $access_token);
         return $payment_info;
     }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
     public function get_payment_info($id) {
         return $this->get_payment($id);
     }
@@ -351,6 +392,11 @@ class MercadoPago_Core_Lib_Api {
 
     /* **************************************************************************************** */
 
+    /**
+     * @param $params
+     *
+     * @return string
+     */
     private function build_query($params) {
         if (function_exists("http_build_query")) {
             return http_build_query($params, "", "&");
