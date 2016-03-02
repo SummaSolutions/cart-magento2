@@ -11,6 +11,9 @@ namespace MercadoPago\Core\Model;
 class Core
     extends \Magento\Payment\Model\Method\AbstractMethod
 {
+    /**
+     * @var string
+     */
     protected $_code = 'mercadopago';
 
     /**
@@ -75,8 +78,6 @@ class Core
      */
     protected $_canReviewPayment = true;
 
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom_checkout/access_token';
-
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -87,21 +88,44 @@ class Core
      */
     protected $_coreHelper;
 
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
     protected $_orderFactory;
 
+    /**
+     * @var
+     */
     protected $_accessToken;
+    /**
+     * @var
+     */
     protected $_clientId;
+    /**
+     * @var
+     */
     protected $_clientSecret;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_statusMessage;
+    /**
+     * @var \MercadoPago\Core\Helper\Message\MessageInterface
+     */
     protected $_statusDetailMessage;
+    /**
+     * @var \Magento\Framework\DB\TransactionFactory
+     */
     protected $_transactionFactory;
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
+     */
     protected $_invoiceSender;
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
     protected $_orderSender;
-
 
 
     /**
@@ -125,7 +149,8 @@ class Core
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
@@ -385,6 +410,11 @@ class Core
         return $infoCoupon;
     }
 
+    /**
+     * @param array $payment_info
+     *
+     * @return array
+     */
     public function makeDefaultPreferencePaymentV1($payment_info = array())
     {
         $quote = $this->_getQuote();
@@ -479,7 +509,7 @@ class Core
         $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
         //seta sdk php mercadopago
-        $mp = $this->_coreHelper->getApiInstance($access_token);
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
         $response = $mp->post("/v1/payments", $preference);
         $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
 
@@ -536,7 +566,7 @@ class Core
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
-        $mp = $this->_coreHelper->getApiInstance($this->_access_token);
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/v1/payments/" . $payment_id);
     }
@@ -570,7 +600,7 @@ class Core
             $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
-        $mp = $this->_coreHelper->getApiInstance($this->access_token);
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         $payment_methods = $mp->get("/v1/payment_methods");
 

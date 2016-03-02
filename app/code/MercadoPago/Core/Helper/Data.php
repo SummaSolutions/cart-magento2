@@ -92,7 +92,7 @@ class Data
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
-        $this->messageInterface = $messageInterface;
+        $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
 		$this->_moduleContext = $moduleContext;
         $this->_statusFactory = $statusFactory;
