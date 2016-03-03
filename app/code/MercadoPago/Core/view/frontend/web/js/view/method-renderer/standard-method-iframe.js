@@ -10,7 +10,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'MercadoPago_Core/payment/standard-iframe',
+                template: 'MercadoPago_Core/payment/standard_iframe',
                 paymentReady: false
             },
             redirectAfterPlaceOrder: false,
