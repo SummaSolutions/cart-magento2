@@ -13,13 +13,34 @@ class Data
     extends \Magento\Payment\Helper\Data
 {
 
+    /**
+     *
+     */
     const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
+    /**
+     *
+     */
     const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
+    /**
+     *
+     */
     const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
+    /**
+     *
+     */
     const XML_PATH_CLIENT_SECRET = 'payment/mercadopago_standard/client_secret';
 
+    /**
+     *
+     */
     const PLATFORM_OPENPLATFORM = 'openplatform';
+    /**
+     *
+     */
     const PLATFORM_STD = 'std';
+    /**
+     *
+     */
     const TYPE = 'magento';
 
     /**
@@ -38,6 +59,11 @@ class Data
      * @var \MercadoPago\Core\Logger\Logger
      */
     protected $_mpLogger;
+
+    /**
+     * @var \Magento\Sales\Model\ResourceModel\Status\Collection
+     */
+    protected $_statusFactory;
 
     /**
      * Data constructor.
@@ -61,13 +87,15 @@ class Data
         \Magento\Payment\Model\Config $paymentConfig,
         \Magento\Framework\App\Config\Initial $initialConfig,
         \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
-		\MercadoPago\Core\Logger\Logger $logger
+		\MercadoPago\Core\Logger\Logger $logger,
+		\Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
-        $this->_moduleContext = $moduleContext;
-		$this->_mpLogger = $logger;
+        $this->_mpLogger = $logger;
+		$this->_moduleContext = $moduleContext;
+        $this->_statusFactory = $statusFactory;
     }
 
 
@@ -96,7 +124,7 @@ class Data
 
     /**
      * Return MercadoPago Api instance given AccessToken or ClientId and Secret
-     * @return \MercadoPago_Lib_Api
+     * @return \MercadoPago_Core_Lib_Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiInstance()
@@ -106,10 +134,10 @@ class Data
             throw new \Magento\Framework\Exception\LocalizedException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
         }
         if ($params == 1) {
-            $api = new \MercadoPago_Lib_Api(func_get_arg(0));
+            $api = new \MercadoPago_Core_Lib_Api(func_get_arg(0));
             $api->set_platform(self::PLATFORM_OPENPLATFORM);
         } else {
-            $api = new \MercadoPago_Lib_Api(func_get_arg(0), func_get_arg(1));
+            $api = new \MercadoPago_Core_Lib_Api(func_get_arg(0), func_get_arg(1));
             $api->set_platform(self::PLATFORM_STD);
         }
         if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {
@@ -117,7 +145,7 @@ class Data
         }
 
         $api->set_type(self::TYPE);
-        $api->set_so((string)$this->_moduleContext->getVersion());
+        //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
         return $api;
 
@@ -223,12 +251,13 @@ class Data
      * @param string $status
      */
     public function _getAssignedState($status)
-    {   //TODO modify model loading
-        $item = Mage::getResourceModel('sales/order_status_collection')
+    {
+        $collection = $this->_statusFactory
             ->joinStates()
             ->addFieldToFilter('main_table.status', $status);
 
-        return array_pop($item->getItems())->getState();
+        $collectionItems = $collection->getItems();
+        return array_pop($collectionItems)->getState();
     }
 
     /**

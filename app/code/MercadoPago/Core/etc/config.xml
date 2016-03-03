@@ -3,6 +3,7 @@
         <payment>
             <mercadopago>
                 <country>mlb</country>
+                <title>General configuration</title>
                 <order_status_approved>processing</order_status_approved>
                 <order_status_refunded>pending</order_status_refunded>
                 <order_status_in_process>pending</order_status_in_process>
@@ -13,31 +14,6 @@
                 <logs>0</logs>
                 <debug_mode>0</debug_mode>
             </mercadopago>
-
-            <mercadopago_custom>
-                <active>0</active>
-                <!--<model>mercadopago/custom_payment</model> TODO set payment models-->
-                <!-- nome do modulo na exibição para o comprador -->
-                <title translate="label">Credit Card - MercadoPago</title>
-                <allowspecific>0</allowspecific>
-                <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
-                <sort_order>-2</sort_order>
-                <payment_action>authorize</payment_action>
-                <coupon_mercadopago>0</coupon_mercadopago>
-            </mercadopago_custom>
-
-            <mercadopago_customticket>
-                <active>0</active>
-                <!--<model>mercadopago/customTicket_payment</model>-->
-                <!-- nome do modulo na exibição para o comprador -->
-                <title translate="label">Ticket - MercadoPago</title>
-                <allowspecific>0</allowspecific>
-                <binary_mode>0</binary_mode>
-                <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/2014/230x60.png</banner_checkout>
-                <sort_order>-1</sort_order>
-                <payment_action>authorize</payment_action>
-                <coupon_mercadopago>0</coupon_mercadopago>
-            </mercadopago_customticket>
 
             <mercadopago_standard>
                 <active>0</active>
