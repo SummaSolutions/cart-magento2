@@ -200,8 +200,13 @@ class Data
     {
         $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        try {
+            $accessToken = $this->getApiInstance($clientId, $clientSecret)->get_access_token();
+        } catch (\Exception $e) {
+            $accessToken = false;
+        }
 
-        return $this->getApiInstance($clientId, $clientSecret)->get_access_token();
+        return $accessToken;
     }
 
     /**
