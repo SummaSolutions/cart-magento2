@@ -42,14 +42,21 @@ class StandardConfigProvider
      */
     public function getConfig()
     {
-        return $this->methodInstance->isAvailable() ? [
-            'payment' => [
-                $this->methodCode => [
-                    'actionUrl' => $this->methodInstance->getActionUrl(),
-                    'bannerUrl' => $this->methodInstance->getConfigData('banner_checkout'),
-                    'type_checkout'  => $this->methodInstance->getConfigData('type_checkout')
+        $config = [];
+        if ($this->methodInstance->isAvailable()) {
+            $config = [
+                'payment' => [
+                    $this->methodCode => [
+                        'actionUrl'     => $this->methodInstance->getActionUrl(),
+                        'bannerUrl'     => $this->methodInstance->getConfigData('banner_checkout'),
+                        'type_checkout' => $this->methodInstance->getConfigData('type_checkout'),
+                    ],
                 ],
-            ],
-        ] : [];
+            ];
+            if ($this->methodInstance->getConfigData('type_checkout') == 'iframe') {
+                $config['payment'][$this->methodCode]['iframe_height'] = $this->methodInstance->getConfigData('iframe_height');
+            }
+        }
+        return $config;
     }
 }
