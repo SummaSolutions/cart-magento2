@@ -34,12 +34,21 @@ define(
                 }
                 return '';
             },
-
+            /**
+             * Get url to show banner
+             * @returns {String}
+             */
             getBannerUrl: function () {
                 if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
                     return window.checkoutConfig.payment['mercadopago_standard']['bannerUrl'];
                 }
                 return '';
+            },
+            getConfigHeight: function () {
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['iframe_height'];
+                }
+                return 710;
             },
             /**
              * Places order in pending payment status.
