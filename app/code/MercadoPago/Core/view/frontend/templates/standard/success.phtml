@@ -11,7 +11,7 @@ $infoPayment = $this->getInfoPayment();
 
 <div id="box-mercadopago">
 
-    <?php if (!isset($infoPayment['status']['value'])): ?>
+    <?php if (!isset($infoPayment['status']['value'],$infoPayment['payment_method'],$infoPayment['installment'])): ?>
         <h2 class="mercadopago-title">
             <?php echo __('Thank you for your purchase!'); ?>
         </h2><p><?php echo $linkToOrder; ?></p>
