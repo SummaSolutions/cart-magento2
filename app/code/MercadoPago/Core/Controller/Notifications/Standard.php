@@ -70,8 +70,16 @@ class Standard
                 if (count($merchant_order['payments']) > 0) {
                     $data = $this->_getDataPayments($merchant_order);
                     $status_final = $this->_getStatusFinal($data['status']);
+                    $shipmentData = (isset($merchant_order['shipments'][0])) ? $merchant_order['shipments'][0] : [];
                     $this->coreHelper->log("Update Order", self::LOG_NAME);
                     $this->coreModel->updateOrder($data);
+
+                    if(!empty($shipmentData)) {
+                        $this->_eventManager->dispatch(
+                            'mercadopago_standard_notification_before_set_status',
+                            ['shipmentData' => $shipmentData, 'orderId' => $merchant_order['external_reference']]
+                        );
+                    }
 
                     if ($status_final != false) {
                         $data['status_final'] = $status_final;
