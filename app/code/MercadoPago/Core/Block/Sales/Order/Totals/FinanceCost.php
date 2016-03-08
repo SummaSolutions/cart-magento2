@@ -4,6 +4,11 @@ namespace MercadoPago\Core\Block\Sales\Order\Totals;
 
 use Magento\Sales\Model\Order;
 
+/**
+ * Class FinanceCost
+ *
+ * @package MercadoPago\Core\Block\Sales\Order\Totals
+ */
 class FinanceCost
     extends \Magento\Framework\View\Element\Template
 {
