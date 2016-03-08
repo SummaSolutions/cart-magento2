@@ -295,12 +295,15 @@ class Data
             $balance = $data['transaction_details']['total_paid_amount'];
         }
 
+        $shippingCost = $this->_getMultiCardValue($data['shipping_cost']);
+
         $order->setGrandTotal($balance);
         $order->setBaseGrandTotal($balance);
+        $order->setBaseShippingAmount($shippingCost);
+        $order->setShippingAmount($shippingCost);
 
         $couponAmount = $this->_getMultiCardValue($data['coupon_amount']);
         $transactionAmount = $this->_getMultiCardValue($data['transaction_amount']);
-        $shippingCost = $this->_getMultiCardValue($data['shipping_cost']);
         if ($couponAmount) {
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);
@@ -309,10 +312,12 @@ class Data
             $balance = $balance - $transactionAmount - $shippingCost;
         }
 
-        if ($balance > 0) {
+        if (round($balance,4) > 0) {
             $order->setFinanceCostAmount($balance);
             $order->setBaseFinanceCostAmount($balance);
         }
+
+        $order->save();
     }
 
     /**

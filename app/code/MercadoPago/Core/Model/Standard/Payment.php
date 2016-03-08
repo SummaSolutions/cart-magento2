@@ -231,6 +231,9 @@ class Payment
             'mercadopago_standard_make_preference_before',
             ['params' => $paramsShipment, 'order' => $order]
         );
+        if (!isset($paramsShipment['cost'])) {
+            $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
+        }
         $arr = [];
 
         $arr['external_reference'] = $orderIncrementId;
