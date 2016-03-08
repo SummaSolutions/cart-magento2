@@ -49,11 +49,6 @@ class Data
     protected $_messageInterface;
 
     /**
-     * @var \Magento\Framework\Setup\ModuleContextInterface
-     */
-    protected $_moduleContext;
-
-	/**
      * MercadoPago Logging instance
      *
      * @var \MercadoPago\Core\Logger\Logger
@@ -64,19 +59,20 @@ class Data
      * @var \Magento\Sales\Model\ResourceModel\Status\Collection
      */
     protected $_statusFactory;
+    protected $_moduleContext;
 
     /**
      * Data constructor.
      *
-     * @param Message\MessageInterface                        $messageInterface
-     * @param \Magento\Framework\App\Helper\Context           $context
-     * @param LayoutFactory                                   $layoutFactory
-     * @param \Magento\Payment\Model\Method\Factory           $paymentMethodFactory
-     * @param \Magento\Store\Model\App\Emulation              $appEmulation
-     * @param \Magento\Payment\Model\Config                   $paymentConfig
-     * @param \Magento\Framework\App\Config\Initial           $initialConfig
-     * @param \Magento\Framework\Setup\ModuleContextInterface $moduleContext
-     * @param \MercadoPago\Core\Logger\Logger                 $logger
+     * @param Message\MessageInterface              $messageInterface
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param LayoutFactory                         $layoutFactory
+     * @param \Magento\Payment\Model\Method\Factory $paymentMethodFactory
+     * @param \Magento\Store\Model\App\Emulation    $appEmulation
+     * @param \Magento\Payment\Model\Config         $paymentConfig
+     * @param \Magento\Framework\App\Config\Initial $initialConfig
+     * @param \MercadoPago\Core\Logger\Logger       $logger
+	 * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
      */
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
@@ -88,7 +84,7 @@ class Data
         \Magento\Framework\App\Config\Initial $initialConfig,
         \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
 		\MercadoPago\Core\Logger\Logger $logger,
-		\Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
+        \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
@@ -304,6 +300,7 @@ class Data
 
         $couponAmount = $this->_getMultiCardValue($data['coupon_amount']);
         $transactionAmount = $this->_getMultiCardValue($data['transaction_amount']);
+
         if ($couponAmount) {
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);

@@ -30,8 +30,12 @@
     background-color: #fff !important;
 }
 
-#cardholderName{
+#cardholderName {
     width: 160px;
+}
+
+#installments__mp {
+    width: 225px;
 }
 
 #securityCode, #securityCodeOCP{
@@ -42,7 +46,7 @@
     margin: 0 0 -10px;
 }
 
-#docNumber{
+#docNumber, #doc_type__mp{
     width: 106px;
 }
 

@@ -297,7 +297,7 @@ var MercadoPagoCustom = (function () {
             Mercadopago.getIdentificationTypes(function (status, identificationsTypes) {
                 if (status == http.status.OK) {
                     var type = TinyJ(self.selectors.docType).val();
-                    identificationsTypes.each(function (dataType) {
+                    identificationsTypes.forEach(function (dataType) {
                         if (dataType.id == type) {
                             if (v.length > dataType.max_length || v.length < dataType.min_length) {
                                 flagReturn = false;
