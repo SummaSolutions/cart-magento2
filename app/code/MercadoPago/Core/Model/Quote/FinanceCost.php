@@ -1,7 +1,13 @@
 <?php
 namespace MercadoPago\Core\Model\Quote;
 
-class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
+/**
+ * Class FinanceCost
+ *
+ * @package MercadoPago\Core\Model\Quote
+ */
+class FinanceCost
+    extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
 
     /**
@@ -18,7 +24,8 @@ class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      */
     public function __construct(
         \Magento\Framework\App\RequestInterface $request
-    ) {
+    )
+    {
         $this->setCode('finance_cost');
         $this->request = $request;
     }
@@ -37,12 +44,14 @@ class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         return (!empty($req) && $address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING);
 
     }
+
     /**
      * Collect address discount amount
      *
-     * @param \Magento\Quote\Model\Quote $quote
+     * @param \Magento\Quote\Model\Quote                          $quote
      * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
+     * @param \Magento\Quote\Model\Quote\Address\Total            $total
+     *
      * @return $this
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
@@ -50,7 +59,8 @@ class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         \Magento\Quote\Model\Quote $quote,
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
-    ) {
+    )
+    {
         $address = $shippingAssignment->getShipping()->getAddress();
 
         if ($this->_getFinancingCondition($address)) {
@@ -81,8 +91,9 @@ class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     /**
      * Add discount total information to address
      *
-     * @param \Magento\Quote\Model\Quote $quote
+     * @param \Magento\Quote\Model\Quote               $quote
      * @param \Magento\Quote\Model\Quote\Address\Total $total
+     *
      * @return array|null
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
@@ -92,11 +103,12 @@ class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 
         if ($amount != 0) {
             $result = [
-                'code' => $this->getCode(),
+                'code'  => $this->getCode(),
                 'title' => __('Financing Cost'),
                 'value' => $amount
             ];
         }
+
         return $result;
     }
 }
