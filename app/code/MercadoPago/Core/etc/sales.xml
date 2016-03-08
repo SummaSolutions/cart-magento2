@@ -5,14 +5,14 @@
             <item name="finance_cost" instance="MercadoPago\Core\Model\Quote\FinanceCost" sort_order="400"/>
         </group>
     </section>
-    <!--<section name="order_invoice">-->
-        <!--<group name="totals">-->
-            <!--<item name="finance_cost" instance="MercadoPago\Core\Model\Order\Invoice\Total\FinanceCost" sort_order="50"/>-->
-        <!--</group>-->
-    <!--</section>-->
-    <!--<section name="order_creditmemo">-->
-        <!--<group name="totals">-->
-            <!--<item name="finance_cost" instance="MercadoPago\Core\Order\Creditmemo\Total\FinanceCost" sort_order="50"/>-->
-        <!--</group>-->
-    <!--</section>-->
+    <section name="order_invoice">
+        <group name="totals">
+            <item name="finance_cost" instance="MercadoPago\Core\Model\Invoice\FinanceCost" sort_order="50"/>
+        </group>
+    </section>
+    <section name="order_creditmemo">
+        <group name="totals">
+            <item name="finance_cost" instance="MercadoPago\Core\Model\Creditmemo\FinanceCost" sort_order="50"/>
+        </group>
+    </section>
 </config>
