@@ -275,9 +275,9 @@ class Data
     public function getMessage($status, $payment)
     {
         $rawMessage = __($this->_messageInterface->getMessage($status));
-        $rawMessage .= __('<br/> Payment id: %s', $payment['id']);
-        $rawMessage .= __('<br/> Status: %s', $payment['status']);
-        $rawMessage .= __('<br/> Status Detail: %s', $payment['status_detail']);
+        $rawMessage .= __('<br/> Payment id: %1', $payment['id']);
+        $rawMessage .= __('<br/> Status: %1', $payment['status']);
+        $rawMessage .= __('<br/> Status Detail: %1', $payment['status_detail']);
 
         return $rawMessage;
     }

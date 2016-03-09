@@ -11,16 +11,16 @@ $infoPayment = $this->getInfoPayment();
 
 <div id="box-mercadopago">
 
-    <?php if (!isset($infoPayment['status']['value'],$infoPayment['payment_method'],$infoPayment['installment'])): ?>
+    <?php if (!isset($infoPayment['status']['value'])): ?>
         <h2 class="mercadopago-title">
             <?php echo __('Thank you for your purchase!'); ?>
         </h2><p><?php echo $linkToOrder; ?></p>
     <?php else: ?><?php
         $message_status = $this->getMessageByStatus(
-            $infoPayment['status']['value'],
-            $infoPayment['status_detail']['value'],
-            $infoPayment['payment_method']['value'],
-            $infoPayment['installment']['value'],
+            (isset($infoPayment['status']['value'])?$infoPayment['status']['value']:''),
+            (isset($infoPayment['status_detail']['value']))?$infoPayment['status_detail']['value']:'',
+            (isset($infoPayment['payment_method']['value']))?$infoPayment['payment_method']['value']:'',
+            (isset($infoPayment['installment']['value']))?$infoPayment['installment']['value']:'',
             $this->getTotal()
         );
         ?>

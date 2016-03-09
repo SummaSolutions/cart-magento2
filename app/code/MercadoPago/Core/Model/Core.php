@@ -227,15 +227,15 @@ class Core
         $payment = $order->getPayment();
         $info_payments = [];
         $fields = [
-            ["field" => "cardholderName", "title" => "Card Holder Name: %s"],
-            ["field" => "trunc_card", "title" => "Card Number: %s"],
-            ["field" => "payment_method", "title" => "Payment Method: %s"],
-            ["field" => "expiration_date", "title" => "Expiration Date: %s"],
-            ["field" => "installments", "title" => "Installments: %s"],
-            ["field" => "statement_descriptor", "title" => "Statement Descriptor: %s"],
-            ["field" => "payment_id", "title" => "Payment id (MercadoPago): %s"],
-            ["field" => "status", "title" => "Payment Status: %s"],
-            ["field" => "status_detail", "title" => "Payment Detail: %s"],
+            ["field" => "cardholderName", "title" => "Card Holder Name: %1"],
+            ["field" => "trunc_card", "title" => "Card Number: %1"],
+            ["field" => "payment_method", "title" => "Payment Method: %1"],
+            ["field" => "expiration_date", "title" => "Expiration Date: %1"],
+            ["field" => "installments", "title" => "Installments: %1"],
+            ["field" => "statement_descriptor", "title" => "Statement Descriptor: %1"],
+            ["field" => "payment_id", "title" => "Payment id (MercadoPago): %1"],
+            ["field" => "status", "title" => "Payment Status: %1"],
+            ["field" => "status_detail", "title" => "Payment Detail: %1"],
             ["field" => "activation_uri", "title" => "Generate Ticket"]
         ];
 
