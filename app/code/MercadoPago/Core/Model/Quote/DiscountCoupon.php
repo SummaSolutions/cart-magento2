@@ -2,11 +2,11 @@
 namespace MercadoPago\Core\Model\Quote;
 
 /**
- * Class FinanceCost
+ * Class DiscountCoupon
  *
  * @package MercadoPago\Core\Model\Quote
  */
-class FinanceCost
+class DiscountCoupon
     extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
 
@@ -16,7 +16,7 @@ class FinanceCost
     protected $request;
 
     /**
-     * FinanceCost constructor.
+     * DiscountCoupon constructor.
      *
      * @param \Magento\Framework\App\RequestInterface $request
      */
@@ -24,7 +24,7 @@ class FinanceCost
         \Magento\Framework\App\RequestInterface $request
     )
     {
-        $this->setCode('finance_cost');
+        $this->setCode('discount_coupon');
         $this->request = $request;
     }
 
@@ -35,7 +35,7 @@ class FinanceCost
      *
      * @return bool
      */
-    protected function _getFinancingCondition($address)
+    protected function _getDiscountCondition($address)
     {
         $req = $this->request->getParam('total_amount');
 
@@ -61,26 +61,24 @@ class FinanceCost
     {
         $address = $shippingAssignment->getShipping()->getAddress();
 
-        if ($this->_getFinancingCondition($address)) {
+        if ($this->_getDiscountCondition($address)) {
+
             $postData = $this->request->getPost();
             parent::collect($quote, $shippingAssignment, $total);
 
-            $totalAmount = (float)$postData['total_amount'];
-            $amount = (float)$postData['amount'] - (float)$postData['mercadopago-discount-amount'];
-            $balance = $totalAmount - $amount;
+            $balance = $postData['mercadopago-discount-amount'] * -1;
 
-            $address->setFinanceCostAmount($balance);
-            $address->setBaseFinanceCostAmount($balance);
+            $address->setDiscountCouponAmount($balance);
+            $address->setBaseDiscountCouponAmount($balance);
 
             $this->_setAmount($balance);
             $this->_setBaseAmount($balance);
 
             return $this;
         }
-
         if ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING) {
-            $address->setFinanceCostAmount(0);
-            $address->setBaseFinanceCostAmount(0);
+            $address->setDiscountCouponAmount(0);
+            $address->setBaseDiscountCouponAmount(0);
         }
 
         return $this;
@@ -95,12 +93,12 @@ class FinanceCost
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
         $result = null;
-        $amount = $total->getFinanceCostAmount();
+        $amount = $total->getDiscountCouponAmount();
 
         if ($amount != 0) {
             $result = [
                 'code'  => $this->getCode(),
-                'title' => __('Financing Cost'),
+                'title' => __('Discount MercadoPago'),
                 'value' => $amount
             ];
         }
