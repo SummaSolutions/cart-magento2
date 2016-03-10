@@ -98,7 +98,7 @@ class DiscountCoupon
         if ($amount != 0) {
             $result = [
                 'code'  => $this->getCode(),
-                'title' => __('Discount MercadoPago'),
+                'title' => __('Discount Mercado Pago'),
                 'value' => $amount
             ];
         }

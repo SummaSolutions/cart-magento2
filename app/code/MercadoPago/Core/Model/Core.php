@@ -233,7 +233,7 @@ class Core
             ["field" => "expiration_date", "title" => "Expiration Date: %1"],
             ["field" => "installments", "title" => "Installments: %1"],
             ["field" => "statement_descriptor", "title" => "Statement Descriptor: %1"],
-            ["field" => "payment_id", "title" => "Payment id (MercadoPago): %1"],
+            ["field" => "payment_id", "title" => "Payment id (Mercado Pago): %1"],
             ["field" => "status", "title" => "Payment Status: %1"],
             ["field" => "status_detail", "title" => "Payment Detail: %1"],
             ["field" => "activation_uri", "title" => "Generate Ticket"]
