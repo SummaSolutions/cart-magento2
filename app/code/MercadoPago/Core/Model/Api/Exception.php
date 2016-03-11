@@ -17,6 +17,8 @@ class Exception
      */
     const GENERIC_USER_MESSAGE = "We could not process your payment in this moment. Please check the form data and retry later";
 
+    const GENERIC_API_EXCEPTION_MESSAGE = "We could not process your payment in this moment. Please retry later";
+
     /**
      * @var array to map messages
      */
