@@ -41,8 +41,11 @@ class Pay
         $standard = $this->_paymentFactory->create();
         $array_assign = $standard->postPago();
         $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setUrl($array_assign['init_point']);
-
+        if ($array_assign['status'] != 400) {
+            $resultRedirect->setUrl($array_assign['init_point']);
+        } else {
+            $resultRedirect->setUrl($this->_url->getUrl('checkout/onepage/failure'));
+        }
         return $resultRedirect;
     }
 }
