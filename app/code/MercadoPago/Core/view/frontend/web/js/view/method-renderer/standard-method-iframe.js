@@ -44,6 +44,22 @@ define(
                 }
                 return '';
             },
+
+            /**
+             * Get url to logo
+             * @returns {String}
+             */
+            getLogoUrl: function () {
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['logoUrl'];
+                }
+                return '';
+            },
+
+            /**
+             * Get height iframne configured
+             * @returns {String}
+             */
             getConfigHeight: function () {
                 if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
                     return window.checkoutConfig.payment['mercadopago_standard']['iframe_height'];

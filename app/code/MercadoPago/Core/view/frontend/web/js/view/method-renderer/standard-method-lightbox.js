@@ -40,6 +40,17 @@ define(
             },
 
             /**
+             * Get url to logo
+             * @returns {String}
+             */
+            getLogoUrl: function () {
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_standard']['logoUrl'];
+                }
+                return '';
+            },
+
+            /**
              * Places order in pending payment status.
              */
             placePendingPaymentOrder: function () {
