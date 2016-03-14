@@ -1,7 +1,14 @@
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <input type="radio" name="payment[method]" class="radio" data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label class="label" data-bind="attr: {'for': getCode()}"><span data-bind="text: getTitle()"></span></label>
+        <label class="label" data-bind="attr: {'for': getCode()}">
+            <!-- Mercado Pago Logo -->
+            <img data-bind="attr: {alt: 'Mercado Pago'}" src="{{view url='Magento_Customer/images/icn_checkout.png'}}"
+                 class="payment-icon"/>
+            <img src="{{view url='Magento_Customer/images/icn_checkout.png'}}" height="30" width="30" alt="{{trans 'Quick Checkout'}}" />
+            <!-- Mercado Pago Logo -->
+            <span data-bind="text: getTitle()"></span>
+        </label>
     </div>
     <div class="payment-method-content">
         <!-- ko foreach: getRegion('messages') -->

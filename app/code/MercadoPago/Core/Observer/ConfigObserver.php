@@ -217,7 +217,7 @@ class ConfigObserver
         $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
         if (!empty($accessToken)) {
             if (!$this->coreHelper->isValidAccessToken($accessToken)) {
-                throw new \Magento\Framework\Exception\LocalizedException(__('MercadoPago - Custom Checkout: Invalid access token'));
+                throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
             }
         }
     }
@@ -232,7 +232,7 @@ class ConfigObserver
         $clientSecret = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET);
         if (!empty($clientId) && !empty($clientSecret)) {
             if (!$this->coreHelper->isValidClientCredentials($clientId, $clientSecret)) {
-                throw new \Magento\Framework\Exception\LocalizedException(__('MercadoPago - Classic Checkout: Invalid client id or client secret'));
+                throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Classic Checkout: Invalid client id or client secret'));
             }
         }
     }
