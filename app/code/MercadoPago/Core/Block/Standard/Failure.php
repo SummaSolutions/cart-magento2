@@ -20,12 +20,14 @@ class Failure
         $this->setTemplate('standard/failure.phtml');
     }
 
-    public function getErrorMessage() {
-        \MercadoPago\Core\Model\Api\Exception::GENERIC_API_EXCEPTION_MESSAGE;
+    public function getErrorMessage()
+    {
+        return \MercadoPago\Core\Model\Api\Exception::GENERIC_API_EXCEPTION_MESSAGE;
     }
 
-    public function getUrlHome() {
-        $this->_urlBuilder->getUrl();
+    public function getUrlHome()
+    {
+        return $this->_storeManager->getStore()->getBaseUrl();
     }
 
 }
