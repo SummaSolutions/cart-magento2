@@ -245,21 +245,11 @@ var MercadoPagoCustom = (function () {
             //    return (!element.hasClassName(self.constants.invalidCoupon));
             //});
             //
-            //Validation.add(self.constants.validateDocNumber, self.messages.invalidDocument, function (v, element) {
-            //    return checkDocNumber(v);
-            //});
-            //
-            //Validation.add(self.constants.validateCC, self.messages.incorrectExpDate, function (v, element) {
-            //    var ccExpMonth = v;
-            //    var ccExpYear = TinyJ(self.selectors.cardExpYear).val();
-            //    var currentTime = new Date();
-            //    var currentMonth = currentTime.getMonth() + 1;
-            //    var currentYear = currentTime.getFullYear();
-            //    if (ccExpMonth < currentMonth && ccExpYear == currentYear) {
-            //        return false;
-            //    }
-            //    return true;
-            //});
+
+            jQuery.validator.addMethod("mp-validate-docnumber", function(value, element) {
+                return checkDocNumber(value);
+            }, 'Document Number is invalid');
+
         }
 
         function setPaymentMethodId(event) {

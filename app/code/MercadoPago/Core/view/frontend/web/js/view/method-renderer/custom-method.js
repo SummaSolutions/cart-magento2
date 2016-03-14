@@ -18,6 +18,8 @@ define(
             },
             placeOrderHandler: null,
             validateHandler: null,
+            redirectAfterPlaceOrder: false,
+
 
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
@@ -43,31 +45,49 @@ define(
                 return "payment[" + this.getCode() + "][" + code + "]";
             },
 
-            getMethodCodeArray: function () {
-                return "payment[" + this.getCode() + "][payment_method_id]";
-            },
-            getInstallmentsCodeArray: function () {
-                return "payment[" + this.getCode() + "][installments]";
-            },
-
             isActive: function () {
                 return true;
             },
 
-            isOCPReady: function () {
+            isOCPReady: function () { return true;
                 //if ($customer !== false && isset($customer['cards']) && count($customer['cards']) > 0)
-                return false;
-            },
-            getTotalAmount: function () {
-                console.log('xxx ' + this.totalAmount() + 'xxxx')
+                return (this.getCustomer() != false);
             },
 
             initApp: function () {
-                console.log('Initializing MP......');
                 window.PublicKeyMercadoPagoCustom = window.checkoutConfig.payment['mercadopago_custom']['public_key'];
                 MercadoPagoCustom.enableLog(window.checkoutConfig.payment['mercadopago_custom']['logEnabled']);
                 MercadoPagoCustom.getInstance().init();
-                //MercadoPagoCustom.getInstance().initOCP();
+                if (this.isOCPReady()){
+                    MercadoPagoCustom.getInstance().initOCP();
+                }
+            },
+            getAvailableCards: function () {
+                if (window.checkoutConfig.payment['mercadopago_custom'] != undefined) {
+                    var _customer = window.checkoutConfig.payment['mercadopago_custom']['customer'];
+                    var Card = function(value, name, firstSix, securityCodeLength) {
+                        this.cardName = name;
+                        this.value = value;
+                        this.firstSix = firstSix;
+                        this.securityCodeLength = securityCodeLength;
+                    };
+                    var availableCards = [];
+                    _customer.cards.forEach(function(card) {
+                        availableCards.push(new Card(card['id'], card['payment_method']['name']+ ' ended in ' + card['last_four_digits'], card['first_six_digits'], card['security_code']['length'] ));
+                    });
+                    return availableCards;
+                }
+                return [];
+            },
+            setOptionsExtraValues: function (option, item) {
+                jQuery(option).attr('first_six_digits', item.firstSix);
+                jQuery(option).attr('security_code_length', item.securityCodeLength);
+            },
+            getCustomerAttribute: function (attribute) {
+                if (window.checkoutConfig.payment['mercadopago_custom'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_custom']['customer'][attribute];
+                }
+                return '';
             },
             getBannerUrl: function () {
                 if (window.checkoutConfig.payment['mercadopago_custom'] != undefined) {
@@ -99,6 +119,18 @@ define(
                 }
                 return '';
             },
+            getSuccessUrl: function () {
+                if (window.checkoutConfig.payment['mercadopago_custom'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_custom']['success_url'];
+                }
+                return '';
+            },
+            getCustomer: function () {
+                if (window.checkoutConfig.payment['mercadopago_custom'] != undefined) {
+                    return window.checkoutConfig.payment['mercadopago_custom']['customer'];
+                }
+                return '';
+            },
             /**
              * @override
              */
@@ -116,43 +148,24 @@ define(
                         'installments': TinyJ('#installments').val(),
                         'total_amount':  TinyJ('.total_amount').val(),
                         'amount': TinyJ('#cardExpirationMonth').val(),
-                        'mercadopago-discount-amount': TinyJ('#cardExpirationMonth').val(),
+                        'mercadopago-discount-amount': TinyJ('.mercadopago-discount-amount').val(),
                         'site_id': this.getCountry(),
                         'token': TinyJ('.token').val(),
                         'payment_method_id': TinyJ('.payment_method_id').val(),
-                        'one_click_pay': TinyJ('#one_click_pay_mp').val()
+                        'one_click_pay': TinyJ('#one_click_pay_mp').val(),
+                        'customer_id': TinyJ('#customer_id').val(),
+                        'issuer_id': TinyJ('#issuer').val()
                     }
                 };
             },
-            initObservable: function () {
-                this._super()
-                    .observe([
-                        'totalAmount'
-                    ]);
-                return this;
+            afterPlaceOrder : function () {
+                window.location = this.getSuccessUrl();
             },
+            validate : function () {
+                return this.validateHandler();
+            }
 
-            ///**
-            // * @override
-            // */
-            //placeOrder: function () {
-            //    var self = this;
-            //
-            //    //if (this.validateHandler() && additionalValidators.validate()) {
-            //        fullScreenLoader.startLoader();
-            //        this.isPlaceOrderActionAllowed(false);
-            //        $.when(setPaymentInformationAction(this.messageContainer, {
-            //            'method': self.getCode()
-            //        })).done(function () {
-            //            self.placeOrderHandler().fail(function () {
-            //                fullScreenLoader.stopLoader();
-            //            });
-            //        }).fail(function () {
-            //            fullScreenLoader.stopLoader();
-            //            self.isPlaceOrderActionAllowed(true);
-            //        });
-            //    //}
-            //}
+
         });
     }
 );
