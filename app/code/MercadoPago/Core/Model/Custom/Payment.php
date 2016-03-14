@@ -153,9 +153,28 @@ class Payment
     protected $_urlBuilder;
 
     protected $_helperData;
+	protected $_checkoutSession;
     const LOG_NAME = 'custom_payment';
-    public static $_excludeInputsOpc = ['issuer_id', 'card_expiration_month', 'card_expiration_year', 'card_holder_name', 'doc_type', 'doc_number'];
 
+//    public function __construct(
+//        \Magento\Framework\Model\Context $context,
+//        \Magento\Framework\Registry $registry,
+//        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+//        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+//        \Magento\Payment\Helper\Data $paymentData,
+//        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+//        \Magento\Payment\Model\Method\Logger $logger,
+//        \Magento\Framework\Module\ModuleListInterface $moduleList,
+//        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+//        \Magento\Framework\Model\ResourceModel\AbstractResource $resource,
+//        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection,
+//        array $data,
+//        \MercadoPago\Core\Helper\Data $coreHelper)
+//    {
+//        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $moduleList, $localeDate, $resource, $resourceCollection, $data);
+//        $this->_coreHelper = $coreHelper;
+//
+//    }
 
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
@@ -172,8 +191,13 @@ class Payment
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \MercadoPago\Core\Model\Core $coreModel
-    )
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection,
+        array $data,
+        \MercadoPago\Core\Helper\Data $coreHelper,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+		\MercadoPago\Core\Model\Core $coreModel)
     {
         parent::__construct(
             $context,
@@ -232,6 +256,21 @@ class Payment
 
         return $this;
     }
+
+
+//    public function assignData(\Magento\Framework\DataObject $data)
+//    {
+//        parent::assignData($data);
+//        $infoInstance = $this->getInfoInstance();
+//        if ($this->getConfigData('fraudprotection') > 0) {
+//            $infoInstance->setAdditionalInformation('device_data', $data->getData('device_data'));
+//        }
+//        $infoInstance->setAdditionalInformation('cc_last4', $data->getData('cc_last4'));
+//        $infoInstance->setAdditionalInformation('cc_token', $data->getCcToken());
+//        $infoInstance->setAdditionalInformation('payment_method_nonce', $data->getPaymentMethodNonce());
+//        $infoInstance->setAdditionalInformation('store_in_vault', $data->getStoreInVault());
+//        return $this;
+//    }
 
     /**
      * Assign corresponding data
