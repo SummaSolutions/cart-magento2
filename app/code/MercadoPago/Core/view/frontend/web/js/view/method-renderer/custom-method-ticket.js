@@ -13,7 +13,7 @@ define(
     function (Component) {
         'use strict';
 
-        var configPayment = window.checkoutConfig.payment.mercadopago_custom_ticket;
+        var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
 
         return Component.extend({
             defaults: {
@@ -48,18 +48,60 @@ define(
                 return '';
             },
 
+            getCode: function () {
+                return 'mercadopago_customticket';
+            },
+
             getTicketsData: function () {
                 return configPayment['options'];
             },
 
-            /**
-             * Places order in pending payment status.
-             */
-            placePendingPaymentOrder: function () {
-                if (this.placeOrder()) {
-                    window.location = this.getActionUrl();
-                }
+            getCountTickets: function () {
+                var options = this.getTicketsData();
+                return options.length;
             },
+
+            getFirstTicketId: function () {
+                var options = this.getTicketsData();
+                return options[0]['id'];
+            },
+
+            getGrandTotal: function () {
+                if (configPayment != undefined) {
+                    return configPayment['grand_total'];
+                }
+                return '';
+            },
+            getCountry: function () {
+                if (configPayment != undefined) {
+                    return configPayment['country'];
+                }
+                return '';
+            },
+
+            getBaseUrl: function () {
+                if (configPayment != undefined) {
+                    return configPayment['base_url'];
+                }
+                return '';
+            },
+            getRoute: function () {
+                if (configPayment != undefined) {
+                    return configPayment['route'];
+                }
+                return '';
+            },
+
+            getSuccessUrl: function () {
+                if (configPayment != undefined) {
+                    return configPayment['success_url'];
+                }
+                return '';
+            },
+
+            afterPlaceOrder : function () {
+                window.location = this.getSuccessUrl();
+            }
         });
     }
 );

@@ -39,7 +39,7 @@ define(
         );
         rendererList.push(
             {
-                type: 'mercadopago_customTicket',
+                type: 'mercadopago_customticket',
                 component: 'MercadoPago_Core/js/view/method-renderer/custom-method-ticket'
             }
         );

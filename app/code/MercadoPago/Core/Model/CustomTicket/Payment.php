@@ -15,84 +15,7 @@ class Payment
      */
     const CODE = 'mercadopago_customticket';
 
-
-    /**
-     * @var \MercadoPago\Core\Helper\Data
-     */
-    protected $_helperData;
-
-    /**
-     * @var \Magento\Catalog\Helper\Image
-     */
-    protected $_helperImage;
-
-    /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    protected $_checkoutSession;
-
-    /**
-     * @var \Magento\Customer\Model\Session
-     */
-    protected $_customerSession;
-
-    /**
-     * @var \Magento\Sales\Model\OrderFactory
-     */
-    protected $_orderFactory;
-
-    /**
-     * @var \Magento\Framework\UrlInterface
-     */
-    protected $_urlBuilder;
-
-    /**
-     * @var \MercadoPago\Core\Model\Core
-     */
-    protected $_coreModel;
-
-    public function __construct(
-        \MercadoPago\Core\Helper\Data $helperData,
-        \Magento\Catalog\Helper\Image $helperImage,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \MercadoPago\Core\Model\Core $coreModel,
-        array $data = []
-    )
-    {
-        parent::__construct(
-            $context,
-            $registry,
-            $extensionFactory,
-            $customAttributeFactory,
-            $paymentData,
-            $scopeConfig,
-            $logger,
-            $resource,
-            $resourceCollection,
-            $data
-        );
-
-        $this->_helperData = $helperData;
-        $this->_helperImage = $helperImage;
-
-        $this->_checkoutSession = $checkoutSession;
-        $this->_customerSession = $customerSession;
-        $this->_orderFactory = $orderFactory;
-        $this->_urlBuilder = $urlBuilder;
-        $this->_coreModel = $coreModel;
-    }
+    protected $_code = self::CODE;
 
     /**
      * @param string $paymentAction
@@ -142,7 +65,57 @@ class Payment
         return $this->_coreModel->postPaymentV1($preference);
     }
 
-    public function getOptions(){
-        return [];
+    /**
+     * Return tickets options availables
+     *
+     * @return array
+     */
+    public function getTicketsOptions()
+    {
+        $payment_methods = $this->_coreModel->getPaymentMethods();
+        $tickets = array();
+
+        //percorre todos os payments methods
+        foreach ($payment_methods['response'] as $pm) {
+
+            //filtra por tickets
+            if ($pm['payment_type_id'] == "ticket") {
+                $tickets[] = $pm;
+            }
+        }
+
+        return $tickets;
     }
+
+    /**
+     * Assign corresponding data
+     *
+     * @param \Magento\Framework\DataObject|mixed $data
+     *
+     * @return $this
+     * @throws LocalizedException
+     */
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+
+        // route /checkout/onepage/savePayment
+        if (!($data instanceof \Magento\Framework\DataObject)) {
+            $data = new \Magento\Framework\DataObject($data);
+        }
+
+        //get array info
+        $info_form = $data->getData();
+        $info_form = $info_form['mercadopago_customticket'];
+
+        $this->_helperData->log("info form", self::LOG_NAME, $info_form);
+        $info = $this->getInfoInstance();
+        $info->setAdditionalInformation('payment_method', $info_form['payment_method_ticket']);
+
+        if (isset($info_form['coupon_code'])) {
+            $info->setAdditionalInformation('coupon_code', $info_form['coupon_code']);
+        }
+
+        return $this;
+    }
+
 }

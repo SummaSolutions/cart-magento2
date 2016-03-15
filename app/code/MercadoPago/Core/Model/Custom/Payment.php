@@ -153,28 +153,8 @@ class Payment
     protected $_urlBuilder;
 
     protected $_helperData;
-	protected $_checkoutSession;
-    const LOG_NAME = 'custom_payment';
 
-//    public function __construct(
-//        \Magento\Framework\Model\Context $context,
-//        \Magento\Framework\Registry $registry,
-//        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-//        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-//        \Magento\Payment\Helper\Data $paymentData,
-//        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-//        \Magento\Payment\Model\Method\Logger $logger,
-//        \Magento\Framework\Module\ModuleListInterface $moduleList,
-//        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-//        \Magento\Framework\Model\ResourceModel\AbstractResource $resource,
-//        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection,
-//        array $data,
-//        \MercadoPago\Core\Helper\Data $coreHelper)
-//    {
-//        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $moduleList, $localeDate, $resource, $resourceCollection, $data);
-//        $this->_coreHelper = $coreHelper;
-//
-//    }
+    const LOG_NAME = 'custom_payment';
 
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
@@ -191,10 +171,6 @@ class Payment
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection,
-        array $data,
-        \MercadoPago\Core\Helper\Data $coreHelper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Sales\Model\OrderFactory $orderFactory,
 		\MercadoPago\Core\Model\Core $coreModel)
@@ -382,9 +358,13 @@ class Payment
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
-
-        return ($parent && !empty($this->_helperData->getAccessToken()));
-
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
+        $publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
+        $custom = (!empty($publicKey) && !empty($accessToken));
+        if (!$parent || !$custom) {
+            return false;
+        }
+        return $this->_helperData->isValidAccessToken($accessToken);
     }
 
     /**
