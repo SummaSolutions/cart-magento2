@@ -67,8 +67,6 @@ class Core
      * {@inheritdoc}
      */
     protected $_canUseCheckout = true;
-    protected $_canFetchTransactionInfo = true;
-    protected $_canReviewPayment = true;
 
     /**
      * {@inheritdoc}
@@ -691,9 +689,7 @@ class Core
     public function setStatusOrder($payment, $stateObject = null)
     {
         $helper = $this->_coreHelper;
-        if (!$order) {
-            $order = $this->_getOrder($payment["external_reference"]);
-        }
+        $order = $this->_getOrder($payment["external_reference"]);
 
         $status = $payment['status'];
 

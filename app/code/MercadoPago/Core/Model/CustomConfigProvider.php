@@ -37,12 +37,9 @@ class CustomConfigProvider
     protected $_storeManager;
     protected $_request;
 
-    /**
-     * @var \Magento\Framework\UrlInterface
-     */
-    protected $_urlBuilder;
 
     protected $_assetRepo;
+    protected $_context;
 
     /**
      * @param PaymentHelper $paymentHelper
@@ -53,7 +50,6 @@ class CustomConfigProvider
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\View\Asset\Repository $assetRepo
     )
     {
@@ -62,8 +58,8 @@ class CustomConfigProvider
         $this->_scopeConfig = $scopeConfig;
         $this->_checkoutSession = $checkoutSession;
         $this->_storeManager = $storeManager;
-        $this->_urlBuilder = $urlBuilder;
         $this->_assetRepo = $assetRepo;
+        $this->_context = $context;
     }
 
 
@@ -77,7 +73,7 @@ class CustomConfigProvider
                     'country'       => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country')),
                     'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
                     'base_url' =>    $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
-                    'success_url' =>    $this->_urlBuilder->getUrl('mercadopago/custom/success', ['_secure' => true]),
+                    'success_url' =>    $this->_context->getUrl()->getUrl('mercadopago/custom/success', ['_secure' => true]),
                     'logEnabled' => $this->_scopeConfig->getValue('payment/mercadopago/logs'),
                     'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_custom/coupon_mercadopago'),
                     'route' => $this->_request->getRouteName(),

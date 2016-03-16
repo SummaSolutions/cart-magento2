@@ -166,11 +166,11 @@ define(
                         'doc_type': TinyJ('#docType').val(),
                         'doc_number': TinyJ('#docNumber').val(),
                         'installments': TinyJ('#installments').val(),
-                        'total_amount':  TinyJ('.total_amount').val(),
+                        'total_amount':  TinyJ('#mercadopago_checkout_custom').getElem('total_amount').val(),
                         'amount': TinyJ('#mercadopago_checkout_custom').getElem('.amount').val(),
                         'site_id': this.getCountry(),
                         'token': TinyJ('.token').val(),
-                        'payment_method_id': TinyJ('.payment_method_id').val(),
+                        'payment_method_id': TinyJ('#mercadopago_checkout_custom').getElem('.payment_method_id').val(),
                         'one_click_pay': TinyJ('#one_click_pay_mp').val(),
                         'issuer_id': TinyJ('#issuer').val()
                     }
