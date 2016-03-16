@@ -38,11 +38,13 @@
                 <div class="form-list" id="payment_form_mercadopago_custom" style="">
                     <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: 'payment_form_' + getCode()}">
 
+                        <!-- ko template: 'MercadoPago_Core/payment/discount' --><!-- /ko -->
+
                         <!-- ko if: isOCPReady() -->
                         <div id="mercadopago_checkout_custom_ocp" class="fields">
                             <div id="cardId__mp" class="field">
                                 <div><a id="use_other_card_mp" class="action_ocp">Use other card</a></div>
-                                <label for="cardNumber">Payment Method</label>
+                                <label for="cardNumber" class="label">Payment Method</label>
                                 <select id="cardId" data-checkout="cardId" data-element-id="#cardId__mp" data-bind="attr: {name: getTokenCodeArray('cardId')}, options: getAvailableCards(), optionsText: 'cardName', optionsValue: 'value', optionsAfterRender: setOptionsExtraValues" >
                                 </select>
                                 <input type="hidden" id="customer_id" data-bind="attr: {name: getTokenCodeArray('customer_id'), value: getCustomerAttribute('id')}">
@@ -65,16 +67,13 @@
                                                 enable: isActive($parents),
                                                 value: creditCardVerificationNumber"/>
                                     <div class="field-tooltip toggle">
-                                <span class="field-tooltip-action action-cvv"
-                                      tabindex="0"
-                                      data-toggle="dropdown"
-                                      data-bind="attr: {title: $t('What is this?')}, mageInit: {'dropdown':{'activeClass': '_active'}}">
-                                    <span><!-- ko i18n: 'What is this?'--><!-- /ko --></span>
-                                </span>
-                                        <div class="field-tooltip-content"
-                                             data-target="dropdown"
-                                             data-bind="html: getCvvImageHtml()">
-                                        </div>
+                                        <span class="field-tooltip-action action-cvv"
+                                              tabindex="0"
+                                              data-toggle="dropdown"
+                                              data-bind="attr: {title: $t('What is this?')}, mageInit: {'dropdown':{'activeClass': '_active'}}">
+                                            <span><!-- ko i18n: 'What is this?'--><!-- /ko --></span>
+                                        </span>
+                                        <div class="field-tooltip-content" data-target="dropdown" data-bind="html: getCvvImageHtml()"></div>
                                     </div>
                                 </div>
                                 <p class="message-error error-E302 error-224 validation-advice"><!-- ko i18n: 'CVV is invalid.'--><!-- /ko --></p>
@@ -83,13 +82,7 @@
 
                         <!-- /ko -->
 
-                        <div id="mercadopago_checkout_custom_card" class="fields">
-                            <div id="paymentMethod__mp" class="field">
-                                <label for="paymentMethod">Payment Method</label>
-                                <select id="paymentMethod" data-checkout="paymentMethod"
-                                        data-bind="attr: {name: getTokenCodeArray('paymentMethod')}"
-                                        data-element-id="#paymentMethod__mp" class="validate-select"></select>
-                            </div>
+                        <div id="mercadopago_checkout_custom_card" class="fields field">
                             <div id="cardNumber__mp" class="field number required">
                                 <div><a id="return_list_card_mp" class="action_ocp">Return to cards list</a></div>
 
@@ -104,8 +97,15 @@
                                 <p class="message-error error-payment-method-min-amount validation-advice"><!-- ko i18n: 'Cannot pay this amount with this payment_method_id.'--><!-- /ko --></p>
                             </div>
 
+                            <div id="paymentMethod__mp" class="field">
+                                <label for="paymentMethod" class="label">Payment Method</label>
+                                <select id="paymentMethod" data-checkout="paymentMethod"
+                                        data-bind="attr: {name: getTokenCodeArray('paymentMethod')}"
+                                        data-element-id="#paymentMethod__mp" class="validate-select"></select>
+                            </div>
+
                             <div id="issuer__mp" class="field">
-                                <label for="issuer">Banks</label>
+                                <label for="issuer" class="label">Banks</label>
                                 <select id="issuer" data-bind="attr: {name: getTokenCodeArray('issuer_id')}" data-checkout="issuer" data-element-id="#issuer__mp"></select>
                                 <p class="message-error error-220 validation-advice"><!-- ko i18n: 'Select issuer'--><!-- /ko --></p>
                             </div>
@@ -157,7 +157,7 @@
                             </div>
 
                             <div id="cardholderName__mp" class="field required">
-                                <label for="cardholderName">
+                                <label for="cardholderName" class="label">
                                     <span><!-- ko i18n: 'Card Holder Name'--><!-- /ko --></span>
                                 </label>
                                 <div class="control">
@@ -187,12 +187,12 @@
                                                 enable: isActive($parents),
                                                 value: creditCardVerificationNumber"/>
                                     <div class="field-tooltip toggle">
-                                <span class="field-tooltip-action action-cvv"
-                                      tabindex="0"
-                                      data-toggle="dropdown"
-                                      data-bind="attr: {title: $t('What is this?')}, mageInit: {'dropdown':{'activeClass': '_active'}}">
-                                    <span><!-- ko i18n: 'What is this?'--><!-- /ko --></span>
-                                </span>
+                                        <span class="field-tooltip-action action-cvv"
+                                              tabindex="0"
+                                              data-toggle="dropdown"
+                                              data-bind="attr: {title: $t('What is this?')}, mageInit: {'dropdown':{'activeClass': '_active'}}">
+                                            <span><!-- ko i18n: 'What is this?'--><!-- /ko --></span>
+                                        </span>
                                         <div class="field-tooltip-content"
                                              data-target="dropdown"
                                              data-bind="html: getCvvImageHtml()">
@@ -201,8 +201,8 @@
                                 </div>
                                 <p class="message-error error-E302 error-224 validation-advice"><!-- ko i18n: 'CVV is invalid.'--><!-- /ko --></p>
                             </div>
-                            <div id="doc_type__mp">
-                                <label for="docType">Document Type</label>
+                            <div id="doc_type__mp" class="field required">
+                                <label for="docType" class="label">Document Type</label>
                                 <select id="docType" data-checkout="docType" data-element-id="#doc_type__mp"
                                         data-bind="attr: {name: getTokenCodeArray('doc_type')}"></select>
 
@@ -210,7 +210,7 @@
                             </div>
 
                             <div id="doc_number__mp" class="field number required">
-                                <label for="docNumber">
+                                <label for="docNumber" class="label">
                                     <span><!-- ko i18n: 'Document Number'--><!-- /ko --></span>
                                 </label>
                                 <div class="control">
@@ -223,8 +223,8 @@
 
                         </div>
 
-                        <div id="installments__mp">
-                            <label for="installments">Installments</label>
+                        <div id="installments__mp" class="field">
+                            <label for="installments" class="label">Installments</label>
                             <select id="installments" data-bind="attr: {name: getTokenCodeArray('installments')}"
                                     data-element-id="#installments__mp" class="validate-select"></select>
                             <p class="message-error error-installment-not-work validation-advice"><!-- ko i18n: 'It was not possible to calculate the installments, click here and try again.'--><!-- /ko --></p>

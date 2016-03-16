@@ -135,6 +135,11 @@ class Core
     protected $_orderSender;
 
 
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $_checkoutSession;
+
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,
@@ -153,7 +158,8 @@ class Core
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Catalog\Helper\Image $helperImage
+        \Magento\Catalog\Helper\Image $helperImage,
+        \Magento\Checkout\Model\Session $checkoutSession
     )
     {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
@@ -168,6 +174,7 @@ class Core
         $this->_customerSession = $customerSession;
         $this->_urlBuilder = $urlBuilder;
         $this->_helperImage = $helperImage;
+        $this->_checkoutSession = $checkoutSession;
     }
 
     /**
@@ -197,11 +204,7 @@ class Core
      */
     protected function _getQuote()
     {
-        if ($this->_storeManager->getStore()->isAdmin()) {
-            return $this->_getAdminCheckout()->getQuote();
-        } else {
-            return $this->_getCheckout()->getQuote();
-        }
+        return $this->_checkoutSession->getQuote();
     }
 
     /**
@@ -438,6 +441,7 @@ class Core
         $preference = array();
 
         $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
+        $preference['notification_url'] = 'http://4d6455e1.ngrok.io/mercadopago/notifications/custom';
         $preference['transaction_amount'] = (float)$this->getAmount($quote);
         $preference['external_reference'] = $order_id;
         $preference['payer']['email'] = $customerInfo['email'];

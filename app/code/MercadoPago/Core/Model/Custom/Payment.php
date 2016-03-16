@@ -215,18 +215,10 @@ class Payment
         if ($response !== false):
 
             $payment = $response['response'];
+            $this->_helperData->log("Payment response", self::LOG_NAME, $payment);
             //set status
             $this->getInfoInstance()->setAdditionalInformation('status', $payment['status']);
             $this->getInfoInstance()->setAdditionalInformation('status_detail', $payment['status_detail']);
-
-//            if ($response['status'] == 200 || $response['status'] == 201) {
-//                $this->_helperData->log("Received Payment data", self::LOG_NAME, $payment);
-//
-//                $payment = $this->_helperData->setPayerInfo($payment);
-//
-//                $this->_helperData->log("Update Order", self::LOG_NAME);
-//
-//            }
 
             return true;
         endif;
@@ -251,7 +243,6 @@ class Payment
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
-
         // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
             $data = new \Magento\Framework\DataObject($data);
@@ -417,6 +408,22 @@ class Payment
         }
 
         return $info;
+    }
+
+    protected function getPaymentInfo($payment)
+    {
+        $payment_info = [];
+
+        if ($payment->getAdditionalInformation("coupon_code") != "") {
+            $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
+        }
+
+        if ($payment->getAdditionalInformation("doc_number") != "") {
+            $payment_info['identification_type'] = $payment->getAdditionalInformation("doc_type");
+            $payment_info['identification_number'] = $payment->getAdditionalInformation("doc_number");
+        }
+
+        return $payment_info;
     }
 
 }

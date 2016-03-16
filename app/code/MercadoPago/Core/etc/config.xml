@@ -18,7 +18,7 @@
             <mercadopago_custom>
                 <active>0</active>
                 <useccv>1</useccv>
-                <cctypes>AE,VI</cctypes>
+                <cctypes>AE,VI,MC,DI,JCB</cctypes>
                 <ccfields>csc,expdate,acct</ccfields>
                 <model>MercadoPago\Core\Model\Custom\Payment</model>
                 <title translate="label">Credit Card - MercadoPago</title>

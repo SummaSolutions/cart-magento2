@@ -1,6 +1,7 @@
 <?php
 namespace MercadoPago\Core\Helper\Message;
 
+
 /**
  * Map Payment Messages with the Credit Card Payment response detail
  * @package MercadoPago\Core\Helper

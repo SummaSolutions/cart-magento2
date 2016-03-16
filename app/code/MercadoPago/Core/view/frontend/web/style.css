@@ -34,7 +34,7 @@
     width: 160px;
 }
 
-#installments__mp {
+#installments__mp, #paymentMethod__mp {
     width: 225px;
 }
 
@@ -42,12 +42,8 @@
     width: 53px;
 }
 
-#securityCodeOCP__mp{
-    margin: 0 0 -10px;
-}
-
 #docNumber, #doc_type__mp{
-    width: 106px;
+    width: 160px;
 }
 
 #box_month, #box_year{
@@ -63,6 +59,9 @@
     margin: 0 5px 0 0;
 }
 
+#securityCodeOCP__mp{
+    margin-bottom: 10px;
+}
 
 .message-error{
     display: none;
@@ -80,6 +79,10 @@
 
 #return_list_card_mp{
     display: none;
+}
+
+.mercadopago-discount-options {
+    margin: 0 0 20px;
 }
 
 /*
@@ -205,6 +208,7 @@
     margin: 5px 0 -5px 0px;
     float: left;
     width: 92%;
+    padding: 0;
 }
 
 .mercadopago-message-coupon li{

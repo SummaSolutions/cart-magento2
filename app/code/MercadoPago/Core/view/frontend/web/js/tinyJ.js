@@ -174,7 +174,7 @@ var TinyJ = function(elemDescriptor, parentElem){
         var parent = parentElem ? parentElem : document;
         var elements = parent.querySelectorAll(elemDescriptor);
         if(elements.length === 0){
-            throw "Invalid element";
+            return [];
         }
         if(elements.length === 1){
             return new ElemContainer(elements[0]);

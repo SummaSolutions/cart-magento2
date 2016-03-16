@@ -42,6 +42,8 @@ class CustomConfigProvider
      */
     protected $_urlBuilder;
 
+    protected $_assetRepo;
+
     /**
      * @param PaymentHelper $paymentHelper
      */
@@ -51,7 +53,8 @@ class CustomConfigProvider
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\UrlInterface $urlBuilder
+        \Magento\Framework\UrlInterface $urlBuilder,
+        \Magento\Framework\View\Asset\Repository $assetRepo
     )
     {
         $this->_request = $context->getRequest();
@@ -60,6 +63,7 @@ class CustomConfigProvider
         $this->_checkoutSession = $checkoutSession;
         $this->_storeManager = $storeManager;
         $this->_urlBuilder = $urlBuilder;
+        $this->_assetRepo = $assetRepo;
     }
 
 
@@ -75,9 +79,11 @@ class CustomConfigProvider
                     'base_url' =>    $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                     'success_url' =>    $this->_urlBuilder->getUrl('mercadopago/custom/success', ['_secure' => true]),
                     'logEnabled' => $this->_scopeConfig->getValue('payment/mercadopago/logs'),
+                    'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_custom/coupon_mercadopago'),
                     'route' => $this->_request->getRouteName(),
                     'public_key' => $this->methodInstance->getConfigData('public_key'),
                     'customer' => $this->methodInstance->getCustomerAndCards(),
+                    'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'text-currency' => __('$'),
                     'text-choice' => __('Choice'),
                     'default-issuer' => __('Default issuer'),
