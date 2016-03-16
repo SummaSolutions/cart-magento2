@@ -81,7 +81,6 @@ class Payment
 
         //get array info
         $info_form = $data->getData();
-//        $info_form = $info_form['mercadopago_customticket'];
 
         $this->_helperData->log("info form", self::LOG_NAME, $info_form);
         $info = $this->getInfoInstance();

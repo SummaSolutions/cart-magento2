@@ -38,6 +38,8 @@ class CustomTicketConfigProvider
 
     protected $_request;
 
+    protected $_assetRepo;
+
     /**
      * @param PaymentHelper $paymentHelper
      */
@@ -46,7 +48,8 @@ class CustomTicketConfigProvider
         PaymentHelper $paymentHelper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\View\Asset\Repository $assetRepo
     )
     {
         $this->_request = $context->getRequest();
@@ -55,6 +58,7 @@ class CustomTicketConfigProvider
         $this->_scopeConfig = $scopeConfig;
         $this->_urlBuilder = $context->getUrl();
         $this->_storeManager = $storeManager;
+        $this->_assetRepo = $assetRepo;
     }
 
     public function getConfig()
@@ -69,6 +73,10 @@ class CustomTicketConfigProvider
                     'success_url' =>    $this->_urlBuilder->getUrl('mercadopago/customTicket/success', ['_secure' => true]),
                     'route' => $this->_request->getRouteName(),
                     'base_url' =>    $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
+                    'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_customticket/coupon_mercadopago'),
+                    'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
+                    'logEnabled' => $this->_scopeConfig->getValue('payment/mercadopago/logs'),
+
                 ],
             ],
         ] : [];

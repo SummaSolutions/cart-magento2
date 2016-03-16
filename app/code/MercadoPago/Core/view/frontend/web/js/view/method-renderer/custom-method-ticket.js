@@ -45,6 +45,17 @@ define(
                 return true;
             },
 
+            getTokenCodeArray: function (code) {
+                return "payment[" + this.getCode() + "][" + code + "]";
+            },
+
+            getLoadingGifUrl: function () {
+                if (configPayment != undefined) {
+                    return configPayment['loading_gif'];
+                }
+                return '';
+            },
+
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
             },
@@ -58,6 +69,22 @@ define(
                     return configPayment['actionUrl'];
                 }
                 return '';
+            },
+
+            initApp: function () {
+                if (configPayment != undefined) {
+                    window.PublicKeyMercadoPagoCustom = configPayment['public_key'];
+                    MercadoPagoCustom.enableLog(configPayment['logEnabled']);
+                    MercadoPagoCustom.getInstance().init();
+                }
+            },
+
+            initDiscountApp: function () {
+                if (configPayment != undefined) {
+                    if (configPayment['discount_coupon']) {
+                        MercadoPagoCustom.getInstance().initDiscountTicket();
+                    }
+                }
             },
 
             getBannerUrl: function () {

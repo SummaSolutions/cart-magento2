@@ -19,7 +19,7 @@ class Core
     /**
      * Define path of access token config
      */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom_checkout/access_token';
+    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
 
     /**
      * {@inheritdoc}
