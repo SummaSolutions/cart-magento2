@@ -8,7 +8,7 @@ namespace MercadoPago\Core\Model\CustomTicket;
  * @package MercadoPago\Core\Model\CustomTicket
  */
 class Payment
-    extends  \MercadoPago\Core\Model\Custom\Payment
+    extends \MercadoPago\Core\Model\Custom\Payment
 {
     /**
      * Define payment method code
@@ -43,9 +43,7 @@ class Payment
     {
         $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
         $quote = $this->_getQuote();
-        $order_id = $quote->getReservedOrderId();
-        $order = $this->_getOrder($order_id);
-
+        $order = $this->getInfoInstance()->getOrder();
         $payment = $order->getPayment();
 
         $payment_info = array();
@@ -54,7 +52,7 @@ class Payment
             $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
         }
 
-        $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info);
+        $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info,$quote,$order);
 
         $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
 
@@ -63,6 +61,37 @@ class Payment
         /* POST /v1/payments */
 
         return $this->_coreModel->postPaymentV1($preference);
+    }
+
+    /**
+     * Assign corresponding data
+     *
+     * @param \Magento\Framework\DataObject|mixed $data
+     *
+     * @return $this
+     * @throws LocalizedException
+     */
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+
+        // route /checkout/onepage/savePayment
+        if (!($data instanceof \Magento\Framework\DataObject)) {
+            $data = new \Magento\Framework\DataObject($data);
+        }
+
+        //get array info
+        $info_form = $data->getData();
+//        $info_form = $info_form['mercadopago_customticket'];
+
+        $this->_helperData->log("info form", self::LOG_NAME, $info_form);
+        $info = $this->getInfoInstance();
+        $info->setAdditionalInformation('payment_method', $info_form['payment_method_ticket']);
+
+        if (!empty($info_form['coupon_code'])) {
+            $info->setAdditionalInformation('coupon_code', $info_form['coupon_code']);
+        }
+
+        return $this;
     }
 
     /**
@@ -85,37 +114,6 @@ class Payment
         }
 
         return $tickets;
-    }
-
-    /**
-     * Assign corresponding data
-     *
-     * @param \Magento\Framework\DataObject|mixed $data
-     *
-     * @return $this
-     * @throws LocalizedException
-     */
-    public function assignData(\Magento\Framework\DataObject $data)
-    {
-
-        // route /checkout/onepage/savePayment
-        if (!($data instanceof \Magento\Framework\DataObject)) {
-            $data = new \Magento\Framework\DataObject($data);
-        }
-
-        //get array info
-        $info_form = $data->getData();
-        $info_form = $info_form['mercadopago_customticket'];
-
-        $this->_helperData->log("info form", self::LOG_NAME, $info_form);
-        $info = $this->getInfoInstance();
-        $info->setAdditionalInformation('payment_method', $info_form['payment_method_ticket']);
-
-        if (isset($info_form['coupon_code'])) {
-            $info->setAdditionalInformation('coupon_code', $info_form['coupon_code']);
-        }
-
-        return $this;
     }
 
 }

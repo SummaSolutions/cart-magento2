@@ -293,7 +293,6 @@ class Payment
         $this->_helperData->log("Credit Card -> init prepare post payment", self::LOG_NAME);
 
         $quote = $this->_getQuote();
-        $order_id = $quote->getReservedOrderId();
         $order = $this->getInfoInstance()->getOrder();
 
         $payment = $order->getPayment();

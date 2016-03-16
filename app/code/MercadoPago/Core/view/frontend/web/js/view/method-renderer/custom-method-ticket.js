@@ -21,15 +21,34 @@ define(
                 paymentReady: false
             },
             redirectAfterPlaceOrder: false,
+            placeOrderHandler: null,
+            validateHandler: null,
             initObservable: function () {
                 this._super()
                     .observe('paymentReady');
 
                 return this;
             },
+            setValidateHandler: function (handler) {
+                this.validateHandler = handler;
+            },
+
             isPaymentReady: function () {
                 return this.paymentReady();
             },
+
+            context: function () {
+                return this;
+            },
+
+            isShowLegend: function () {
+                return true;
+            },
+
+            setPlaceOrderHandler: function (handler) {
+                this.placeOrderHandler = handler;
+            },
+
             /**
              * Get action url for payment method.
              * @returns {String}
@@ -92,6 +111,23 @@ define(
                 return '';
             },
 
+            getPaymentSelected: function() {
+                if (this.getCountTickets()==1) {
+                    var option = TinyJ('.optionsTicketMp');
+                    return option.val();
+                }
+                var options = TinyJ('.optionsTicketMp');
+                if (options.length > 0) {
+                    for (var i = 0; i < options.length; i++) {
+                        option = options[i];
+                        if (option.isChecked()){
+                            return option.val();
+                        }
+                    }
+                }
+                return false;
+            },
+
             getSuccessUrl: function () {
                 if (configPayment != undefined) {
                     return configPayment['success_url'];
@@ -99,8 +135,30 @@ define(
                 return '';
             },
 
+            /**
+             * @override
+             */
+            getData: function () {
+                return {
+                    'method': this.item.method,
+                    'additional_data': {
+                        'method': this.getCode(),
+                        'coupon_code': '',
+                        'payment_method_ticket':this.getPaymentSelected(),
+                        'total_amount':  TinyJ('#mercadopago_checkout_custom_ticket .total_amount').val(),
+                        'amount': TinyJ('#mercadopago_checkout_custom_ticket .amount').val(),
+                        'mercadopago-discount-amount': TinyJ('#mercadopago_checkout_custom_ticket .mercadopago-discount-amount').val(),
+                        'site_id': this.getCountry(),
+                    }
+                };
+            },
+
             afterPlaceOrder : function () {
                 window.location = this.getSuccessUrl();
+            },
+
+            validate : function () {
+                return this.validateHandler();
             }
         });
     }

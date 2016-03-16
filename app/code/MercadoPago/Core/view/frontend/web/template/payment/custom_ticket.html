@@ -13,6 +13,11 @@
             <!--/ko-->
         </div>
 
+        <form class="form" id="co-mercadopago-form" action="#" method="post" data-bind="mageInit: {
+            'transparent':{
+                'context': context(),
+            }, 'validation':[]}">
+
         <fieldset class="form-list">
             <div id="mercadopago_checkout_custom_ticket">
                 <ul class="form-list form-mercadopago" id="payment_form_mercadopago_customticket">
@@ -32,13 +37,14 @@
                     <br/>
                     <li class="mercadopago-discount-options">
                         <!-- ko if: (getCountTickets() == 1)-->
-                            <input type="hidden" name="payment[getCode()][payment_method_ticket]" data-bind="'attr':{value: getFirstTicketId()}" id="payment_method_ticket"/>
+                            <input type="hidden" name="payment[mercadopago_customticket][payment_method_ticket]" class="optionsTicketMp" data-bind="'attr':{value: getFirstTicketId()}" id="payment_method_ticket"/>
                         <!-- /ko -->
                         <!-- ko if: (getCountTickets() > 1) -->
 
                             <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
                                 <br/>
-                                <input type="radio" name="payment[getCode()][payment_method_ticket]" class="optionsTicketMp" data-bind="'attr':{value: ticket.id}">
+                                <input type="radio" class="optionsTicketMp" name="payment[mercadopago_customticket][payment_method_ticket]"
+                                       data-bind="'attr':{value: ticket.id,'data-validate': JSON.stringify({'validate-one-required-by-name':true})}">
                                 <img data-bind="'attr':{src: ticket.secure_thumbnail}">
                                 <label class="mercadopago-ticket-label" data-bind="text:ticket.name"></label><br/>
                             <!--/ko-->
@@ -62,7 +68,7 @@
             <img class="banner_checkout_mp" data-bind="attr: {src: getBannerUrl()}" />
 
         </fieldset>
-
+        </form>
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
             <!-- ko template: getTemplate() --><!-- /ko -->
