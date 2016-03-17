@@ -71,17 +71,9 @@ define(
                 return '';
             },
 
-            initApp: function () {
-                if (configPayment != undefined) {
-                    window.PublicKeyMercadoPagoCustom = configPayment['public_key'];
-                    MercadoPagoCustom.enableLog(configPayment['logEnabled']);
-                    MercadoPagoCustom.getInstance().init();
-                }
-            },
-
             initDiscountApp: function () {
                 if (configPayment != undefined) {
-                    if (configPayment['discount_coupon']) {
+                    if (configPayment['discount_coupon'] == 1) {
                         MercadoPagoCustom.getInstance().initDiscountTicket();
                     }
                 }
@@ -162,22 +154,33 @@ define(
                 return '';
             },
 
+            couponActive: function () {
+                return configPayment['discount_coupon'];
+            },
+
+
             /**
              * @override
              */
             getData: function () {
-                return {
+                var dataObj = {
                     'method': this.item.method,
                     'additional_data': {
                         'method': this.getCode(),
-                        'coupon_code': '',
                         'payment_method_ticket':this.getPaymentSelected(),
                         'total_amount':  TinyJ('#mercadopago_checkout_custom_ticket .total_amount').val(),
                         'amount': TinyJ('#mercadopago_checkout_custom_ticket .amount').val(),
-                        'mercadopago-discount-amount': TinyJ('#mercadopago_checkout_custom_ticket .mercadopago-discount-amount').val(),
                         'site_id': this.getCountry(),
                     }
                 };
+                if (configPayment != undefined) {
+                    if (configPayment['discount_coupon'] == 1) {
+                        dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom_ticket .mercadopago-discount-amount').val();
+                        dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom_ticket #input-coupon-discount').val();
+                    }
+                }
+
+                return dataObj;
             },
 
             afterPlaceOrder : function () {

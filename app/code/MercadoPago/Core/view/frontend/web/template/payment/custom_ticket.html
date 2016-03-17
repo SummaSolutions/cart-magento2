@@ -19,11 +19,14 @@
             }, 'validation':[]}">
 
         <fieldset class="form-list">
-            <div id="mercadopago_checkout_custom_ticket" data-bind="template: {afterRender: initApp()}">
+            <div id="mercadopago_checkout_custom_ticket" >
                 <ul class="form-list form-mercadopago" id="payment_form_mercadopago_customticket">
-
-                    <!-- ko template: 'MercadoPago_Core/payment/discount' --><!-- /ko -->
-
+                    <!-- ko if: (couponActive() == 1)-->
+                        <li class="mercadopago-discount-options">
+                        <!-- ko template: 'MercadoPago_Core/payment/discount' --><!-- /ko -->
+                        </li>
+                        </br>
+                    <!-- /ko -->
                     <li class="mercadopago-discount-options">
                         <!-- ko if: (getCountTickets() == 1)-->
                             <input type="hidden" name="payment[mercadopago_customticket][payment_method_ticket]" class="optionsTicketMp" data-bind="'attr':{value: getFirstTicketId()}" id="payment_method_ticket"/>

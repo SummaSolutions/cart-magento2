@@ -66,16 +66,17 @@ class CustomTicketConfigProvider
         return $this->methodInstance->isAvailable() ? [
             'payment' => [
                 $this->methodCode => [
-                    'bannerUrl' => $this->methodInstance->getConfigData('banner_checkout'),
-                    'options'   => $this->methodInstance->getTicketsOptions(),
-                    'country'       => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country')),
-                    'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
-                    'success_url' =>    $this->_urlBuilder->getUrl('mercadopago/customTicket/success', ['_secure' => true]),
-                    'route' => $this->_request->getRouteName(),
-                    'base_url' =>    $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
+                    'bannerUrl'       => $this->methodInstance->getConfigData('banner_checkout'),
+                    'options'         => $this->methodInstance->getTicketsOptions(),
+                    'country'         => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country')),
+                    'grand_total'     => $this->_checkoutSession->getQuote()->getGrandTotal(),
+                    'success_url'     => $this->_urlBuilder->getUrl('mercadopago/customTicket/success', ['_secure' => true]),
+                    'route'           => $this->_request->getRouteName(),
+                    'base_url'        => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                     'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_customticket/coupon_mercadopago'),
-                    'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
-                    'logEnabled' => $this->_scopeConfig->getValue('payment/mercadopago/logs'),
+                    'loading_gif'     => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
+                    'logEnabled'      => $this->_scopeConfig->getValue('payment/mercadopago/logs'),
+                    'logoUrl'         => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png")
 
                 ],
             ],

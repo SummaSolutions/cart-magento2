@@ -3,9 +3,8 @@
         <input type="radio" name="payment[method]" class="radio" data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
-            <img data-bind="attr: {alt: 'Mercado Pago'}" src="{{view url='Magento_Customer/images/icn_checkout.png'}}"
+            <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}"
                  class="payment-icon"/>
-            <img src="{{view url='Magento_Customer/images/icn_checkout.png'}}" height="30" width="30" alt="{{trans 'Quick Checkout'}}" />
             <!-- Mercado Pago Logo -->
             <span data-bind="text: getTitle()"></span>
         </label>
