@@ -11,6 +11,7 @@ interface MessageInterface
 {
     /**
      * Return message array based on subclass
+     *
      * @return mixed
      */
     public function getMessageMap();

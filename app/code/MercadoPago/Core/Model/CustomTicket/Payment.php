@@ -31,7 +31,7 @@ class Payment
 
         if ($response !== false) {
             $this->getInfoInstance()->setAdditionalInformation('activation_uri', $response['response']['transaction_details']['external_resource_url']);
-
+            $this->setOrderSubtotals($response['response']);
             return true;
         }
 
@@ -115,4 +115,16 @@ class Payment
         return $tickets;
     }
 
+    function setOrderSubtotals($data) {
+        $total = $data['transaction_details']['total_paid_amount'];
+        $order = $this->getInfoInstance()->getOrder();
+        $order->setGrandTotal($total);
+        $order->setBaseGrandTotal($total);
+        $couponAmount = $data['coupon_amount'];
+        if ($couponAmount) {
+            $order->setDiscountCouponAmount($couponAmount * -1);
+            $order->setBaseDiscountCouponAmount($couponAmount * -1);
+        }
+        $this->getInfoInstance()->setOrder($order);
+    }
 }

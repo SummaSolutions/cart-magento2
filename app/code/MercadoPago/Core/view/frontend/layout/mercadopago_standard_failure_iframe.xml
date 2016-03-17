@@ -4,10 +4,10 @@
         <referenceContainer name="page.messages">
             <block class="Magento\Framework\View\Element\Messages" name="messages" as="messages"/>
         </referenceContainer>
-        <referenceContainer name="header.container" remove="true" />
-        <referenceContainer name="page.top" remove="true" />
-        <referenceContainer name="footer-container" remove="true" />
-        <referenceContainer name="copyright" remove="true" />
+        <referenceContainer name="header.container" remove="true"/>
+        <referenceContainer name="page.top" remove="true"/>
+        <referenceContainer name="footer-container" remove="true"/>
+        <referenceContainer name="copyright" remove="true"/>
         <referenceContainer name="content">
             <block class="MercadoPago\Core\Block\Standard\Failure" name="mercadopago_standard_failure" cacheable="false"/>
         </referenceContainer>

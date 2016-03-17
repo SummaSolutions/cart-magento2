@@ -23,7 +23,7 @@ class Standard
     protected $coreModel;
 
     /**
-     *
+     *log file name
      */
     const LOG_NAME = 'standard_notification';
 
@@ -74,7 +74,7 @@ class Standard
                     $this->coreHelper->log("Update Order", self::LOG_NAME);
                     $this->coreModel->updateOrder($data);
 
-                    if(!empty($shipmentData)) {
+                    if (!empty($shipmentData)) {
                         $this->_eventManager->dispatch(
                             'mercadopago_standard_notification_before_set_status',
                             ['shipmentData' => $shipmentData, 'orderId' => $merchant_order['external_reference']]
@@ -99,9 +99,10 @@ class Standard
         $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
     }
 
-    
- 	/**
+
+    /**
      * Check if status is final in case of multiple card payment
+     *
      * @param $dataStatus
      *
      * @return bool|mixed|string
@@ -126,6 +127,7 @@ class Standard
 
     /**
      * Collect data from notification content
+     *
      * @param $merchantOrder
      *
      * @return array
@@ -145,6 +147,7 @@ class Standard
 
     /**
      * Collect data from notification content to update order info
+     *
      * @param $data
      * @param $payment
      *

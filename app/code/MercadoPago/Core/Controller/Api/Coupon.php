@@ -11,6 +11,9 @@ class Coupon
     extends \Magento\Framework\App\Action\Action
 
 {
+    /**
+     * @var \MercadoPago\Core\Model\Standard\PaymentFactory
+     */
     protected $_paymentFactory;
 
     /**

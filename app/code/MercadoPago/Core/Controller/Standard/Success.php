@@ -65,6 +65,7 @@ class Success
             $handle = $order->getPayment()->getMethod();
         }
         $handle .= '_success';
+
         return $handle;
     }
 }
