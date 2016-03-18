@@ -1,15 +1,18 @@
 <?php
-namespace Mercadopago\Core\Controller\Notifications;
+namespace MercadoPago\Core\Controller\Notifications;
 
 /**
  * Class Standard
  *
- * @package Mercadopago\Core\Controller\Notifications
+ * @package MercadoPago\Core\Controller\Notifications
  */
 class Standard
     extends \Magento\Framework\App\Action\Action
 
 {
+    /**
+     * @var \MercadoPago\Core\Model\Standard\PaymentFactory
+     */
     protected $_paymentFactory;
 
     /**

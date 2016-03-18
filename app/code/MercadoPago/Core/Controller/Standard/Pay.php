@@ -1,6 +1,6 @@
 <?php
 
-namespace Mercadopago\Core\Controller\Standard;
+namespace MercadoPago\Core\Controller\Standard;
 
 /**
  * Class Pay action controller to pay order with MP
