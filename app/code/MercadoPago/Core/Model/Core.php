@@ -19,7 +19,7 @@ class Core
     /**
      * Define path of access token config
      */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom_checkout/access_token';
+    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
 
     /**
      * {@inheritdoc}
@@ -93,13 +93,26 @@ class Core
      */
     protected $_scopeConfig;
 
-	/**
+    /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_orderFactory;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var
+     */
+    protected $_accessToken;
+    /**
+     * @var
+     */
+    protected $_clientId;
+    /**
+     * @var
+     */
+    protected $_clientSecret;
+
+    /**
+     * @var \MercadoPago\Core\Helper\Message\MessageInterface
      */
     protected $_statusMessage;
     /**
@@ -119,20 +132,47 @@ class Core
      */
     protected $_orderSender;
 
-    /**
-     * @var
-     */
-    protected $_accessToken;
-    /**
-     * @var
-     */
-    protected $_clientId;
-    /**
-     * @var
-     */
-    protected $_clientSecret;
 
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $_checkoutSession;
+    /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $_customerSession;
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
+    protected $_urlBuilder;
+    /**
+     * @var \Magento\Catalog\Helper\Image
+     */
+    protected $_helperImage;
 
+    /**
+     * Core constructor.
+     *
+     * @param \Magento\Store\Model\StoreManagerInterface            $storeManager
+     * @param \MercadoPago\Core\Helper\Data                         $coreHelper
+     * @param \Magento\Sales\Model\OrderFactory                     $orderFactory
+     * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusMessage
+     * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusDetailMessage
+     * @param \Magento\Framework\Model\Context                      $context
+     * @param \Magento\Framework\Registry                           $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory     $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory          $customAttributeFactory
+     * @param \Magento\Payment\Model\Method\Logger                  $logger
+     * @param \Magento\Payment\Helper\Data                          $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
+     * @param \Magento\Framework\DB\TransactionFactory              $transactionFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderSender
+     * @param \Magento\Customer\Model\Session                       $customerSession
+     * @param \Magento\Framework\UrlInterface                       $urlBuilder
+     * @param \Magento\Catalog\Helper\Image                         $helperImage
+     * @param \Magento\Checkout\Model\Session                       $checkoutSession
+     */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,
@@ -148,7 +188,11 @@ class Core
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Framework\UrlInterface $urlBuilder,
+        \Magento\Catalog\Helper\Image $helperImage,
+        \Magento\Checkout\Model\Session $checkoutSession
     )
     {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
@@ -160,24 +204,10 @@ class Core
         $this->_transactionFactory = $transactionFactory;
         $this->_invoiceSender = $invoiceSender;
         $this->_orderSender = $orderSender;
-    }
-
-    /**
-     * @return \Magento\Checkout\Model\Session
-     */
-    protected function _getCheckout()
-    {
-        return Mage::getSingleton('checkout/session');
-    }
-
-    /**
-     * Get admin checkout session namespace
-     *
-     * @return \Magento\Backend\Model\Session\Quote
-     */
-    protected function _getAdminCheckout()
-    {
-        return Mage::getSingleton('adminhtml/session_quote');
+        $this->_customerSession = $customerSession;
+        $this->_urlBuilder = $urlBuilder;
+        $this->_helperImage = $helperImage;
+        $this->_checkoutSession = $checkoutSession;
     }
 
     /**
@@ -187,17 +217,9 @@ class Core
      *
      * @return \Magento\Quote\Model\Quote
      */
-    protected function _getQuote($quoteId = null)
+    protected function _getQuote()
     {
-        if (!empty($quoteId)) {
-            return Mage::getModel('sales/quote')->load($quoteId);
-        } else {
-            if ($this->_storeManeger->getStore()->isAdmin()) {
-                return $this->_getAdminCheckout()->getQuote();
-            } else {
-                return $this->_getCheckout()->getQuote();
-            }
-        }
+        return $this->_checkoutSession->getQuote();
     }
 
     /**
@@ -251,6 +273,8 @@ class Core
     }
 
     /**
+     * Check if status is final in case of multiple card payment
+     *
      * @param $status
      *
      * @return string
@@ -354,20 +378,20 @@ class Core
      */
     protected function getItemsInfo($order)
     {
-        $dataItems = array();
+        $dataItems = [];
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
-            $image = (string)Mage::helper('catalog/image')->init($product, 'image');
+            $image = $this->_helperImage->init($product, 'image');
 
-            $dataItems[] = array(
+            $dataItems[] = [
                 "id"          => $item->getSku(),
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
-                "picture_url" => $image,
+                "picture_url" => $image->getUrl(),
                 "category_id" => $this->_scopeConfig->getValue('payment/mercadopago/category_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                 "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => (float)number_format($product->getPrice(), 2, '.', '')
-            );
+                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
+            ];
         }
 
         /* verify discount and add it like an item */
@@ -409,16 +433,23 @@ class Core
     }
 
     /**
+     * Return array with preference data by default to custom method
+     *
      * @param array $payment_info
      *
      * @return array
      */
-    public function makeDefaultPreferencePaymentV1($payment_info = array())
+    public function makeDefaultPreferencePaymentV1($payment_info = array(), $quote = null, $order = null)
     {
-        $quote = $this->_getQuote();
+        if (!$quote) {
+            $quote = $this->_getQuote();
+        }
         $order_id = $quote->getReservedOrderId();
-        $order = $this->_getOrder($order_id);
-        $customer = Mage::getSingleton('customer/session')->getCustomer();
+        if (!$order) {
+            $order = $this->_getOrder($order_id);
+        }
+
+        $customer = $this->_customerSession->getCustomer();
 
         $billing_address = $quote->getBillingAddress()->getData();
         $customerInfo = $this->getCustomerInfo($customer, $order);
@@ -426,8 +457,8 @@ class Core
         /* INIT PREFERENCE */
         $preference = array();
 
-        $preference['notification_url'] = Mage::getBaseUrl(\Magento\Store\Model\Store::URL_TYPE_LINK) . "mercadopago/notifications/custom";
-        $preference['transaction_amount'] = (float)$this->getAmount();
+        $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
+        $preference['transaction_amount'] = (float)$this->getAmount($quote);
         $preference['external_reference'] = $order_id;
         $preference['payer']['email'] = $customerInfo['email'];
 
@@ -448,21 +479,24 @@ class Core
 
         $preference['additional_info']['payer']['registration_date'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
 
-        $shipping = $order->getShippingAddress()->getData();
+        if ($order->getShippingAddress()) {
 
-        $preference['additional_info']['shipments']['receiver_address'] = array(
-            "zip_code"      => $shipping['postcode'],
-            "street_name"   => $shipping['street'] . " - " . $shipping['city'] . " - " . $shipping['country_id'],
-            "street_number" => '',
-            "floor"         => "-",
-            "apartment"     => "-",
+            $shipping = $order->getShippingAddress()->getData();
 
-        );
+            $preference['additional_info']['shipments']['receiver_address'] = array(
+                "zip_code"      => $shipping['postcode'],
+                "street_name"   => $shipping['street'] . " - " . $shipping['city'] . " - " . $shipping['country_id'],
+                "street_number" => '',
+                "floor"         => "-",
+                "apartment"     => "-",
 
-        $preference['additional_info']['payer']['phone'] = array(
-            "area_code" => "0",
-            "number"    => $shipping['telephone']
-        );
+            );
+
+            $preference['additional_info']['payer']['phone'] = array(
+                "area_code" => "0",
+                "number"    => $shipping['telephone']
+            );
+        }
 
         if (!empty($payment_info['coupon_code'])) {
             $coupon_code = $payment_info['coupon_code'];
@@ -506,7 +540,7 @@ class Core
         }
         $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
-        //seta sdk php mercadopago
+        //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
         $response = $mp->post("/v1/payments", $preference);
         $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
@@ -609,8 +643,8 @@ class Core
      * @return mixed|string
      */
     public function getEmailCustomer()
-    {   //TODO customer model
-        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    {
+        $customer = $this->_customerSession->getCustomer();
         $email = $customer->getEmail();
 
         if (empty($email)) {
@@ -624,10 +658,12 @@ class Core
     /**
      * @return float
      */
-    public function getAmount()
+    public function getAmount($quote = null)
     {
-        $quote = $this->_getQuote();
-        $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount();
+        if (!$quote) {
+            $quote = $this->_getQuote();
+        }
+        $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
 
         return (float)$total;
 
@@ -666,6 +702,8 @@ class Core
     }
 
     /**
+     * Updates order status ond creates invoice
+     *
      * @param      $payment
      * @param null $stateObject
      *
@@ -701,8 +739,7 @@ class Core
                 //Associate card to customer
                 $additionalInfo = $order->getPayment()->getAdditionalInformation();
                 if (isset($additionalInfo['token'])) {
-                    //TODO save customer and card
-                    //Mage::getModel('mercadopago/custom_payment')->customerAndCards($additionalInfo['token'], $payment);
+                    $order->getPayment()->getMethodInstance()->customerAndCards($additionalInfo['token'], $payment);
                 }
 
 
@@ -734,16 +771,18 @@ class Core
     }
 
     /**
-     * Set info in order
+     * Set order and payment info
      *
      * @param $data
      */
-    public function updateOrder($data)
+    public function updateOrder($data, $order = null)
     {
         $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
 
         try {
-            $order = $this->_getOrder($data["external_reference"]);
+            if (!$order) {
+                $order = $this->_getOrder($data["external_reference"]);
+            }
 
             //update payment info
             $payment_order = $order->getPayment();
@@ -788,7 +827,7 @@ class Core
 
             $status_save = $order->save();
             $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->_coreHelper->log("erro in update order status: " . $e, 'mercadopago.log');
             $this->getResponse()->setBody($e);
 
