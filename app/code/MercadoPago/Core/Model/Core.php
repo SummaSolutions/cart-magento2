@@ -479,7 +479,7 @@ class Core
 
         $preference['additional_info']['payer']['registration_date'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
 
-        if ($order->getShippingAddress()) {
+        if ($order->canShip()) {
 
             $shipping = $order->getShippingAddress()->getData();
 
