@@ -168,6 +168,10 @@ class Payment
      */
     public static $_excludeInputsOpc = ['issuer_id', 'card_expiration_month', 'card_expiration_year', 'card_holder_name', 'doc_type', 'doc_number'];
 
+    /**
+     * @var string
+     */
+    protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
 
     /**
      * Payment constructor.
