@@ -737,6 +737,9 @@ class Core
             $status = $payment['status_final'];
         }
         $message = $helper->getMessage($status, $payment);
+        if ($this->_coreHelper->isStatusUpdated()) {
+            return ['text' => $message, 'code' => MercadoPago_Core_Helper_Response::HTTP_OK];
+        }
 
         try {
             if ($status == 'approved') {
@@ -795,61 +798,62 @@ class Core
     public function updateOrder($data, $order = null)
     {
         $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
-
-        try {
-            if (!$order) {
-                $order = $this->_getOrder($data["external_reference"]);
-            }
-
-            //update payment info
-            $payment_order = $order->getPayment();
-
-            $additionalFields = array(
-                'status',
-                'status_detail',
-                'payment_id',
-                'transaction_amount',
-                'cardholderName',
-                'installments',
-                'statement_descriptor',
-                'trunc_card'
-
-            );
-
-            foreach ($additionalFields as $field) {
-                if (isset($data[$field])) {
-                    $payment_order->setAdditionalInformation($field, $data[$field]);
+        if (!$this->_coreHelper->isStatusUpdated()) {
+            try {
+                if (!$order) {
+                    $order = $this->_getOrder($data["external_reference"]);
                 }
+
+                //update payment info
+                $payment_order = $order->getPayment();
+
+                $additionalFields = array(
+                    'status',
+                    'status_detail',
+                    'payment_id',
+                    'transaction_amount',
+                    'cardholderName',
+                    'installments',
+                    'statement_descriptor',
+                    'trunc_card'
+
+                );
+
+                foreach ($additionalFields as $field) {
+                    if (isset($data[$field])) {
+                        $payment_order->setAdditionalInformation($field, $data[$field]);
+                    }
+                }
+
+                if (isset($data['payment_method_id'])) {
+                    $payment_order->setAdditionalInformation('payment_method', $data['payment_method_id']);
+                }
+
+                $payment_status = $payment_order->save();
+                $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
+
+                if ($data['payer_first_name']) {
+                    $order->setCustomerFirstname($data['payer_first_name']);
+                }
+
+                if ($data['payer_last_name']) {
+                    $order->setCustomerLastname($data['payer_last_name']);
+                }
+
+                if ($data['payer_email']) {
+                    $order->setCustomerEmail($data['payer_email']);
+                }
+
+
+                $status_save = $order->save();
+                $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());
+            } catch (\Exception $e) {
+                $this->_coreHelper->log("erro in update order status: " . $e, 'mercadopago.log');
+                $this->getResponse()->setBody($e);
+
+                //if notification proccess returns error, mercadopago will resend the notification.
+                $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST);
             }
-
-            if (isset($data['payment_method_id'])) {
-                $payment_order->setAdditionalInformation('payment_method', $data['payment_method_id']);
-            }
-
-            $payment_status = $payment_order->save();
-            $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
-
-            if ($data['payer_first_name']) {
-                $order->setCustomerFirstname($data['payer_first_name']);
-            }
-
-            if ($data['payer_last_name']) {
-                $order->setCustomerLastname($data['payer_last_name']);
-            }
-
-            if ($data['payer_email']) {
-                $order->setCustomerEmail($data['payer_email']);
-            }
-
-
-            $status_save = $order->save();
-            $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());
-        } catch (\Exception $e) {
-            $this->_coreHelper->log("erro in update order status: " . $e, 'mercadopago.log');
-            $this->getResponse()->setBody($e);
-
-            //if notification proccess returns error, mercadopago will resend the notification.
-            $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST);
         }
     }
 

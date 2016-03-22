@@ -233,6 +233,7 @@ class Payment
         );
         if (!isset($paramsShipment['cost'])) {
             $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
+            $paramsShipment['mode'] = 'custom';
         }
         $arr = [];
 
