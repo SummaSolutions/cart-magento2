@@ -12,11 +12,11 @@ var MercadoPagoCustom = (function () {
     };
     var self = {
         messages: {
-            init: 'Init MercadoPago JS',
-            initOCP: 'Init MercadoPago OCP',
-            initDiscount: 'Init MercadoPago Custom Discount',
-            initTicket: 'Init MercadoPago Custom Ticket',
-            mpIncorrectlyConfigured: 'MercadoPago was not configured correctly. Public Key not found.',
+            init: 'Init Mercado Pago JS',
+            initOCP: 'Init Mercado Pago OCP',
+            initDiscount: 'Init Mercado Pago Custom Discount',
+            initTicket: 'Init Mercado Pago Custom Ticket',
+            mpIncorrectlyConfigured: 'Mercado Pago was not configured correctly. Public Key not found.',
             publicKey: 'Public Key: {0}',
             siteId: 'SITE_ID: {0}',
             invalidDocument: 'Document Number is invalid.',
@@ -79,7 +79,7 @@ var MercadoPagoCustom = (function () {
         selectors: {
             checkoutCustom: '#mercadopago_checkout_custom',
             checkoutTicket: '#mercadopago_checkout_custom_ticket',
-            siteId: '#mercadopago_checkout_custom .site_id',
+            siteId: '.site_id',
             cardNumberInput: 'input[data-checkout="cardNumber"]',
             installmentsDontWork: '.error-installment-not-work',
             mercadopagoCustomOpt: '#mercadopago_custom',
@@ -202,11 +202,19 @@ var MercadoPagoCustom = (function () {
             Mercadopago.setPublishableKey(PublicKeyMercadoPagoCustom);
         }
 
+        function getSiteId() {
+            var siteElem = TinyJ(self.selectors.siteId);
+            if (Array.isArray(siteElem)) {
+                siteElem = siteElem[0];
+            }
+            return siteElem.val();
+
+        }
 
         function initMercadoPagoJs() {
             showLogMercadoPago(self.messages.init);
 
-            var siteId = TinyJ(self.selectors.siteId).val();
+            var siteId = getSiteId();
 
             if (typeof PublicKeyMercadoPagoCustom == self.constants.undefined) {
                 alert(self.messages.mpIncorrectlyConfigured);
@@ -320,7 +328,7 @@ var MercadoPagoCustom = (function () {
         function defineInputs() {
             showLogMercadoPago(self.messages.defineInputs);
 
-            var siteId = TinyJ(self.selectors.siteId).val();
+            var siteId = getSiteId();
             var oneClickPay = TinyJ(self.selectors.oneClickPayment).val();
             var dataCheckout = TinyJ(self.selectors.dataCheckout);
             var excludeInputs = [self.selectors.cardId, self.selectors.securityCodeOCP, self.selectors.paymentMethod];
@@ -749,7 +757,7 @@ var MercadoPagoCustom = (function () {
 
 
                 setTimeout(function () {
-                    var siteId = TinyJ(self.selectors.siteId).val();
+                    var siteId = getSiteId();
                     if (siteId == self.constants.mexico) {
 
                         var issuers = TinyJ(self.selectors.issuer);

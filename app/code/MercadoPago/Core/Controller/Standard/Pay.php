@@ -38,7 +38,7 @@ class Pay
 
     /**
      * Execute action
-     * 
+     *
      * @return \Magento\Framework\Controller\Result\Redirect
      */
     public function execute()
@@ -51,12 +51,13 @@ class Pay
             $resultRedirect->setUrl($array_assign['init_point']);
         } else {
             $typeCheckout = $this->_scopeConfig->getValue('payment/mercadopago_standard/type_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            if ($typeCheckout == 'lightbox'){
+            if ($typeCheckout == 'lightbox') {
                 $resultRedirect->setUrl($this->_url->getUrl('mercadopago/standard/failureRedirect'));
             } else {
                 $resultRedirect->setUrl($this->_url->getUrl('mercadopago/standard/failure'));
             }
         }
+
         return $resultRedirect;
     }
 }

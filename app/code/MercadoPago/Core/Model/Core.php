@@ -132,7 +132,6 @@ class Core
      */
     protected $_orderSender;
 
-
     /**
      * @var \Magento\Checkout\Model\Session
      */
@@ -208,6 +207,24 @@ class Core
         $this->_urlBuilder = $urlBuilder;
         $this->_helperImage = $helperImage;
         $this->_checkoutSession = $checkoutSession;
+    }
+
+    /**
+     * @return \Magento\Checkout\Model\Session
+     */
+    protected function _getCheckout()
+    {
+        return Mage::getSingleton('checkout/session');
+    }
+
+    /**
+     * Get admin checkout session namespace
+     *
+     * @return \Magento\Backend\Model\Session\Quote
+     */
+    protected function _getAdminCheckout()
+    {
+        return Mage::getSingleton('adminhtml/session_quote');
     }
 
     /**

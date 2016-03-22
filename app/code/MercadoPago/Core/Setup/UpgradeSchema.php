@@ -9,7 +9,8 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 /**
  * @codeCoverageIgnore
  */
-class UpgradeSchema implements UpgradeSchemaInterface
+class UpgradeSchema
+    implements UpgradeSchemaInterface
 {
     /**
      * {@inheritdoc}
@@ -30,17 +31,17 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '1.0.2', '<=')) {
 
             $columns = [
-                'finance_cost_amount' => [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length' => '12,4',
+                'finance_cost_amount'      => [
+                    'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'   => '12,4',
                     'nullable' => true,
-                    'comment' => 'Finance Cost Amount',
+                    'comment'  => 'Finance Cost Amount',
                 ],
                 'base_finance_cost_amount' => [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length' => '12,4',
+                    'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'   => '12,4',
                     'nullable' => true,
-                    'comment' => 'Base Finance Cost Amount',
+                    'comment'  => 'Base Finance Cost Amount',
                 ]
             ];
 
@@ -53,17 +54,17 @@ class UpgradeSchema implements UpgradeSchemaInterface
         /*********** VERSION 1.0.3 ADD DISCOUNT COUPON COLUMNS TO ORDER, QUOTE, INVOICE, CREDITMEMO ***********/
         if (version_compare($context->getVersion(), '1.0.3', '<=')) {
             $columns = [
-                'discount_coupon_amount' => [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length' => '12,4',
+                'discount_coupon_amount'      => [
+                    'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'   => '12,4',
                     'nullable' => true,
-                    'comment' => 'Discount coupon Amount',
+                    'comment'  => 'Discount coupon Amount',
                 ],
                 'base_discount_coupon_amount' => [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length' => '12,4',
+                    'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'   => '12,4',
                     'nullable' => true,
-                    'comment' => 'Base Discount coupon Amount',
+                    'comment'  => 'Base Discount coupon Amount',
                 ]
             ];
 
