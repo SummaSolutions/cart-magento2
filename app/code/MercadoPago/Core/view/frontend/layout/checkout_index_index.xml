@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="MercadoPago_Core::style.css"/>
+    </head>
     <body>
         <referenceBlock name="checkout.root">
             <arguments>
@@ -20,6 +23,9 @@
                                                                     <item name="component" xsi:type="string">MercadoPago_Core/js/view/mercadopago-payments</item>
                                                                     <item name="methods" xsi:type="array">
                                                                         <item name="mercadopago_standard" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+                                                                        <item name="mercadopago_custom" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                     </item>

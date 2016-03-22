@@ -1,10 +1,10 @@
 <?php
-namespace MercadoPago\Core\Controller\Standard;
+namespace MercadoPago\Core\Controller\Custom;
 
 /**
  * Class Success
  *
- * @package MercadoPago\Core\Controller\Standard
+ * @package MercadoPago\Core\Controller\Custom
  */
 class Success
     extends \Magento\Framework\App\Action\Action
@@ -20,6 +20,8 @@ class Success
     protected $_orderFactory;
 
     /**
+     * Success constructor.
+     *
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Checkout\Model\Session       $checkoutSession
      * @param \Magento\Sales\Model\OrderFactory     $orderFactory
@@ -41,7 +43,7 @@ class Success
     }
 
     /**
-     * Execute Success action
+     * Controller action
      */
     public function execute()
     {
@@ -65,6 +67,7 @@ class Success
             $handle = $order->getPayment()->getMethod();
         }
         $handle .= '_success';
+
         return $handle;
     }
 }

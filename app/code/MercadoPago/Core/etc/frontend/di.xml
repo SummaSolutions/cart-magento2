@@ -5,6 +5,14 @@
         <arguments>
             <argument name="configProviders" xsi:type="array">
                 <item name="mercadopago_core_standard_provider" xsi:type="object">MercadoPago\Core\Model\StandardConfigProvider</item>
+                <item name="mercadopago_core_custom_provider" xsi:type="object">MercadoPago\Core\Model\CustomConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="mercadopago_custom" xsi:type="const">MercadoPago\Core\Model\Custom\Payment::CODE</item>
             </argument>
         </arguments>
     </type>
