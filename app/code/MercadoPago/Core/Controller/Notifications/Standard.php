@@ -75,6 +75,7 @@ class Standard
                     $status_final = $this->_getStatusFinal($data['status']);
                     $shipmentData = (isset($merchant_order['shipments'][0])) ? $merchant_order['shipments'][0] : [];
                     $this->coreHelper->log("Update Order", self::LOG_NAME);
+                    $this->coreHelper->setStatusUpdated($data);
                     $this->coreModel->updateOrder($data);
 
                     if (!empty($shipmentData)) {
