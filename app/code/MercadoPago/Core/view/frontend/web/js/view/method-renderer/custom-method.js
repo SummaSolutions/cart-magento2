@@ -156,6 +156,18 @@ define(
                 }
                 return '';
             },
+
+            /**
+             * Get url to logo
+             * @returns {String}
+             */
+            getLogoUrl: function () {
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment[this.getCode()]['logoUrl'];
+                }
+                return '';
+            },
+
             /**
              * @override
              */

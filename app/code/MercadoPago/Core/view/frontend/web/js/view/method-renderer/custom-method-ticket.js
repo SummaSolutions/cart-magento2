@@ -56,6 +56,17 @@ define(
                 return '';
             },
 
+            /**
+             * Get url to logo
+             * @returns {String}
+             */
+            getLogoUrl: function () {
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return configPayment['logoUrl'];
+                }
+                return '';
+            },
+
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
             },

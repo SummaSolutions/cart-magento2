@@ -102,7 +102,8 @@ class CustomConfigProvider
                     'text-currency'    => __('$'),
                     'text-choice'      => __('Choice'),
                     'default-issuer'   => __('Default issuer'),
-                    'text-installment' => __('Enter the card number')
+                    'text-installment' => __('Enter the card number'),
+                    'logoUrl'          => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png")
                 ],
             ],
         ] : [];
