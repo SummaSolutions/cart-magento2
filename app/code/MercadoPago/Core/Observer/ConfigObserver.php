@@ -44,7 +44,7 @@ class ConfigObserver
      *
      * @var array
      */
-    private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm'];
+    private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm', 'mlv', 'mlc', 'mco'];
 
     /**
      * Available countries to custom ticket
