@@ -233,6 +233,7 @@ class Payment
         );
         if (!isset($paramsShipment['cost'])) {
             $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
+            $paramsShipment['mode'] = 'custom';
         }
         $arr = [];
 
@@ -262,16 +263,17 @@ class Payment
             $this->_helperData->log("Total order: " . $order_amount, 'mercadopago-standard.log');
             $this->_helperData->log("Difference add itens: " . $diff_price, 'mercadopago-standard.log');
         }
+        if ($order->canShip()) {
+            $shipping = $order->getShippingAddress()->getData();
 
-        $shipping = $order->getShippingAddress()->getData();
+            $arr['payer']['phone'] = [
+                "area_code" => "-",
+                "number"    => $shipping['telephone']
+            ];
 
-        $arr['payer']['phone'] = [
-            "area_code" => "-",
-            "number"    => $shipping['telephone']
-        ];
-
-        $paramsShipment['receiver_address'] = $this->getReceiverAddress($order->getShippingAddress());
-        $arr['shipments'] = $paramsShipment;
+            $paramsShipment['receiver_address'] = $this->getReceiverAddress($order->getShippingAddress());
+            $arr['shipments'] = $paramsShipment;
+        }
 
         $billing_address = $order->getBillingAddress()->getData();
 
