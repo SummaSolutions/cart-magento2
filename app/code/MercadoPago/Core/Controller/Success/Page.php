@@ -1,12 +1,12 @@
 <?php
-namespace MercadoPago\Core\Controller\Custom;
+namespace MercadoPago\Core\Controller\Success;
 
 /**
  * Class Success
  *
- * @package MercadoPago\Core\Controller\Custom
+ * @package MercadoPago\Core\Controller\Success
  */
-class Success
+class Page
     extends \Magento\Framework\App\Action\Action
 {
     /**

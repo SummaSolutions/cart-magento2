@@ -8,6 +8,7 @@ use Magento\Framework\View\LayoutFactory;
  * Class Data
  *
  * @package MercadoPago\Core\Helper
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Data
     extends \Magento\Payment\Helper\Data
