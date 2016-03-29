@@ -14,32 +14,32 @@ class Data
 {
 
     /**
-     *
+     *path to access token config
      */
     const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
     /**
-     *
+     *path to public config
      */
     const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
     /**
-     *
+     *path to client id config
      */
     const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
     /**
-     *
+     *path to client secret config
      */
     const XML_PATH_CLIENT_SECRET = 'payment/mercadopago_standard/client_secret';
 
     /**
-     *
+     *api platform openplatform
      */
     const PLATFORM_OPENPLATFORM = 'openplatform';
     /**
-     *
+     *api platform stdplatform
      */
     const PLATFORM_STD = 'std';
     /**
-     *
+     *type
      */
     const TYPE = 'magento';
 
@@ -59,23 +59,35 @@ class Data
      * @var \Magento\Sales\Model\ResourceModel\Status\Collection
      */
     protected $_statusFactory;
+
     /**
      * @var \Magento\Framework\Setup\ModuleContextInterface
      */
     protected $_moduleContext;
 
     /**
+     * @var bool flag indicates when status was updated by notifications.
+     */
+    protected $_statusUpdatedFlag = false;
+
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
+    protected $_orderFactory;
+
+    /**
      * Data constructor.
      *
-     * @param Message\MessageInterface              $messageInterface
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param LayoutFactory                         $layoutFactory
-     * @param \Magento\Payment\Model\Method\Factory $paymentMethodFactory
-     * @param \Magento\Store\Model\App\Emulation    $appEmulation
-     * @param \Magento\Payment\Model\Config         $paymentConfig
-     * @param \Magento\Framework\App\Config\Initial $initialConfig
-     * @param \MercadoPago\Core\Logger\Logger       $logger
-	 * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
+     * @param Message\MessageInterface                             $messageInterface
+     * @param \Magento\Framework\App\Helper\Context                $context
+     * @param LayoutFactory                                        $layoutFactory
+     * @param \Magento\Payment\Model\Method\Factory                $paymentMethodFactory
+     * @param \Magento\Store\Model\App\Emulation                   $appEmulation
+     * @param \Magento\Payment\Model\Config                        $paymentConfig
+     * @param \Magento\Framework\App\Config\Initial                $initialConfig
+     * @param \Magento\Framework\Setup\ModuleContextInterface      $moduleContext
+     * @param \MercadoPago\Core\Logger\Logger                      $logger
+     * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
      */
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
@@ -86,20 +98,45 @@ class Data
         \Magento\Payment\Model\Config $paymentConfig,
         \Magento\Framework\App\Config\Initial $initialConfig,
         \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
-		\MercadoPago\Core\Logger\Logger $logger,
-        \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
+        \MercadoPago\Core\Logger\Logger $logger,
+        \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
+        \Magento\Sales\Model\OrderFactory $orderFactory
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
-		$this->_moduleContext = $moduleContext;
+        $this->_moduleContext = $moduleContext;
         $this->_statusFactory = $statusFactory;
+        $this->_orderFactory = $orderFactory;
     }
 
+    /**
+     * @return bool return updated flag
+     */
+    public function isStatusUpdated()
+    {
+        return $this->_statusUpdatedFlag;
+    }
+
+    /**
+     * Set flag status updated
+     *
+     * @param $notificationData
+     */
+    public function setStatusUpdated($notificationData)
+    {
+        $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
+        $status = $notificationData['status'];
+        $currentStatus = $order->getPayment()->getAdditionalInformation('status');
+        if ($status == $currentStatus) {
+            $this->_statusUpdatedFlag = true;
+        }
+    }
 
     /**
      * Log custom message using MercadoPago logger instance
+     *
      * @param        $message
      * @param string $name
      * @param null   $array
@@ -123,6 +160,7 @@ class Data
 
     /**
      * Return MercadoPago Api instance given AccessToken or ClientId and Secret
+     *
      * @return \MercadoPago_Core_Lib_Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -144,6 +182,7 @@ class Data
         }
 
         $api->set_type(self::TYPE);
+
         //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
         return $api;
@@ -152,6 +191,7 @@ class Data
 
     /**
      * AccessToken valid?
+     *
      * @param $accessToken
      *
      * @return bool
@@ -170,6 +210,7 @@ class Data
 
     /**
      * ClientId and Secret valid?
+     *
      * @param $clientId
      * @param $clientSecret
      *
@@ -210,6 +251,7 @@ class Data
 
     /**
      * Return order status mapping based on current configuration
+     *
      * @param $status
      *
      * @return mixed
@@ -261,11 +303,13 @@ class Data
             ->addFieldToFilter('main_table.status', $status);
 
         $collectionItems = $collection->getItems();
+
         return array_pop($collectionItems)->getState();
     }
 
     /**
      * Return raw message for payment detail
+     *
      * @param $status
      * @param $payment
      *
@@ -283,6 +327,7 @@ class Data
 
     /**
      * Calculate and set order MercadoPago specific subtotals based on data values
+     *
      * @param $data
      * @param $order
      */
@@ -304,6 +349,8 @@ class Data
 
         $order->setGrandTotal($balance);
         $order->setBaseGrandTotal($balance);
+        $order->setBaseShippingAmount($shippingCost);
+        $order->setShippingAmount($shippingCost);
 
         $couponAmount = $this->_getMultiCardValue($data['coupon_amount']);
         $transactionAmount = $this->_getMultiCardValue($data['transaction_amount']);
@@ -315,7 +362,7 @@ class Data
             $balance = $balance - $transactionAmount - $shippingCost;
         }
 
-        if (\Zend_Locale_Math::round($balance,4) > 0) {
+        if (\Zend_Locale_Math::round($balance, 4) > 0) {
             $order->setFinanceCostAmount($balance);
             $order->setBaseFinanceCostAmount($balance);
         }
@@ -325,6 +372,7 @@ class Data
 
     /**
      * Modify payment array adding specific fields
+     *
      * @param $payment
      *
      * @return mixed
@@ -342,6 +390,7 @@ class Data
 
     /**
      * Return sum of fields separated with |
+     *
      * @param $fullValue
      *
      * @return int

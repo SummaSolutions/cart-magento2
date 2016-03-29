@@ -12,6 +12,11 @@ use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
+/**
+ * Class InstallSchema
+ *
+ * @package MercadoPago\Core\Setup
+ */
 class InstallSchema
     implements InstallSchemaInterface
 {
@@ -29,17 +34,17 @@ class InstallSchema
         $quoteTable = $installer->getTable('quote');
 
         $columns = [
-            'finance_cost_amount' => [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length' => '12,4',
+            'finance_cost_amount'      => [
+                'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'   => '12,4',
                 'nullable' => true,
-                'comment' => 'Finance Cost Amount',
+                'comment'  => 'Finance Cost Amount',
             ],
             'base_finance_cost_amount' => [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length' => '12,4',
+                'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'   => '12,4',
                 'nullable' => true,
-                'comment' => 'Base Finance Cost Amount',
+                'comment'  => 'Base Finance Cost Amount',
             ]
         ];
 

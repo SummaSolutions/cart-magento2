@@ -45,6 +45,20 @@
                 <sandbox_mode>0</sandbox_mode>
 				<group>offline</group>
             </mercadopago_standard>
+
+            <mercadopago_customticket>
+                <active>0</active>
+                <model>MercadoPago\Core\Model\CustomTicket\Payment</model>
+                <title translate="label">Ticket - Mercado Pago</title>
+                <allowspecific>0</allowspecific>
+                <binary_mode>0</binary_mode>
+                <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/2014/230x60.png</banner_checkout>
+                <sort_order>-1</sort_order>
+                <payment_action>authorize</payment_action>
+                <coupon_mercadopago>0</coupon_mercadopago>
+                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+            </mercadopago_customticket>
+
         </payment>
     </default>
 </config>

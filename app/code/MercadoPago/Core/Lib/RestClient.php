@@ -8,7 +8,7 @@
 class MercadoPago_Core_Lib_RestClient {
 
     /**
-     *
+     *API URL
      */
     const API_BASE_URL = "https://api.mercadopago.com";
 

@@ -27,7 +27,7 @@ class Custom
     protected $coreModel;
 
     /**
-     *
+     * Log file name
      */
     const LOG_NAME = 'custom_notification';
 

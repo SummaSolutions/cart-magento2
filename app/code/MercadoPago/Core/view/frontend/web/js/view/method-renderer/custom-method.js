@@ -156,6 +156,18 @@ define(
                 }
                 return '';
             },
+
+            /**
+             * Get url to logo
+             * @returns {String}
+             */
+            getLogoUrl: function () {
+                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                    return window.checkoutConfig.payment[this.getCode()]['logoUrl'];
+                }
+                return '';
+            },
+
             /**
              * @override
              */
@@ -181,8 +193,8 @@ define(
                 };
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     if (window.checkoutConfig.payment[this.getCode()]['discount_coupon']) {
-                        dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('.mercadopago-discount-amount').val();
-                        dataObj.additional_data['coupon_code'] = TinyJ('#input-coupon-discount').val();
+                        dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom').getElem('.mercadopago-discount-amount').val();
+                        dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom').getElem('#input-coupon-discount').val();
                     }
                 }
                 if (this.isOCPReady()) {

@@ -92,7 +92,7 @@ class PaymentMethods
         $response = $response['response'];
 
         foreach ($response as $m) {
-            if ($m['id'] != 'account_money') {
+            if (isset($m['id']) && $m['id'] != 'account_money') {
                 $methods[] = [
                     'value' => $m['id'],
                     'label' => __($m['name'])

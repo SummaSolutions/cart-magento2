@@ -6,6 +6,7 @@
             <argument name="configProviders" xsi:type="array">
                 <item name="mercadopago_core_standard_provider" xsi:type="object">MercadoPago\Core\Model\StandardConfigProvider</item>
                 <item name="mercadopago_core_custom_provider" xsi:type="object">MercadoPago\Core\Model\CustomConfigProvider</item>
+                <item name="mercadopago_core_customTicket_provider" xsi:type="object">MercadoPago\Core\Model\CustomTicketConfigProvider</item>
             </argument>
         </arguments>
     </type>
@@ -13,6 +14,7 @@
         <arguments>
             <argument name="methodCodes" xsi:type="array">
                 <item name="mercadopago_custom" xsi:type="const">MercadoPago\Core\Model\Custom\Payment::CODE</item>
+                <item name="mercadopago_customticket" xsi:type="const">MercadoPago\Core\Model\CustomTicket\Payment::CODE</item>
             </argument>
         </arguments>
     </type>

@@ -174,8 +174,6 @@ class Payment
     protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
 
     /**
-     * Payment constructor.
-     *
      * @param \MercadoPago\Core\Helper\Data                        $helperData
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Customer\Model\Session                      $customerSession
@@ -190,6 +188,8 @@ class Payment
      * @param \Magento\Payment\Model\Method\Logger                 $logger
      * @param \Magento\Framework\Module\ModuleListInterface        $moduleList
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Checkout\Model\Session                      $checkoutSession
+     * @param \Magento\Sales\Model\OrderFactory                    $orderFactory
      * @param \MercadoPago\Core\Model\Core                         $coreModel
      */
     public function __construct(
@@ -207,8 +207,9 @@ class Payment
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \MercadoPago\Core\Model\Core $coreModel
-    )
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+		\MercadoPago\Core\Model\Core $coreModel)
     {
         parent::__construct(
             $context,
@@ -401,10 +402,13 @@ class Payment
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
-
-        return ($parent && !empty($this->_helperData->isValidAccessToken($accessToken)));
-
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
+        $publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
+        $custom = (!empty($publicKey) && !empty($accessToken));
+        if (!$parent || !$custom) {
+            return false;
+        }
+        return $this->_helperData->isValidAccessToken($accessToken);
     }
 
     /**

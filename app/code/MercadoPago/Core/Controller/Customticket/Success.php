@@ -1,10 +1,10 @@
 <?php
-namespace MercadoPago\Core\Controller\Standard;
+namespace MercadoPago\Core\Controller\Customticket;
 
 /**
  * Class Success
  *
- * @package MercadoPago\Core\Controller\Standard
+ * @package MercadoPago\Core\Controller\Customticket
  */
 class Success
     extends \Magento\Framework\App\Action\Action
@@ -20,6 +20,8 @@ class Success
     protected $_orderFactory;
 
     /**
+     * Success constructor.
+     *
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Checkout\Model\Session       $checkoutSession
      * @param \Magento\Sales\Model\OrderFactory     $orderFactory
@@ -41,31 +43,12 @@ class Success
     }
 
     /**
-     * Execute Success action
+     * Controller action
      */
     public function execute()
     {
-        $checkoutTypeHandle = $this->getCheckoutHandle();
-        $this->_view->loadLayout(['default', $checkoutTypeHandle]);
+        $this->_view->loadLayout(['default', 'mercadopago_customticket_success']);
 
         $this->_view->renderLayout();
-    }
-
-    /**
-     * Return handle name, depending on payment method used in the order placed
-     *
-     * @return string
-     */
-    public function getCheckoutHandle()
-    {
-        $handle = '';
-        $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
-        $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
-        if (!empty($order->getId())) {
-            $handle = $order->getPayment()->getMethod();
-        }
-        $handle .= '_success';
-
-        return $handle;
     }
 }
