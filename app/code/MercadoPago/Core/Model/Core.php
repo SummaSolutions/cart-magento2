@@ -461,9 +461,9 @@ class Core
         if (!$quote) {
             $quote = $this->_getQuote();
         }
-        $order_id = $quote->getReservedOrderId();
+        $orderId = $quote->getReservedOrderId();
         if (!$order) {
-            $order = $this->_getOrder($order_id);
+            $order = $this->_getOrder($orderId);
         }
 
         $customer = $this->_customerSession->getCustomer();
@@ -475,8 +475,9 @@ class Core
         $preference = array();
 
         $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
+        $preference['description'] = __("Order # %1 in store %2", $orderId, $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
         $preference['transaction_amount'] = (float)$this->getAmount($quote);
-        $preference['external_reference'] = $order_id;
+        $preference['external_reference'] = $orderId;
         $preference['payer']['email'] = $customerInfo['email'];
 
         if (!empty($payment_info['identification_type'])) {

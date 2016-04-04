@@ -205,3 +205,5 @@
 
 "Use Mercado Pago success page","Use página de sucesso Mercado Pago"
  "If set this config with NO, magento success page will be used","Se definir essa configuração com NO, página de sucesso magento será usado"
+
+ "Order # %1 in store %2","Pedido # %1 realizado na loja %2"
