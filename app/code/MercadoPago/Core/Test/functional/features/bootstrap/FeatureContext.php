@@ -325,5 +325,203 @@ class FeatureContext
         $this->getSession()->wait($milliseconds);
     }
 
+    /**
+     * @When I am logged in MP as :arg1 :arg2
+     */
+    public function iAmLoggedInMPAs($arg1, $arg2)
+    {
+        $session = $this->getSession();
+        $logged = $session->getPage()->find('css', '#payerAccount');
+        if ($logged) {
+            $exit = $session->getPage()->find('css', '#payerAccount a');
+            $exit->press();
+            $this->iWaitForSeconds(5);
+        }
+
+        $login = $session->getPage()->find('css', '#user_id');
+        $pwd = $session->getPage()->find('css', '#password');
+        $submit = $session->getPage()->find('css', '#init');
+        if ($login && $pwd && $submit) {
+            $email = $arg1;
+            $password = $arg2;
+            $login->setValue($email);
+            $pwd->setValue($password);
+            $submit->click();
+            $this->iWaitForSeconds(7);
+            $logged = $session->getPage()->find('css', '#payerAccount');
+            if ($logged) {
+                return;
+            } else {
+                $actual = $this->getSession()->getPage()->getHtml();
+                if ($this->_stringMatch($actual, "captcha")) {
+                    throw new ExpectationException('This form has a captcha', $this->getSession()->getDriver());
+                }
+            }
+        }
+    }
+
+    /**
+     * @Given Setting merchant :arg1
+     */
+    public function settingMerchant($arg1)
+    {
+        $dataCountry = [
+            'mla' => [
+                'client_id'     => '446950613712741',
+                'client_secret' => '0WX05P8jtYqCtiQs6TH1d9SyOJ04nhEv',
+                'public_key'    => 'TEST-d5a3d71b-6bd4-4bfc-a1f3-7ed77987d5aa',
+                'access_token'  => 'TEST-446950613712741-091715-092a6109a25bb763aa94c61688ada0cd__LC_LA__-192627424'
+            ],
+            'mlb' => [
+                'client_id'     => '1872374615846510',
+                'client_secret' => 'WGfDqM8bNLzjvmrEz8coLCUwL8s4h9HZ',
+                'public_key'    => 'TEST-09fcb4ab-319c-45d1-8e33-9a92bf11de11',
+                'access_token'  => 'TEST-1872374615846510-111016-1db7450c5b662c1be62b45eebef82f32__LA_LC__-193992978'
+            ],
+            'mlm' => [
+                'client_id'     => '2272101328791208',
+                'client_secret' => 'cPi6Mlzc7bGkEaubEJjHRipqmojXLtKm',
+                'public_key'    => 'TEST-687f89f2-19d1-4a8b-893e-8da5c7e238ac',
+                'access_token'  => 'TEST-2272101328791208-111108-fabd0182d1c7c7ba554b1773558a828a__LD_LB__-193996689'
+            ],
+            'mlv' => [
+                'client_id'     => '201313175671817',
+                'client_secret' => 'bASLUlb5s12QYPAUJwCQUMa21wFzFrzz',
+                'public_key'    => 'TEST-a4f588fd-5bb8-406c-9811-1536154d5d73',
+                'access_token'  => 'TEST-201313175671817-111108-b30483a389dbc6a04e401c23e62da2c1__LB_LC__-193994249'
+            ],
+            'mco' => [
+                'client_id'     => '3688958250893559',
+                'client_secret' => 'bASLUlb5s12QYPAUJwCQUMa21wFzFrzz',
+                'public_key'    => 'TEST-6226129a-143f-4f87-973c-060c2426510a',
+                'access_token'  => 'TEST-7635994297462517-030309-51dfe28ab15e9d0f30a7bdd12f019675__LA_LD__-193993045'
+            ],
+            'mlc' => [
+                'client_id'     => '4911204937414957',
+                'client_secret' => '81SULY2VoVfjYBufde7s7njAnhT2tNSU',
+                'public_key'    => 'TEST-94844496-13a2-4977-8ecd-f5ccdae9e14a',
+                'access_token'  => 'TEST-7635994297462517-030309-51dfe28ab15e9d0f30a7bdd12f019675__LA_LD__-193993045'
+            ]
+        ];
+        $clientId = $dataCountry[$arg1]['client_id'];
+        $clientSecret = $dataCountry[$arg1]['client_secret'];
+        $this->settingConfig('payment/mercadopago/country', $arg1);
+        $this->settingConfig('payment/mercadopago_standard/client_id', $clientId);
+        $this->settingConfig('payment/mercadopago_standard/client_secret', $clientSecret);
+        if (isset($dataCountry[$arg1]['public_key'])) {
+            $publicKey = $dataCountry[$arg1]['public_key'];
+            $accessToken = $dataCountry[$arg1]['access_token'];
+            $this->settingConfig('payment/mercadopago_custom/public_key', $publicKey);
+            $this->settingConfig('payment/mercadopago_custom/access_token', $accessToken);
+        }
+
+    }
+
+    /**
+     * @Given I fill text field :arg1 with :arg2
+     */
+    public function iFillTextFieldWith($arg1, $arg2)
+    {
+        $page = $this->getSession()->getPage();
+        $page->fillField($arg1, $arg2);
+    }
+
+    /**
+     * @Given I select option field :arg1 with :arg2
+     */
+    public function iSelectOptionFieldWith($arg1, $arg2)
+    {
+        //$this->getSession()->wait(20000, '(0 === Ajax.activeRequestCount)');
+        $page = $this->getSession()->getPage();
+
+        $page->selectFieldOption($arg1, $arg2);
+    }
+
+    /**
+     * @Given I select payment method option field :arg1 with :arg2
+     */
+    public function iSelectPaymentMethodOptionFieldWith($arg1, $arg2)
+    {
+        $page = $this->getSession()->getPage();
+        $field = $page->find('css', $arg1);
+        if (null !== $field) {
+            $field->selectOption($arg2, false);
+        }
+    }
+
+
+    /**
+     * @Given I select installment :arg1
+     */
+
+    public function iSelectInstallment($installment)
+    {
+        $page = $this->getSession()->getPage();
+        $this->getSession()->wait(20000, "jQuery('#installments').children().length > 1");
+        $page->selectFieldOption('installments', $installment);
+    }
+
+    /**
+     * @When I wait for :secs seconds avoiding alert
+     */
+    public function iWaitForSecondsAvoidingAlert($secs)
+    {
+        $milliseconds = $secs * 1000;
+        try {
+            $this->getSession()->wait($milliseconds, '(0 === Ajax.activeRequestCount)');
+        } catch (Exception $e) {
+            $this->acceptAlert();
+        }
+    }
+    /**
+     * @Then I should see :arg1
+     */
+    public function iShouldSee($arg1)
+    {
+        $actual = $this->getSession()->getPage()->getText();
+        if (!$this->_stringMatch($actual, $arg1)) {
+            throw new ExpectationException('Element' . $arg1 . ' not found', $this->getSession()->getDriver());
+        }
+    }
+
+    /**
+     * @Then I should stay step :arg1
+     */
+    public function iShouldStayStep($arg1)
+    {
+        if ($this->findElement($arg1)->hasClass('active')) {
+            return;
+        }
+        throw new ExpectationException('I am not stay in ' . $arg1, $this->getSession()->getDriver());
+
+    }
+
+    /**
+     * @When I wait for :secs seconds with :cond
+     */
+    public function iWaitForSecondsWithCondition($secs, $condition)
+    {
+        $milliseconds = $secs * 1000;
+        $this->getSession()->wait($milliseconds, $condition);
+    }
+
+    /**
+     * @Given I blur field :arg1
+     */
+    public function iBlurField($arg1)
+    {
+        $field = $this->findElement($arg1);
+        $this->getSession()->getDriver()->blur($field->getXpath());
+    }
+
+    /**
+     * @Given Product with sku :arg1 has a price of :arg2
+     */
+    public function productWithSkuHasAPriceOf($arg1, $arg2)
+    {
+        $product = $this->getMagentoObject('Magento\Catalog\Model\Product')->loadByAttribute('sku', $arg1);
+
+        $product->setPrice($arg2)->save();
+    }
 
 }

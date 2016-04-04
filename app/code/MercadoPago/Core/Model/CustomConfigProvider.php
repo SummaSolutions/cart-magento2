@@ -88,15 +88,15 @@ class CustomConfigProvider
         return $this->methodInstance->isAvailable() ? [
             'payment' => [
                 $this->methodCode => [
-                    'bannerUrl'        => $this->methodInstance->getConfigData('banner_checkout'),
-                    'country'          => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country')),
+                    'bannerUrl'        => $this->_scopeConfig->getValue('payment/mercadopago_custom/banner_checkout'),
+                    'country'          => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', 'default', $this->_storeManager->getStore()->getId())),
                     'grand_total'      => $this->_checkoutSession->getQuote()->getGrandTotal(),
                     'base_url'         => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                     'success_url'      => $this->_context->getUrl()->getUrl('mercadopago/custom/success', ['_secure' => true]),
-                    'logEnabled'       => $this->_scopeConfig->getValue('payment/mercadopago/logs'),
-                    'discount_coupon'  => $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/coupon_mercadopago'),
+                    'logEnabled'       => $this->_scopeConfig->getValue('payment/mercadopago/logs', 'default', $this->_storeManager->getStore()->getId()),
+                    'discount_coupon'  => $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/coupon_mercadopago', 'default', $this->_storeManager->getStore()->getId()),
                     'route'            => $this->_request->getRouteName(),
-                    'public_key'       => $this->methodInstance->getConfigData('public_key'),
+                    'public_key'       => $this->_scopeConfig->getValue('payment/mercadopago_custom/public_key'),
                     'customer'         => $this->methodInstance->getCustomerAndCards(),
                     'loading_gif'      => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'text-currency'    => __('$'),

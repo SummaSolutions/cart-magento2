@@ -142,7 +142,7 @@ class AbstractSuccess
      */
     public function getOrderUrl()
     {
-        $params = ['order_id' => $this->_checkoutSession->getLastRealOrderId()];
+        $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
         $url = $this->_urlBuilder->getUrl('sales/order/view', $params);
 
         return $url;
