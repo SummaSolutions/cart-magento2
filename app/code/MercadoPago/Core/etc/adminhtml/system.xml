@@ -56,6 +56,11 @@
                     <comment>Enable to display actual error messages to frontend users (not recommended on production environment)</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="use_successpage_mp" translate="label comment" type="select" sortOrder="75" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Use Mercado Pago success page</label>
+                    <comment>If set this config with NO, magento success page will be used</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="mercadopago_custom" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Mercado Pago - Custom Checkout</label>

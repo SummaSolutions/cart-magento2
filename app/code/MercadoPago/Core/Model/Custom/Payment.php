@@ -9,6 +9,8 @@ use Magento\Payment\Model\Method\ConfigInterface;
  * Class Payment
  *
  * @package MercadoPago\Core\Model\Custom
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Payment
     extends \Magento\Payment\Model\Method\Cc
@@ -190,6 +192,7 @@ class Payment
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Sales\Model\OrderFactory                    $orderFactory
      * @param \MercadoPago\Core\Model\Core                         $coreModel
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
@@ -398,7 +401,8 @@ class Payment
      */
     public function getOrderPlaceRedirectUrl()
     {
-        return $this->_urlBuilder->getUrl('mercadopago/custom/success', ['_secure' => true]);
+        $url = $this->_helperData->getSuccessUrl();
+        return $this->_urlBuilder->getUrl($url, ['_secure' => true]);
     }
 
     /**
@@ -509,7 +513,7 @@ class Payment
      *
      * @param $email
      *
-     * @return bool
+     * @return bool|array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getOrCreateCustomer($email)

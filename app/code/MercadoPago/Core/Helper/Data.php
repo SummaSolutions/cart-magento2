@@ -8,6 +8,7 @@ use Magento\Framework\View\LayoutFactory;
  * Class Data
  *
  * @package MercadoPago\Core\Helper
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Data
     extends \Magento\Payment\Helper\Data
@@ -410,4 +411,14 @@ class Data
         return $finalValue;
     }
 
+    public function getSuccessUrl()
+    {
+        if ($this->scopeConfig->getValue('payment/mercadopago/use_successpage_mp')) {
+            $url = 'mercadopago/success/page';
+        } else {
+            $url = 'checkout/onepage/success';
+        }
+
+        return $url;
+    }
 }
