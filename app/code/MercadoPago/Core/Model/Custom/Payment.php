@@ -116,14 +116,6 @@ class Payment
     protected $_canReviewPayment = true;
 
     /**
-     * {inheritdoc}
-     */
-    public function postRequest(DataObject $request, ConfigInterface $config)
-    {
-        return '';
-    }
-
-    /**
      * Payment Method feature
      *
      * @var bool
@@ -174,6 +166,13 @@ class Payment
     protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
 
     /**
+     * Request object
+     *
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    protected $_request;
+
+    /**
      * @param \MercadoPago\Core\Helper\Data                        $helperData
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Customer\Model\Session                      $customerSession
@@ -209,7 +208,8 @@ class Payment
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-		\MercadoPago\Core\Model\Core $coreModel)
+        \MercadoPago\Core\Model\Core $coreModel,
+        \Magento\Framework\App\RequestInterface $request)
     {
         parent::__construct(
             $context,
@@ -229,7 +229,16 @@ class Payment
         $this->_customerSession = $customerSession;
         $this->_orderFactory = $orderFactory;
         $this->_urlBuilder = $urlBuilder;
+        $this->_request = $request;
 
+    }
+
+    /**
+     * {inheritdoc}
+     */
+    public function postRequest(DataObject $request, ConfigInterface $config)
+    {
+        return '';
     }
 
     /**
@@ -408,6 +417,13 @@ class Payment
         if (!$parent || !$custom) {
             return false;
         }
+
+        $debugMode = $this->_scopeConfig->getValue('payment/mercadopago/debug_mode');
+        $secure = $this->_request->isSecure();
+        if (!$secure && !$debugMode) {
+            return false;
+        }
+
         return $this->_helperData->isValidAccessToken($accessToken);
     }
 
