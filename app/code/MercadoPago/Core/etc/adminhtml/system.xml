@@ -58,7 +58,7 @@
                 </field>
             </group>
             <group id="mercadopago_custom" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Mercado Pago - Custom Checkout</label>
+                <label>Mercado Pago - Custom Checkout</label>
                 <field id="public_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key</label>
                 </field>
@@ -82,6 +82,12 @@
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_custom/active</config_path>
+                        <comment>
+                            <![CDATA[It is a requirement that you have a SSL certificate, and the payment form to be provided under an HTTPS page.
+                                        During the sandbox mode tests, you can operate over HTTP,
+                                        but for homologation you'll need to acquire the certificate in case you don't have it.
+                                        <a href="https://www.mercadopago.com.ar/developers/solutions/payments/custom-checkout/appliance-requirements/" target="_blank">Learn More</a>]]>
+                        </comment>
                     </field>
                     <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment Title</label>
