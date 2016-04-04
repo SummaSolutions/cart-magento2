@@ -210,24 +210,6 @@ class Core
     }
 
     /**
-     * @return \Magento\Checkout\Model\Session
-     */
-    protected function _getCheckout()
-    {
-        return Mage::getSingleton('checkout/session');
-    }
-
-    /**
-     * Get admin checkout session namespace
-     *
-     * @return \Magento\Backend\Model\Session\Quote
-     */
-    protected function _getAdminCheckout()
-    {
-        return Mage::getSingleton('adminhtml/session_quote');
-    }
-
-    /**
      * Retrieves Quote
      *
      * @param integer $quoteId
@@ -578,7 +560,7 @@ class Core
             $this->_coreHelper->log("erro post pago: " . $e, 'mercadopago-custom.log');
             $this->_coreHelper->log("response post pago: ", 'mercadopago-custom.log', $response);
 
-            //$exception->; TODO change exception functionality
+            $exception->setPhrase(new \Magento\Framework\Phrase($e));
             throw $exception;
         }
     }
@@ -738,7 +720,7 @@ class Core
         }
         $message = $helper->getMessage($status, $payment);
         if ($this->_coreHelper->isStatusUpdated()) {
-            return ['text' => $message, 'code' => MercadoPago_Core_Helper_Response::HTTP_OK];
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         }
 
         try {

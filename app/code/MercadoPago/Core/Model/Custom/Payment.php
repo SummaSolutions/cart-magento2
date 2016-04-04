@@ -141,11 +141,6 @@ class Payment
     protected $_checkoutSession;
 
     /**
-     * @var \Magento\Customer\Model\Session
-     */
-    protected $_customerSession;
-
-    /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_orderFactory;
@@ -176,7 +171,6 @@ class Payment
     /**
      * @param \MercadoPago\Core\Helper\Data                        $helperData
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
-     * @param \Magento\Customer\Model\Session                      $customerSession
      * @param \Magento\Sales\Model\OrderFactory                    $orderFactory
      * @param \Magento\Framework\UrlInterface                      $urlBuilder
      * @param \Magento\Framework\Model\Context                     $context
@@ -195,7 +189,6 @@ class Payment
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Customer\Model\Session $customerSession,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\Model\Context $context,
@@ -207,8 +200,6 @@ class Payment
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
 		\MercadoPago\Core\Model\Core $coreModel)
     {
         parent::__construct(
@@ -226,7 +217,6 @@ class Payment
         $this->_helperData = $helperData;
         $this->_coreModel = $coreModel;
         $this->_checkoutSession = $checkoutSession;
-        $this->_customerSession = $customerSession;
         $this->_orderFactory = $orderFactory;
         $this->_urlBuilder = $urlBuilder;
 
@@ -348,7 +338,7 @@ class Payment
         }
 
         $preference['binary_mode'] = $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/binary_mode');
-        $preference['statement_descriptor'] = $this->_scopeConfig->getValue('payment/mercadopago_custom/statement_descriptor');
+        $preference['statement_descriptor'] = $this->getConfigData('statement_descriptor');
 
         $this->_helperData->log("Credit Card -> PREFERENCE to POST /v1/payments", self::LOG_NAME, $preference);
 
@@ -402,8 +392,8 @@ class Payment
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
-        $publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
+        $accessToken = $this->getConfigData('access_token');
+        $publicKey = $this->getConfigData('public_key');
         $custom = (!empty($publicKey) && !empty($accessToken));
         if (!$parent || !$custom) {
             return false;
@@ -452,7 +442,7 @@ class Payment
      */
     public function checkAndcreateCard($customer, $token, $payment)
     {
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
+        $accessToken = $this->getConfigData('access_token');
 
 
         $mp = $this->_helperData->getApiInstance($accessToken);
@@ -501,7 +491,7 @@ class Payment
         if (empty($email)) {
             return false;
         }
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
+        $accessToken = $this->getConfigData('access_token');
 
         $mp = $this->_helperData->getApiInstance($accessToken);
 

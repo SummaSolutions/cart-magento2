@@ -50,4 +50,8 @@ class Exception
             'transaction_amount_invalid' => "Amount discount is invalid"
         ];
 
+    public function setPhrase(\Magento\Framework\Phrase $phrase) {
+        $this->phrase = $phrase;
+    }
+
 }

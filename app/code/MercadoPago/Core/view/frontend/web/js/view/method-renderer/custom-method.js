@@ -97,8 +97,8 @@ define(
                         availableCards.push(new Card(card['id'],
                             card['payment_method']['name']+ ' ended in ' + card['last_four_digits'],
                             card['first_six_digits'],
-                            card['security_code']['length'] ),
-                            card['payment_method']['secure_thumbnail']);
+                            card['security_code']['length'],
+                            card['payment_method']['secure_thumbnail']));
                     });
                     return availableCards;
                 }
