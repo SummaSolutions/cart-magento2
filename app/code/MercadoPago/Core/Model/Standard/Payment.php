@@ -295,9 +295,10 @@ class Payment
             "street_number" => ""
         ];
 
+        $url = $this->_helperData->getSuccessUrl();
         $arr['back_urls'] = [
-            'success' => $this->_urlBuilder->getUrl('mercadopago/standard/success'),
-            'pending' => $this->_urlBuilder->getUrl('mercadopago/standard/success'),
+            'success' => $this->_urlBuilder->getUrl($url),
+            'pending' => $this->_urlBuilder->getUrl($url),
             'failure' => $this->_urlBuilder->getUrl('checkout/onepage/failure'),
         ];
 

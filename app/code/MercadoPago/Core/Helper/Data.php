@@ -410,4 +410,14 @@ class Data
         return $finalValue;
     }
 
+    public function getSuccessUrl()
+    {
+        if ($this->scopeConfig->getValue('payment/mercadopago/use_successpage_mp')) {
+            $url = 'mercadopago/success/page';
+        } else {
+            $url = 'checkout/onepage/success';
+        }
+
+        return $url;
+    }
 }

@@ -398,7 +398,8 @@ class Payment
      */
     public function getOrderPlaceRedirectUrl()
     {
-        return $this->_urlBuilder->getUrl('mercadopago/custom/success', ['_secure' => true]);
+        $url = $this->_helperData->getSuccessUrl();
+        return $this->_urlBuilder->getUrl($url, ['_secure' => true]);
     }
 
     /**
