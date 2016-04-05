@@ -2,15 +2,18 @@
 define(
     [
         'Magento_Checkout/js/view/payment/default',
-        'MPcheckout',
+        'Magento_Checkout/js/model/payment-service',
+        'Magento_Checkout/js/model/payment/method-list',
+        'Magento_Checkout/js/action/get-totals',
         'jquery',
+        'MPcheckout',
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Checkout/js/action/set-payment-information',
         'meli',
         'tinyj',
         'MPcustom'
     ],
-    function (Component) {
+    function (Component,paymentService,paymentMethodList,getTotalsAction,$) {
         'use strict';
 
         var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
@@ -86,6 +89,11 @@ define(
                 if (configPayment != undefined) {
                     if (configPayment['discount_coupon'] == 1) {
                         MercadoPagoCustom.getInstance().initDiscountTicket();
+                        MercadoPagoCustom.getInstance().setPaymentService(paymentService);
+                        MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
+                        MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
+                        //var deferred = $.Deferred();
+                        //getTotalsAction([], deferred);
                     }
                 }
             },
