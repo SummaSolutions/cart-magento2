@@ -1,6 +1,6 @@
 define(
     [
-        'MarcadoPago_Core/js/view/checkout/summary/discount_coupon'
+        'MercadoPago_Core/js/view/checkout/summary/discount_coupon'
     ],
     function (Component) {
         'use strict';

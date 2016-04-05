@@ -9,11 +9,9 @@ define(
         "use strict";
         return Component.extend({
             defaults: {
-                isFullTaxSummaryDisplayed: window.checkoutConfig.isFullTaxSummaryDisplayed || false,
                 template: 'MercadoPago_Core/checkout/summary/discount_coupon'
             },
             totals: quote.getTotals(),
-            isTaxDisplayedInGrandTotal: window.checkoutConfig.includeTaxInGrandTotal || false,
             isDisplayed: function() {
                 return this.isFullMode();
             },
@@ -27,7 +25,7 @@ define(
             getBaseValue: function() {
                 var price = 0;
                 if (this.totals()) {
-                    price = this.totals().base_fee;
+                    price = this.totals().base_discount_coupon_amount;
                 }
                 return priceUtils.formatPrice(price, quote.getBasePriceFormat());
             }
