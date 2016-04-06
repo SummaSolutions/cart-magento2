@@ -74,13 +74,27 @@ class DiscountCoupon
             $this->_setAmount($balance);
             $this->_setBaseAmount($balance);
 
+            $total->setDiscountCouponDescription($this->getCode());
+            $total->setDiscountCouponAmount($balance);
+            $total->setBaseDiscountCouponAmount($balance);
+//            $total->setSubtotalWithDiscount($total->getSubtotal() + $discountAmount);
+//            $total->setBaseSubtotalWithDiscount($total->getBaseSubtotal() + $discountAmount);
+
+            $total->addTotalAmount($this->getCode(),$address->getDiscountCouponAmount());
+            $total->addBaseTotalAmount($this->getCode(),$address->getBaseDiscountCouponAmount());
             return $this;
         }
         if ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING) {
             $address->setDiscountCouponAmount(0);
             $address->setBaseDiscountCouponAmount(0);
+
         }
 
+        $total->setDiscountCouponDescription($this->getCode());
+        $total->setDiscountCouponAmount($address->getDiscountCouponAmount());
+        $total->setBaseDiscountCouponAmount($address->getBaseDiscountCouponAmount());
+        $total->addTotalAmount($this->getCode(),$address->getDiscountCouponAmount());
+        $total->addBaseTotalAmount($this->getCode(),$address->getBaseDiscountCouponAmount());
         return $this;
     }
 
@@ -95,13 +109,13 @@ class DiscountCoupon
         $result = null;
         $amount = $total->getDiscountCouponAmount();
 
-        if ($amount != 0) {
+//        if ($amount != 0) {
             $result = [
                 'code'  => $this->getCode(),
                 'title' => __('Discount Mercado Pago'),
                 'value' => $amount
             ];
-        }
+//        }
 
         return $result;
     }

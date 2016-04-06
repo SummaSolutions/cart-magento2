@@ -22,13 +22,6 @@ define(
                 }
                 return this.getFormattedPrice(price);
             },
-            getBaseValue: function() {
-                var price = 0;
-                if (this.totals()) {
-                    price = this.totals().base_discount_coupon_amount;
-                }
-                return priceUtils.formatPrice(price, quote.getBasePriceFormat());
-            }
         });
     }
 );
