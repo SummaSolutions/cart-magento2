@@ -77,6 +77,25 @@ class UpgradeSchema
 
         }
 
+
+        /*********** VERSION 1.0.4 ADD DISCOUNT COUPON COLUMNS TO QUOTE_ADDRESS ***********/
+
+        if (version_compare($context->getVersion(), '1.0.4', '<=')) {
+            $quoteAddressTable = $installer->getTable('quote_address');
+            $columns = ['discount_coupon_amount'      => ['type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                                                          'length'   => '12,4',
+                                                          'nullable' => true,
+                                                          'comment'  => 'Discount coupon Amount',],
+                        'base_discount_coupon_amount' => ['type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                                                          'length'   => '12,4',
+                                                          'nullable' => true,
+                                                          'comment'  => 'Base Discount coupon Amount',]];
+
+            foreach ($columns as $name => $definition) {
+                $connection->addColumn($quoteAddressTable, $name, $definition);
+            }
+        }
+
         $setup->endSetup();
     }
 }

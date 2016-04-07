@@ -6,14 +6,14 @@ define(
         'Magento_Checkout/js/model/payment/method-list',
         'Magento_Checkout/js/action/get-totals',
         'jquery',
+        'Magento_Checkout/js/action/set-payment-information',
         'MPcheckout',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'Magento_Checkout/js/action/set-payment-information',
         'meli',
         'tinyj',
         'MPcustom'
     ],
-    function (Component,paymentService,paymentMethodList,getTotalsAction,$) {
+    function (Component,paymentService,paymentMethodList,getTotalsAction,$,setPaymentInformationAction) {
         'use strict';
 
         var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
@@ -91,7 +91,7 @@ define(
                         MercadoPagoCustom.getInstance().initDiscountTicket();
                         MercadoPagoCustom.getInstance().setPaymentService(paymentService);
                         MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
-                        MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
+                        MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$,setPaymentInformationAction);
                         //var deferred = $.Deferred();
                         //getTotalsAction([], deferred);
                     }

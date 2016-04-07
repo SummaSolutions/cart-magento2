@@ -147,7 +147,8 @@ var MercadoPagoCustom = (function () {
         paymentService: null,
         paymentMethodList:null,
         totalAction: null,
-        jqObject: null
+        jqObject: null,
+        paymentInformation: null
     };
 
     function getMessages() {
@@ -194,9 +195,10 @@ var MercadoPagoCustom = (function () {
         self.paymentMethodList = paymentList;
     }
 
-    function setTotalsAction(totalAction,jqObject) {
+    function setTotalsAction(totalAction,jqObject,paymentInformation) {
         self.totalAction = totalAction;
         self.jqObject = jqObject;
+        self.paymentInformation = paymentInformation;
     }
 
 // MERCADO LOG
@@ -1034,6 +1036,14 @@ var MercadoPagoCustom = (function () {
                 guessingPaymentMethod(event.type = self.constants.keyup);
             }
             $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
+            var deferred = self.jqObject.Deferred();
+            self.totalAction([], deferred);
+            self.jqObject.when(deferred).done(function() {
+                self.paymentService.setPaymentMethods(
+                    self.paymentMethodList()
+                );
+            });
+            self.paymentInformation({}, {'method': 'mercadopago_customticket'})
             showLogMercadoPago(self.messages.removeCoupon);
         }
 

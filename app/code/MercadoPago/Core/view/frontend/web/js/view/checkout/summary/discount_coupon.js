@@ -17,7 +17,7 @@ define(
             },
             getValue: function() {
                 var price = 0;
-                if (this.totals()) {
+                if (this.totals() && totals.getSegment('discount_coupon')) {
                     price = totals.getSegment('discount_coupon').value;
                 }
                 return this.getFormattedPrice(price);
