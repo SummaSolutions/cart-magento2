@@ -15,11 +15,17 @@ define(
             isDisplayed: function() {
                 return this.isFullMode();
             },
-            getValue: function() {
+
+            getRawValue: function () {
                 var price = 0;
                 if (this.totals() && totals.getSegment('discount_coupon')) {
                     price = totals.getSegment('discount_coupon').value;
                 }
+                return price;
+            },
+
+            getValue: function() {
+                var price = this.getRawValue();
                 return this.getFormattedPrice(price);
             },
         });

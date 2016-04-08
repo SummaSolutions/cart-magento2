@@ -46,7 +46,6 @@ class DiscountCoupon
     }
 
     protected function _getDIscountAmount() {
-        $amount = $this->request->getPost('mercadopago-discount-amount');
         $amount = $this->_registry->registry('mercadopago_discount_amount');
         return $amount * -1;
     }

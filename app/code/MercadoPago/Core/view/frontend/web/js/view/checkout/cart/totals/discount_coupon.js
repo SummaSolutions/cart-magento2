@@ -11,7 +11,7 @@ define(
              * @override
              */
             isDisplayed: function () {
-               return this.getValue() != 0;
+               return this.getRawValue() != 0;
             }
         });
     }
