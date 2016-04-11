@@ -12,11 +12,6 @@ class Coupon
 
 {
     /**
-     * @var \MercadoPago\Core\Model\Standard\PaymentFactory
-     */
-    protected $_paymentFactory;
-
-    /**
      * @var \MercadoPago\Core\Helper\
      */
     protected $coreHelper;
@@ -27,24 +22,48 @@ class Coupon
     protected $coreModel;
 
     /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $_checkoutSession;
+
+    /**
+     * Quote repository.
+     *
+     * @var \Magento\Quote\Api\CartRepositoryInterface
+     */
+    protected $quoteRepository;
+
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $_registry;
+
+
+    /**
      * Coupon constructor.
      *
-     * @param \Magento\Framework\App\Action\Context           $context
-     * @param \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory
-     * @param \MercadoPago\Core\Helper\Data                   $coreHelper
-     * @param \MercadoPago\Core\Model\Core                    $coreModel
+     * @param \Magento\Framework\App\Action\Context      $context
+     * @param \MercadoPago\Core\Helper\Data              $coreHelper
+     * @param \MercadoPago\Core\Model\Core               $coreModel
+     * @param \Magento\Checkout\Model\Session            $checkoutSession
+     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+     * @param \Magento\Framework\Registry                $registry
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory,
         \MercadoPago\Core\Helper\Data $coreHelper,
-        \MercadoPago\Core\Model\Core $coreModel
+        \MercadoPago\Core\Model\Core $coreModel,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        \Magento\Framework\Registry $registry
     )
     {
         parent::__construct($context);
-        $this->_paymentFactory = $paymentFactory;
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
+        $this->_checkoutSession = $checkoutSession;
+        $this->quoteRepository = $quoteRepository;
+        $this->_registry     = $registry;
     }
 
     /**
@@ -62,11 +81,15 @@ class Coupon
                 "status"   => 400,
                 "response" => array(
                     "error"   => "invalid_id",
-                    "message" => "invalid id"
+                    "message" => "invalid id",
+                    "coupon_amount" => 0
                 )
             );
         }
-
+        //save value to DiscountCoupon collect
+        $this->_registry->register('mercadopago_discount_amount', $response['response']['coupon_amount']);
+        $quote = $this->_checkoutSession->getQuote();
+        $this->quoteRepository->save($quote->collectTotals());
         $jsonData = json_encode($response);
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody($jsonData);
