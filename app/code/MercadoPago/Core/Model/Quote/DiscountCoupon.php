@@ -15,6 +15,9 @@ class DiscountCoupon
      */
     protected $request;
 
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
 
     /**
@@ -45,7 +48,12 @@ class DiscountCoupon
         return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING && count($items));
     }
 
-    protected function _getDIscountAmount() {
+    /**
+     * Return discount amount stored
+     *
+     * @return mixed
+     */
+    protected function _getDiscountAmount() {
         $amount = $this->_registry->registry('mercadopago_discount_amount');
         return $amount * -1;
     }
@@ -71,7 +79,7 @@ class DiscountCoupon
         if ($this->_getDiscountCondition($address,$shippingAssignment)) {
             parent::collect($quote, $shippingAssignment, $total);
 
-            $balance = $this->_getDIscountAmount();
+            $balance = $this->_getDiscountAmount();
 
             $address->setDiscountCouponAmount($balance);
             $address->setBaseDiscountCouponAmount($balance);

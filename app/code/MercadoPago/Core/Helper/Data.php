@@ -411,6 +411,11 @@ class Data
         return $finalValue;
     }
 
+    /**
+     * Return success url
+     *
+     * @return string
+     */
     public function getSuccessUrl()
     {
         if ($this->scopeConfig->getValue('payment/mercadopago/use_successpage_mp')) {
