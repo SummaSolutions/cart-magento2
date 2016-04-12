@@ -20,6 +20,7 @@ class Core
      * Define path of access token config
      */
     const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
+    const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
 
     /**
      * {@inheritdoc}
@@ -207,24 +208,6 @@ class Core
         $this->_urlBuilder = $urlBuilder;
         $this->_helperImage = $helperImage;
         $this->_checkoutSession = $checkoutSession;
-    }
-
-    /**
-     * @return \Magento\Checkout\Model\Session
-     */
-    protected function _getCheckout()
-    {
-        return Mage::getSingleton('checkout/session');
-    }
-
-    /**
-     * Get admin checkout session namespace
-     *
-     * @return \Magento\Backend\Model\Session\Quote
-     */
-    protected function _getAdminCheckout()
-    {
-        return Mage::getSingleton('adminhtml/session_quote');
     }
 
     /**
@@ -554,7 +537,7 @@ class Core
 
         //get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN);
         }
         $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
@@ -579,7 +562,7 @@ class Core
             $this->_coreHelper->log("erro post pago: " . $e, 'mercadopago-custom.log');
             $this->_coreHelper->log("response post pago: ", 'mercadopago-custom.log', $response);
 
-            //$exception->; TODO change exception functionality
+            $exception->setPhrase(new \Magento\Framework\Phrase($e));
             throw $exception;
         }
     }
@@ -739,7 +722,7 @@ class Core
         }
         $message = $helper->getMessage($status, $payment);
         if ($this->_coreHelper->isStatusUpdated()) {
-            return ['text' => $message, 'code' => MercadoPago_Core_Helper_Response::HTTP_OK];
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         }
 
         try {

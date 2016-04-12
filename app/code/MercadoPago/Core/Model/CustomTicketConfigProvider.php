@@ -39,6 +39,7 @@ class CustomTicketConfigProvider
     protected $_request;
 
     protected $_assetRepo;
+    protected $_urlBuilder;
 
     /**
      * @param PaymentHelper $paymentHelper

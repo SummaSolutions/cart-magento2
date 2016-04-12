@@ -157,6 +157,8 @@ class Payment
      *
      */
     const LOG_NAME = 'custom_payment';
+    protected $_accessToken;
+    protected $_publicKey;
     /**
      * @var array
      */
@@ -360,7 +362,7 @@ class Payment
         }
 
         $preference['binary_mode'] = $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/binary_mode');
-        $preference['statement_descriptor'] = $this->_scopeConfig->getValue('payment/mercadopago_custom/statement_descriptor');
+        $preference['statement_descriptor'] = $this->getConfigData('statement_descriptor');
 
         $this->_helperData->log("Credit Card -> PREFERENCE to POST /v1/payments", self::LOG_NAME, $preference);
 
@@ -415,9 +417,13 @@ class Payment
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
-        $publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
-        $custom = (!empty($publicKey) && !empty($accessToken));
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        }
+        if (!$this->_publicKey) {
+            $this->_publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
+        }
+        $custom = (!empty($this->_publicKey) && !empty($this->_accessToken));
         if (!$parent || !$custom) {
             return false;
         }
@@ -472,9 +478,7 @@ class Payment
      */
     public function checkAndcreateCard($customer, $token, $payment)
     {
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
-
-
+        $accessToken = $this->getConfigData('access_token');
         $mp = $this->_helperData->getApiInstance($accessToken);
 
         foreach ($customer['cards'] as $card) {
@@ -521,9 +525,12 @@ class Payment
         if (empty($email)) {
             return false;
         }
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
+        //get access_token
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        }
 
-        $mp = $this->_helperData->getApiInstance($accessToken);
+        $mp = $this->_helperData->getApiInstance($this->_accessToken);
 
         $customer = $mp->get("/v1/customers/search", ["email" => $email]);
 

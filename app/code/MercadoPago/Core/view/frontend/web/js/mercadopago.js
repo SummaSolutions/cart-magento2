@@ -62,6 +62,7 @@ var MercadoPagoCustom = (function () {
             checkout: 'checkout',
             mexico: 'MLM',
             brazil: 'MLB',
+            colombia: 'MCO',
             mercadopagoCustom: 'mercadopago_custom',
             validateDiscount: 'validate-discount',
             validateDocNumber: 'mp-validate-docnumber',
@@ -247,7 +248,12 @@ var MercadoPagoCustom = (function () {
             } else {
                 setTimeout(function () {
                     setPaymentMethods()
-                }, 1000);
+                }, 5000);
+            }
+            if (siteId == self.constants.colombia) {
+                setTimeout(function () {
+                    setPaymentMethods()
+                }, 5000);
             }
 
             defineInputs();
@@ -373,8 +379,13 @@ var MercadoPagoCustom = (function () {
                 if (index > -1) {
                     excludeInputs.splice(index, 1);
                 }
-
+            } else if (siteId == self.constants.colombia) {
+                var indexColombia = excludeInputs.indexOf(self.selectors.paymentMethod);
+                if (indexColombia > -1) {
+                    excludeInputs.splice(indexColombia, 1);
+                }
             }
+
             if (!this.issuerMandatory) {
                 excludeInputs.push(self.selectors.issuer);
             }
@@ -594,6 +605,8 @@ var MercadoPagoCustom = (function () {
                 var selector = oneClickPay == true ? self.selectors.cardId : self.selectors.cardNumberInput;
                 if (response.length == 1) {
                     TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, response[0].secure_thumbnail);
+                } else if (oneClickPay != 0) {
+                    TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, TinyJ(selector).getSelectedOption().attribute('secure_thumb'));
                 }
 
                 var bin = getBin();

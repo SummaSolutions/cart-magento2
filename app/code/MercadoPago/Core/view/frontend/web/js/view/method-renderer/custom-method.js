@@ -92,16 +92,21 @@ define(
                     var _customer = window.checkoutConfig.payment[this.getCode()]['customer'];
                     if (!_customer) return [];
 
-                    var Card = function(value, name, firstSix, securityCodeLength) {
+                    var Card = function(value, name, firstSix, securityCodeLength, secureThumbnail) {
                         this.cardName = name;
                         this.value = value;
                         this.firstSix = firstSix;
                         this.securityCodeLength = securityCodeLength;
+                        this.secureThumbnail = secureThumbnail;
                     };
 
                     var availableCards = [];
                     _customer.cards.forEach(function(card) {
-                        availableCards.push(new Card(card['id'], card['payment_method']['name']+ ' ended in ' + card['last_four_digits'], card['first_six_digits'], card['security_code']['length'] ));
+                        availableCards.push(new Card(card['id'],
+                            card['payment_method']['name']+ ' ended in ' + card['last_four_digits'],
+                            card['first_six_digits'],
+                            card['security_code']['length'],
+                            card['payment_method']['secure_thumbnail']));
                     });
                     return availableCards;
                 }
@@ -110,6 +115,7 @@ define(
             setOptionsExtraValues: function (option, item) {
                 jQuery(option).attr('first_six_digits', item.firstSix);
                 jQuery(option).attr('security_code_length', item.securityCodeLength);
+                jQuery(option).attr('secure_thumb', item.secureThumbnail);
             },
             getCustomerAttribute: function (attribute) {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {

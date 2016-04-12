@@ -69,7 +69,7 @@
                                            data-element-id="#securityCodeOCP__mp"
                                            data-bind="attr: {title: $t('Card Verification Number'),
                                                 'data-container': getCode() + '-cc-cvv',
-                                                'data-validate': JSON.stringify({'required-number':true, 'validate-card-cvv':'#securityCodeOCP'})},
+                                                'data-validate': JSON.stringify({'required-number':true})},
                                                 enable: isActive($parents),
                                                 value: creditCardVerificationNumber"/>
                                     <div class="field-tooltip toggle">
@@ -129,7 +129,7 @@
                                                         id="cardExpirationMonth"
                                                         data-checkout="cardExpirationMonth"
                                                         data-element-id="#expiration_date__mp"
-                                                        data-bind="attr: {'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({required:true, 'validate-cc-exp':'#cardExpirationYear'})},
+                                                        data-bind="attr: {'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({required:true})},
                                             enable: isActive($parents),
                                             options: getCcMonthsValues(),
                                             optionsValue: 'value',
@@ -189,7 +189,7 @@
                                            data-element-id="#securityCode__mp"
                                            data-bind="attr: {title: $t('Card Verification Number'),
                                                 'data-container': getCode() + '-cc-cvv',
-                                                'data-validate': JSON.stringify({'required-number':true, 'validate-card-cvv':'#securityCode'})},
+                                                'data-validate': JSON.stringify({'required-number':true})},
                                                 enable: isActive($parents),
                                                 value: creditCardVerificationNumber"/>
                                     <div class="field-tooltip toggle">
@@ -284,6 +284,7 @@
             <div class="primary">
                 <button data-role="review-save"
                         type="submit"
+                        id="mp-custom-save-payment"
                         data-bind="
                         attr: {title: $t('Place Order')},
                         enable: (getCode() == isChecked()),

@@ -54,9 +54,10 @@ Feature: A customer should be able to do a checkout with MercadoPago
     And I press "#shipping-method-buttons-container .button" element
     And I wait for "8" seconds
     And I select payment method "mercadopago_standard"
-    And I press "button[data-role='review-save']" element
+    And I press "#mp-standard-save-payment" element
     And I wait for "5" seconds
     When I switch to the iframe "mercadopago_standard-iframe"
+    And I am logged in MP as "test_user_58666377@testuser.com" "qatest3200"
     And I fill the iframe fields
 
     When I press "#next" input element
