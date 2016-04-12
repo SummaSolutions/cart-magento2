@@ -158,6 +158,8 @@ class Payment
      *
      */
     const LOG_NAME = 'custom_payment';
+    protected $_accessToken;
+    protected $_publicKey;
     /**
      * @var array
      */
@@ -392,13 +394,17 @@ class Payment
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
-        $accessToken = $this->getConfigData('access_token');
-        $publicKey = $this->getConfigData('public_key');
-        $custom = (!empty($publicKey) && !empty($accessToken));
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        }
+        if (!$this->_publicKey) {
+            $this->_publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
+        }
+        $custom = (!empty($this->_publicKey) && !empty($this->_accessToken));
         if (!$parent || !$custom) {
             return false;
         }
-        return $this->_helperData->isValidAccessToken($accessToken);
+        return $this->_helperData->isValidAccessToken($this->_accessToken);
     }
 
     /**
@@ -443,8 +449,6 @@ class Payment
     public function checkAndcreateCard($customer, $token, $payment)
     {
         $accessToken = $this->getConfigData('access_token');
-
-
         $mp = $this->_helperData->getApiInstance($accessToken);
 
         foreach ($customer['cards'] as $card) {
@@ -491,9 +495,12 @@ class Payment
         if (empty($email)) {
             return false;
         }
-        $accessToken = $this->getConfigData('access_token');
+        //get access_token
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        }
 
-        $mp = $this->_helperData->getApiInstance($accessToken);
+        $mp = $this->_helperData->getApiInstance($this->_accessToken);
 
         $customer = $mp->get("/v1/customers/search", ["email" => $email]);
 
