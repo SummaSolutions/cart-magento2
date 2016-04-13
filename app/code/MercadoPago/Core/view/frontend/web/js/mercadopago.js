@@ -141,7 +141,8 @@ var MercadoPagoCustom = (function () {
         url: {
             amount: 'mercadopago/api/amount',
             couponUrlFormat: 'mercadopago/api/coupon?id={0}',
-            termsUrlFormat: "https://api.mercadolibre.com/campaigns/{0}/terms_and_conditions?format_type=html"
+            termsUrlFormat: "https://api.mercadolibre.com/campaigns/{0}/terms_and_conditions?format_type=html",
+            subtotals: 'mercadopago/api/subtotals'
         },
         enableLog: true,
         paymentService: null,
@@ -339,7 +340,24 @@ var MercadoPagoCustom = (function () {
         }
 
         function setTotalAmount() {
-            TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(TinyJ(this).getSelectedOption().attribute(self.constants.cost));
+            var cost = TinyJ(this).getSelectedOption().attribute(self.constants.cost);
+            var url = baseUrl+self.url.subtotals+'?cost='+cost;
+            tiny.ajax( url , {
+                method: http.method.GET,
+                timeout: 5000,
+                success: function (response, status, xhr) {
+                    TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(cost);
+                    var deferred = self.jqObject.Deferred();
+                    self.totalAction([], deferred);
+                    self.jqObject.when(deferred).done(function() {
+                        self.paymentService.setPaymentMethods(
+                            self.paymentMethodList()
+                        );
+                    });
+                },
+                error: function (status, response) {
+                }
+            });
         }
 
         function defineInputs() {
@@ -981,6 +999,7 @@ var MercadoPagoCustom = (function () {
 
                         $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
 
+                        var deferred = self.jqObject.Deferred();
                         self.totalAction([], deferred);
                         self.jqObject.when(deferred).done(function() {
                             self.paymentService.setPaymentMethods(
@@ -993,7 +1012,6 @@ var MercadoPagoCustom = (function () {
                             guessingPaymentMethod(event.type = self.constants.keyup);
                         }
 
-                        var deferred = self.jqObject.Deferred();
                     } else {
 
                         //reset input amount

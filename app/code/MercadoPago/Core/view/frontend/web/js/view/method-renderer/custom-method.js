@@ -65,6 +65,9 @@ define(
                     window.PublicKeyMercadoPagoCustom = window.checkoutConfig.payment[this.getCode()]['public_key'];
                     MercadoPagoCustom.enableLog(window.checkoutConfig.payment[this.getCode()]['logEnabled']);
                     MercadoPagoCustom.getInstance().init();
+                    MercadoPagoCustom.getInstance().setPaymentService(paymentService);
+                    MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
+                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
                     if (this.isOCPReady()) {
                         MercadoPagoCustom.getInstance().initOCP();
                     }
@@ -75,9 +78,6 @@ define(
                 if (this.isCouponEnabled()){
                     MercadoPagoCustom.getInstance().initDiscount();
                     MercadoPagoCustom.getInstance().initDiscountTicket();
-                    MercadoPagoCustom.getInstance().setPaymentService(paymentService);
-                    MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
-                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
                 }
             },
 
