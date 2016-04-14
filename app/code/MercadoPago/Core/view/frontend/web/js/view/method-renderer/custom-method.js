@@ -15,7 +15,7 @@ define(
         'MPcustom',
         'tiny'
     ],
-    function ($, Component, quote, paymentService,paymentMethodList,getTotalsAction) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction) {
         'use strict';
 
         return Component.extend({
@@ -67,7 +67,7 @@ define(
                     MercadoPagoCustom.getInstance().init();
                     MercadoPagoCustom.getInstance().setPaymentService(paymentService);
                     MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
-                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
+                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction, $);
                     if (this.isOCPReady()) {
                         MercadoPagoCustom.getInstance().initOCP();
                     }
@@ -75,7 +75,7 @@ define(
             },
 
             initDiscountApp: function () {
-                if (this.isCouponEnabled()){
+                if (this.isCouponEnabled()) {
                     MercadoPagoCustom.getInstance().initDiscount();
                     MercadoPagoCustom.getInstance().initDiscountTicket();
                 }
@@ -92,7 +92,7 @@ define(
                     var _customer = window.checkoutConfig.payment[this.getCode()]['customer'];
                     if (!_customer) return [];
 
-                    var Card = function(value, name, firstSix, securityCodeLength) {
+                    var Card = function (value, name, firstSix, securityCodeLength) {
                         this.cardName = name;
                         this.value = value;
                         this.firstSix = firstSix;
@@ -100,8 +100,8 @@ define(
                     };
 
                     var availableCards = [];
-                    _customer.cards.forEach(function(card) {
-                        availableCards.push(new Card(card['id'], card['payment_method']['name']+ ' ended in ' + card['last_four_digits'], card['first_six_digits'], card['security_code']['length'] ));
+                    _customer.cards.forEach(function (card) {
+                        availableCards.push(new Card(card['id'], card['payment_method']['name'] + ' ended in ' + card['last_four_digits'], card['first_six_digits'], card['security_code']['length']));
                     });
                     return availableCards;
                 }
@@ -129,10 +129,8 @@ define(
             },
 
             getInitialGrandTotal: function () {
-                if (this.initialGrandTotal == null){
-                    this.initialGrandTotal = this.getGrandTotal();
-                }
-                return this.initialGrandTotal;
+                var initialTotal = quote.totals().base_subtotal + quote.totals().base_shipping_incl_tax + quote.totals().base_tax_amount;
+                return initialTotal;
             },
 
             getBaseUrl: function () {
@@ -197,7 +195,7 @@ define(
                         'doc_type': TinyJ('#docType').val(),
                         'doc_number': TinyJ('#docNumber').val(),
                         'installments': TinyJ('#installments').val(),
-                        'total_amount':  TinyJ('#mercadopago_checkout_custom').getElem('.total_amount').val(),
+                        'total_amount': TinyJ('#mercadopago_checkout_custom').getElem('.total_amount').val(),
                         'amount': TinyJ('#mercadopago_checkout_custom').getElem('.amount').val(),
                         'site_id': this.getCountry(),
                         'token': TinyJ('.token').val(),
@@ -217,10 +215,10 @@ define(
                 }
                 return dataObj;
             },
-            afterPlaceOrder : function () {
+            afterPlaceOrder: function () {
                 window.location = this.getSuccessUrl();
             },
-            validate : function () {
+            validate: function () {
                 return this.validateHandler();
             }
 

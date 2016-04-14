@@ -263,14 +263,7 @@ var MercadoPagoCustom = (function () {
 
             cardsHandler();
 
-            if (TinyJ(self.selectors.mercadopagoCustomOpt).isChecked()) {
-                //payment.switchMethod(self.constants.mercadopagoCustom);
-            }
-
-            //Validation.add(self.constants.validateDiscount, ' ', function (v, element) {
-            //    return (!element.hasClassName(self.constants.invalidCoupon));
-            //});
-            //
+            setTotalAmount();
 
             jQuery.validator.addMethod("mp-validate-docnumber", function(value, element) {
                 return checkDocNumber(value);
@@ -340,7 +333,12 @@ var MercadoPagoCustom = (function () {
         }
 
         function setTotalAmount() {
-            var cost = TinyJ(this).getSelectedOption().attribute(self.constants.cost);
+            try {
+                var cost = TinyJ(this).getSelectedOption().attribute(self.constants.cost);
+            } catch (e) {
+                var cost = 0;
+            }
+            var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
             var url = baseUrl+self.url.subtotals+'?cost='+cost;
             tiny.ajax( url , {
                 method: http.method.GET,

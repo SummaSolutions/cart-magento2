@@ -7,7 +7,7 @@ namespace MercadoPago\Core\Controller\Api;
  *
  * @package Mercadopago\Core\Controller\Notifications
  */
-class Coupon
+class Subtotals
     extends \Magento\Framework\App\Action\Action
 
 {
