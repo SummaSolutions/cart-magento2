@@ -9,6 +9,8 @@ use Magento\Payment\Model\Method\ConfigInterface;
  * Class Payment
  *
  * @package MercadoPago\Core\Model\Custom
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Payment
     extends \Magento\Payment\Model\Method\Cc
@@ -116,14 +118,6 @@ class Payment
     protected $_canReviewPayment = true;
 
     /**
-     * {inheritdoc}
-     */
-    public function postRequest(DataObject $request, ConfigInterface $config)
-    {
-        return '';
-    }
-
-    /**
      * Payment Method feature
      *
      * @var bool
@@ -174,6 +168,13 @@ class Payment
     protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
 
     /**
+     * Request object
+     *
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    protected $_request;
+
+    /**
      * @param \MercadoPago\Core\Helper\Data                        $helperData
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Customer\Model\Session                      $customerSession
@@ -191,6 +192,7 @@ class Payment
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Sales\Model\OrderFactory                    $orderFactory
      * @param \MercadoPago\Core\Model\Core                         $coreModel
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
@@ -209,7 +211,8 @@ class Payment
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-		\MercadoPago\Core\Model\Core $coreModel)
+        \MercadoPago\Core\Model\Core $coreModel,
+        \Magento\Framework\App\RequestInterface $request)
     {
         parent::__construct(
             $context,
@@ -229,7 +232,16 @@ class Payment
         $this->_customerSession = $customerSession;
         $this->_orderFactory = $orderFactory;
         $this->_urlBuilder = $urlBuilder;
+        $this->_request = $request;
 
+    }
+
+    /**
+     * {inheritdoc}
+     */
+    public function postRequest(DataObject $request, ConfigInterface $config)
+    {
+        return '';
     }
 
     /**
@@ -389,7 +401,8 @@ class Payment
      */
     public function getOrderPlaceRedirectUrl()
     {
-        return $this->_urlBuilder->getUrl('mercadopago/custom/success', ['_secure' => true]);
+        $url = $this->_helperData->getSuccessUrl();
+        return $this->_urlBuilder->getUrl($url, ['_secure' => true]);
     }
 
     /**
@@ -408,6 +421,13 @@ class Payment
         if (!$parent || !$custom) {
             return false;
         }
+
+        $debugMode = $this->_scopeConfig->getValue('payment/mercadopago/debug_mode');
+        $secure = $this->_request->isSecure();
+        if (!$secure && !$debugMode) {
+            return false;
+        }
+
         return $this->_helperData->isValidAccessToken($accessToken);
     }
 
@@ -493,7 +513,7 @@ class Payment
      *
      * @param $email
      *
-     * @return bool
+     * @return bool|array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getOrCreateCustomer($email)

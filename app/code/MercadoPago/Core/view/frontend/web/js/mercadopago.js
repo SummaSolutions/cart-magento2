@@ -143,7 +143,11 @@ var MercadoPagoCustom = (function () {
             couponUrlFormat: 'mercadopago/api/coupon?id={0}',
             termsUrlFormat: "https://api.mercadolibre.com/campaigns/{0}/terms_and_conditions?format_type=html"
         },
-        enableLog: true
+        enableLog: true,
+        paymentService: null,
+        paymentMethodList:null,
+        totalAction: null,
+        jqObject: null,
     };
 
     function getMessages() {
@@ -180,6 +184,19 @@ var MercadoPagoCustom = (function () {
 
     function isLogEnabled() {
         return self.enableLog;
+    }
+
+    function setPaymentService(paymentService) {
+        self.paymentService = paymentService;
+    }
+
+    function setPaymentMethodList(paymentList) {
+        self.paymentMethodList = paymentList;
+    }
+
+    function setTotalsAction(totalAction,jqObject) {
+        self.totalAction = totalAction;
+        self.jqObject = jqObject;
     }
 
 // MERCADO LOG
@@ -963,10 +980,20 @@ var MercadoPagoCustom = (function () {
                         $formPayment.getElem(self.selectors.couponActionApply).hide();
 
                         $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
+
+                        self.totalAction([], deferred);
+                        self.jqObject.when(deferred).done(function() {
+                            self.paymentService.setPaymentMethods(
+                                self.paymentMethodList()
+                            );
+                        });
+
                         if (formPaymentMethod == self.selectors.checkoutCustom) {
                             var event = {};
                             guessingPaymentMethod(event.type = self.constants.keyup);
                         }
+
+                        var deferred = self.jqObject.Deferred();
                     } else {
 
                         //reset input amount
@@ -993,23 +1020,44 @@ var MercadoPagoCustom = (function () {
         }
 
         function removeDiscount(formPaymentMethod) {
-            showLogMercadoPago(self.messages.removeDiscount);
             var $formPayment = TinyJ(formPaymentMethod);
+            var baseUrl = $formPayment.getElem(self.selectors.baseUrl).val();
 
             //hide all info
             hideMessageCoupon($formPayment);
             $formPayment.getElem(self.selectors.couponActionApply).show();
             $formPayment.getElem(self.selectors.couponActionRemove).hide();
             $formPayment.getElem(self.selectors.coupon).val("");
-            $formPayment.getElem(self.selectors.discountAmount).val(0);
-            $formPayment.getElem(self.selectors.discountOk).hide();
+            //show loading
+            $formPayment.getElem(self.selectors.couponLoading).show();
+            tiny.ajax({
+                method: http.method.GET,
+                url: baseUrl + String.format(self.url.couponUrlFormat, ''),
+                success: function (r, status, xhr) {
+                    showLogMercadoPago(self.messages.removeDiscount);
+                    var $formPayment = TinyJ(formPaymentMethod);
+                    $formPayment.getElem(self.selectors.discountAmount).val(0);
+                    $formPayment.getElem(self.selectors.discountOk).hide();
 
-            if (formPaymentMethod == self.selectors.checkoutCustom) {
-                var event = {};
-                guessingPaymentMethod(event.type = self.constants.keyup);
-            }
-            $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
-            showLogMercadoPago(self.messages.removeCoupon);
+                    if (formPaymentMethod == self.selectors.checkoutCustom) {
+                        var event = {};
+                        guessingPaymentMethod(event.type = self.constants.keyup);
+                    }
+                    $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
+                    var deferred = self.jqObject.Deferred();
+                    self.totalAction([], deferred);
+                    self.jqObject.when(deferred).done(function () {
+                        self.paymentService.setPaymentMethods(
+                            self.paymentMethodList()
+                        );
+                    });
+                    $formPayment.getElem(self.selectors.couponLoading).hide();
+                    showLogMercadoPago(self.messages.removeCoupon);
+                },
+                error: function (status, response) {
+                    console.log(status, response);
+                }
+            });
         }
 
         function hideMessageCoupon($formPayment) {
@@ -1026,7 +1074,10 @@ var MercadoPagoCustom = (function () {
             init: initMercadoPagoJs,
             initDiscount: initDiscountMercadoPagoCustom,
             initOCP: initMercadoPagoOCP,
-            initDiscountTicket: initDiscountMercadoPagoCustomTicket
+            initDiscountTicket: initDiscountMercadoPagoCustomTicket,
+            setPaymentService: setPaymentService,
+            setPaymentMethodList: setPaymentMethodList,
+            setTotalsAction: setTotalsAction
         };
     }
 

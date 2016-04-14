@@ -6,6 +6,8 @@ namespace MercadoPago\Core\Model\Standard;
  * Class Payment
  *
  * @package MercadoPago\Core\Model\Standard
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Payment
     extends \Magento\Payment\Model\Method\AbstractMethod
@@ -122,6 +124,7 @@ class Payment
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
      * @param array                                                        $data
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
@@ -231,12 +234,8 @@ class Payment
             'mercadopago_standard_make_preference_before',
             ['params' => $paramsShipment, 'order' => $order]
         );
-        if (!isset($paramsShipment['cost'])) {
-            $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
-            $paramsShipment['mode'] = 'custom';
-        }
-        $arr = [];
 
+        $arr = [];
         $arr['external_reference'] = $orderIncrementId;
         $arr['items'] = $this->getItems($order);
 
@@ -244,7 +243,6 @@ class Payment
         $this->_calculateBaseTaxAmount($arr['items'], $order);
         $total_item = $this->getTotalItems($arr['items']);
         $total_item += (float)$order->getBaseShippingAmount();
-
         $order_amount = (float)$order->getBaseGrandTotal();
         if (!$order_amount) {
             $order_amount = (float)$order->getBasePrice() + $order->getBaseShippingAmount();
@@ -276,7 +274,6 @@ class Payment
         }
 
         $billing_address = $order->getBillingAddress()->getData();
-
         $arr['payer']['date_created'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
         $arr['payer']['email'] = htmlentities($customer->getEmail());
         $arr['payer']['first_name'] = htmlentities($customer->getFirstname());
@@ -295,9 +292,10 @@ class Payment
             "street_number" => ""
         ];
 
+        $url = $this->_helperData->getSuccessUrl();
         $arr['back_urls'] = [
-            'success' => $this->_urlBuilder->getUrl('mercadopago/standard/success'),
-            'pending' => $this->_urlBuilder->getUrl('mercadopago/standard/success'),
+            'success' => $this->_urlBuilder->getUrl($url),
+            'pending' => $this->_urlBuilder->getUrl($url),
             'failure' => $this->_urlBuilder->getUrl('checkout/onepage/failure'),
         ];
 
@@ -318,7 +316,6 @@ class Payment
             $this->_helperData->log("Sponsor_id identificado", 'mercadopago-standard.log', $sponsor_id);
             $arr['sponsor_id'] = (int)$sponsor_id;
         }
-
 
         return $arr;
     }
@@ -459,6 +456,7 @@ class Payment
      * Check whether payment method can be used
      *
      * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     *
      * @return bool
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)

@@ -61,7 +61,7 @@ Feature: A customer should be able to do a checkout with MercadoPago
 
     When I press "#next" input element
     And I switch to the site
-    Then I should be on "/standard/success"
+    Then I should be on "/success/page"
 
   @checkoutPrice
   Scenario: Check total displayed in iframe

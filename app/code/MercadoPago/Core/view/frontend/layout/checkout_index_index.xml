@@ -41,6 +41,28 @@
                                         </item>
                                     </item>
                                 </item>
+
+                                <item name="sidebar" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="summary" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <item name="totals" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="discount_coupon" xsi:type="array">
+                                                            <item name="component" xsi:type="string">MercadoPago_Core/js/view/checkout/cart/totals/discount_coupon</item>
+                                                            <item name="sortOrder" xsi:type="string">50</item>
+                                                            <item name="config" xsi:type="array">
+                                                                <item name="template" xsi:type="string">MercadoPago_Core/checkout/cart/totals/discount_coupon</item>
+                                                                <item name="title" xsi:type="string" translate="true">Discount Mercado Pago</item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+
                             </item>
                         </item>
                     </item>

@@ -2,17 +2,20 @@ define(
     [
         'jquery',
         'Magento_Payment/js/view/payment/iframe',
+        'Magento_Checkout/js/model/quote',
+        'Magento_Checkout/js/model/payment-service',
+        'Magento_Checkout/js/model/payment/method-list',
+        'Magento_Checkout/js/action/get-totals',
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Checkout/js/action/set-payment-information',
         'Magento_Checkout/js/model/full-screen-loader',
         'mage/translate',
-        'Magento_Checkout/js/model/quote',
         'meli',
         'tinyj',
         'MPcustom',
         'tiny'
     ],
-    function ($, Component, additionalValidators, setPaymentInformationAction, fullScreenLoader, $t, quote) {
+    function ($, Component, quote, paymentService,paymentMethodList,getTotalsAction) {
         'use strict';
 
         return Component.extend({
@@ -22,6 +25,7 @@ define(
             placeOrderHandler: null,
             validateHandler: null,
             redirectAfterPlaceOrder: false,
+            initialGrandTotal: null,
 
 
             setPlaceOrderHandler: function (handler) {
@@ -70,6 +74,10 @@ define(
             initDiscountApp: function () {
                 if (this.isCouponEnabled()){
                     MercadoPagoCustom.getInstance().initDiscount();
+                    MercadoPagoCustom.getInstance().initDiscountTicket();
+                    MercadoPagoCustom.getInstance().setPaymentService(paymentService);
+                    MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
+                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
                 }
             },
 
@@ -118,6 +126,13 @@ define(
 
             getGrandTotal: function () {
                 return quote.totals().base_grand_total;
+            },
+
+            getInitialGrandTotal: function () {
+                if (this.initialGrandTotal == null){
+                    this.initialGrandTotal = this.getGrandTotal();
+                }
+                return this.initialGrandTotal;
             },
 
             getBaseUrl: function () {

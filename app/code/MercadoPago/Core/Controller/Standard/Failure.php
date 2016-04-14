@@ -33,7 +33,7 @@ class Failure
     }
 
     /**
-     * Execute Success action
+     * Execute Failure action
      */
     public function execute()
     {
