@@ -77,7 +77,6 @@ define(
             initDiscountApp: function () {
                 if (this.isCouponEnabled()) {
                     MercadoPagoCustom.getInstance().initDiscount();
-                    MercadoPagoCustom.getInstance().initDiscountTicket();
                 }
             },
 
