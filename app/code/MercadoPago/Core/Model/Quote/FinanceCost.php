@@ -72,9 +72,9 @@ class FinanceCost
     protected function _getDiscountAmount()
     {
         $quote = $this->_checkoutSession->getQuote();
-        $discount = $quote->getShippingAddress()->getTotalAmount('discount_coupon');
-
-        return $discount * -1;
+        $totals = $quote->getShippingAddress()->getTotals();
+        $discount = (isset($totals['discount_coupon']))?$totals['discount_coupon']['value']:0;
+        return $discount;
     }
 
     /**

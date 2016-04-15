@@ -513,6 +513,7 @@ var MercadoPagoCustom = (function () {
                 fragment.appendChild(option);
                 selectorInstallments.appendChild(fragment);
                 selectorInstallments.disable();
+                setTotalAmount();
             }
         }
 
