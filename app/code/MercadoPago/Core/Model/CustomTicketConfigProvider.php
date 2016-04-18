@@ -15,8 +15,14 @@ use Magento\Payment\Helper\Data as PaymentHelper;
 class CustomTicketConfigProvider
     implements ConfigProviderInterface
 {
+    /**
+     * @var \Magento\Payment\Model\MethodInterface
+     */
     protected $methodInstance;
 
+    /**
+     * @var string
+     */
     protected $methodCode = CustomTicket\Payment::CODE;
 
     /**
@@ -36,9 +42,18 @@ class CustomTicketConfigProvider
      */
     protected $_storeManager;
 
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
     protected $_request;
 
+    /**
+     * @var \Magento\Framework\View\Asset\Repository
+     */
     protected $_assetRepo;
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
     protected $_urlBuilder;
 
     /**
@@ -62,6 +77,9 @@ class CustomTicketConfigProvider
         $this->_assetRepo = $assetRepo;
     }
 
+    /**
+     * @return array
+     */
     public function getConfig()
     {
         return $this->methodInstance->isAvailable() ? [
