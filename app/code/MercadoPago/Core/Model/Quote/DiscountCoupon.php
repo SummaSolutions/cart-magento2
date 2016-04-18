@@ -78,17 +78,15 @@ class DiscountCoupon
             parent::collect($quote, $shippingAssignment, $total);
 
             $balance = $this->_getDiscountAmount();
-        } else {
-            $balance = 0;
-        }
-        $address->setDiscountCouponAmount($balance);
-        $address->setBaseDiscountCouponAmount($balance);
+            $address->setDiscountCouponAmount($balance);
+            $address->setBaseDiscountCouponAmount($balance);
 
-        $total->setDiscountCouponDescription($this->getCode());
-        $total->setDiscountCouponAmount($balance);
-        $total->setBaseDiscountCouponAmount($balance);
-        $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
-        $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
+            $total->setDiscountCouponDescription($this->getCode());
+            $total->setDiscountCouponAmount($balance);
+            $total->setBaseDiscountCouponAmount($balance);
+            $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
+            $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
+        }
 
         return $this;
     }

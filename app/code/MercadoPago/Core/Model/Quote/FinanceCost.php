@@ -129,7 +129,6 @@ class FinanceCost
             $total->addTotalAmount($this->getCode(), $address->getFinanceCostAmount());
             $total->addBaseTotalAmount($this->getCode(), $address->getBaseFinanceCostAmount());
 
-            return $this;
         }
 
         return $this;

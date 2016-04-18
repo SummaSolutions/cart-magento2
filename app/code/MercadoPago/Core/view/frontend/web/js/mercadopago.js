@@ -935,13 +935,17 @@ var MercadoPagoCustom = (function () {
         function initDiscountMercadoPagoCustom() {
             showLogMercadoPago(self.messages.initDiscount);
             TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.couponActionApply).click(applyDiscountCustom);
-            TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.couponActionRemove).click(globalRemoveDiscount);
+
+            var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
+            radios.forEach (function (radioButton) {
+                radioButton.click(globalRemoveDiscount);
+                radioButton.click(setTotalAmount);
+            });
         }
 
         function initDiscountMercadoPagoCustomTicket() {
             showLogMercadoPago(self.messages.initTicket);
             TinyJ(self.selectors.ticketActionApply).click(applyDiscountCustomTicket);
-            TinyJ(self.selectors.ticketActionRemove).click(globalRemoveDiscount);
         }
 
         function applyDiscountCustom() {
@@ -1041,13 +1045,25 @@ var MercadoPagoCustom = (function () {
             removeDiscount(self.selectors.checkoutTicket);
         }
 
+        function shouldRemove(formPayment) {
+            if (formPayment.length == 0) {
+                return false;
+            }
+            if (formPayment.getElem(self.selectors.discountAmount).val() == 0){
+                return false;
+            }
+
+            return true
+        }
+
         function removeDiscount(formPaymentMethod) {
             var $formPayment = TinyJ(formPaymentMethod);
-            var currentAmount = $formPayment.getElem(self.selectors.discountAmount).val();
-            if ($formPayment.length == 0) {
+            if (!shouldRemove($formPayment)){
                 return;
             }
+
             var baseUrl = $formPayment.getElem(self.selectors.baseUrl).val();
+            var currentAmount = $formPayment.getElem(self.selectors.discountAmount).val();
 
             //hide all info
             hideMessageCoupon($formPayment);
