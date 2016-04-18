@@ -92,7 +92,7 @@ class CustomConfigProvider
                     'country'          => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', 'default', $this->_storeManager->getStore()->getId())),
                     'grand_total'      => $this->_checkoutSession->getQuote()->getGrandTotal(),
                     'base_url'         => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
-                    'success_url'      => $this->_context->getUrl()->getUrl('mercadopago/custom/success', ['_secure' => true]),
+                    'success_url'      => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'logEnabled'       => $this->_scopeConfig->getValue('payment/mercadopago/logs', 'default', $this->_storeManager->getStore()->getId()),
                     'discount_coupon'  => $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/coupon_mercadopago', 'default', $this->_storeManager->getStore()->getId()),
                     'route'            => $this->_request->getRouteName(),

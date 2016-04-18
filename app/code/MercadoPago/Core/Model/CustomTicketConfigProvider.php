@@ -89,7 +89,7 @@ class CustomTicketConfigProvider
                     'options'         => $this->methodInstance->getTicketsOptions(),
                     'country'         => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country')),
                     'grand_total'     => $this->_checkoutSession->getQuote()->getGrandTotal(),
-                    'success_url'     => $this->_urlBuilder->getUrl('mercadopago/customTicket/success', ['_secure' => true]),
+                    'success_url'     => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'route'           => $this->_request->getRouteName(),
                     'base_url'        => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                     'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_customticket/coupon_mercadopago'),
