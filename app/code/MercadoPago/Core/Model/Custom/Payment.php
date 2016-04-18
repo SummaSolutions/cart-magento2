@@ -272,6 +272,7 @@ class Payment
             //set status
             $this->getInfoInstance()->setAdditionalInformation('status', $payment['status']);
             $this->getInfoInstance()->setAdditionalInformation('status_detail', $payment['status_detail']);
+            $this->getInfoInstance()->setAdditionalInformation('payment_id_detail', $payment['id']);
 
             return true;
         endif;
