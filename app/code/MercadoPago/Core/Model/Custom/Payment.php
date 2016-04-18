@@ -435,7 +435,7 @@ class Payment
             return false;
         }
 
-        return $this->_helperData->isValidAccessToken($accessToken);
+        return $this->_helperData->isValidAccessToken($this->_accessToken);
     }
 
     /**
