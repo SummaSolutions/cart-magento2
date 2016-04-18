@@ -42,7 +42,8 @@ class Info extends \Magento\Payment\Block\Info
             ["field" => "payment_id", "title" => "Payment id (MercadoPago)"],
             ["field" => "status", "title" => "Payment Status"],
             ["field" => "status_detail", "title" => "Payment Detail"],
-            ["field" => "activation_uri", "title" => "Generate Ticket"]
+            ["field" => "activation_uri", "title" => "Generate Ticket"],
+            ["field" => "payment_id_detail", "title" => "Mercado Pago Payment Id"],
         ];
 
         foreach ($fields as $field) {
