@@ -15,8 +15,14 @@ use Magento\Payment\Helper\Data as PaymentHelper;
 class CustomTicketConfigProvider
     implements ConfigProviderInterface
 {
+    /**
+     * @var \Magento\Payment\Model\MethodInterface
+     */
     protected $methodInstance;
 
+    /**
+     * @var string
+     */
     protected $methodCode = CustomTicket\Payment::CODE;
 
     /**
@@ -36,9 +42,19 @@ class CustomTicketConfigProvider
      */
     protected $_storeManager;
 
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
     protected $_request;
 
+    /**
+     * @var \Magento\Framework\View\Asset\Repository
+     */
     protected $_assetRepo;
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
+    protected $_urlBuilder;
 
     /**
      * @param PaymentHelper $paymentHelper
@@ -61,6 +77,9 @@ class CustomTicketConfigProvider
         $this->_assetRepo = $assetRepo;
     }
 
+    /**
+     * @return array
+     */
     public function getConfig()
     {
         return $this->methodInstance->isAvailable() ? [
@@ -70,7 +89,7 @@ class CustomTicketConfigProvider
                     'options'         => $this->methodInstance->getTicketsOptions(),
                     'country'         => strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country')),
                     'grand_total'     => $this->_checkoutSession->getQuote()->getGrandTotal(),
-                    'success_url'     => $this->_urlBuilder->getUrl('mercadopago/customTicket/success', ['_secure' => true]),
+                    'success_url'     => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'route'           => $this->_request->getRouteName(),
                     'base_url'        => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                     'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_customticket/coupon_mercadopago'),
