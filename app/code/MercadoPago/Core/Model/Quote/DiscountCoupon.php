@@ -84,9 +84,9 @@ class DiscountCoupon
             $total->setDiscountCouponDescription($this->getCode());
             $total->setDiscountCouponAmount($balance);
             $total->setBaseDiscountCouponAmount($balance);
-            $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
-            $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
         }
+        $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
+        $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
 
         return $this;
     }

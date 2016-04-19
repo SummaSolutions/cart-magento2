@@ -263,8 +263,6 @@ var MercadoPagoCustom = (function () {
 
             cardsHandler();
 
-            setTotalAmount();
-
             jQuery.validator.addMethod("mp-validate-docnumber", function(value, element) {
                 return checkDocNumber(value);
             }, 'Document Number is invalid');
@@ -935,7 +933,7 @@ var MercadoPagoCustom = (function () {
         function initDiscountMercadoPagoCustom() {
             showLogMercadoPago(self.messages.initDiscount);
             TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.couponActionApply).click(applyDiscountCustom);
-
+            TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.couponActionRemove).click(removeDiscountCustom);
             var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
             radios.forEach (function (radioButton) {
                 radioButton.click(globalRemoveDiscount);
@@ -945,7 +943,8 @@ var MercadoPagoCustom = (function () {
 
         function initDiscountMercadoPagoCustomTicket() {
             showLogMercadoPago(self.messages.initTicket);
-            TinyJ(self.selectors.ticketActionApply).click(applyDiscountCustomTicket);
+            TinyJ(self.selectors.checkoutTicket).getElem(self.selectors.couponActionApply).click(applyDiscountCustomTicket);
+            TinyJ(self.selectors.checkoutTicket).getElem(self.selectors.couponActionRemove).click(removeDiscountCustomTicket);
         }
 
         function applyDiscountCustom() {
@@ -1121,7 +1120,7 @@ var MercadoPagoCustom = (function () {
             initDiscountTicket: initDiscountMercadoPagoCustomTicket,
             setPaymentService: setPaymentService,
             setPaymentMethodList: setPaymentMethodList,
-            setTotalsAction: setTotalsAction
+            setTotalsAction: setTotalsAction,
         };
     }
 

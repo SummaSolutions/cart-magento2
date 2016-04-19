@@ -71,7 +71,6 @@ define(
                     if (this.isOCPReady()) {
                         MercadoPagoCustom.getInstance().initOCP();
                     }
-                    jQuery('#co-payment-form').on('changePaymentMethod', this.initDiscountApp());
                 }
             },
 
@@ -79,6 +78,10 @@ define(
                 if (this.isCouponEnabled()) {
                     MercadoPagoCustom.getInstance().initDiscount();
                 }
+            },
+
+            resetTotals: function () {
+                MercadoPagoCustom.getInstance().globalRemoveDiscount();
             },
 
             isCouponEnabled: function () {
