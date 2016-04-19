@@ -13,7 +13,7 @@ define(
         'meli',
         'tinyj',
         'MPcustom',
-        'tiny'
+        'tiny',
     ],
     function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction) {
         'use strict';
@@ -70,6 +70,14 @@ define(
                     MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction, $);
                     if (this.isOCPReady()) {
                         MercadoPagoCustom.getInstance().initOCP();
+                    }
+
+                    var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
+                    if (radios.length > 0) {
+                        radios.forEach(function (radioButton) {
+                            radioButton.click(globalRemoveDiscount);
+                            radioButton.click(setTotalAmount);
+                        });
                     }
                 }
             },

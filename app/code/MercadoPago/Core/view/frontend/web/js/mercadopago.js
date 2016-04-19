@@ -264,7 +264,7 @@ var MercadoPagoCustom = (function () {
             cardsHandler();
 
             jQuery.validator.addMethod("mp-validate-docnumber", function(value, element) {
-                return checkDocNumber(value);
+                return checkDocNumber(alue);
             }, 'Document Number is invalid');
 
         }
@@ -328,6 +328,7 @@ var MercadoPagoCustom = (function () {
             TinyJ(self.selectors.installments).change(setTotalAmount);
 
             returnListCard.show();
+            //actionUseOneClickPayOrNo();
         }
 
         function setTotalAmount() {
@@ -934,11 +935,6 @@ var MercadoPagoCustom = (function () {
             showLogMercadoPago(self.messages.initDiscount);
             TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.couponActionApply).click(applyDiscountCustom);
             TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.couponActionRemove).click(removeDiscountCustom);
-            var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
-            radios.forEach (function (radioButton) {
-                radioButton.click(globalRemoveDiscount);
-                radioButton.click(setTotalAmount);
-            });
             removeDiscountCustom();
 
         }
@@ -1049,6 +1045,9 @@ var MercadoPagoCustom = (function () {
 
         function shouldRemove(formPayment) {
             if (formPayment.length == 0) {
+                return false;
+            }
+            if (formPayment.getElem('#input-coupon-discount').length == 0) {
                 return false;
             }
             return true
