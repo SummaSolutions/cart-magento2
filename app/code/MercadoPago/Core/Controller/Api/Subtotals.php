@@ -62,15 +62,8 @@ class Subtotals
 
         //save value to DiscountCoupon collect
         $this->_registry->register('mercadopago_total_amount', $total);
-//        $this->_registry->register('mercadopago_discount_amount', $this->getCurrentDiscount($quote));
         $this->quoteRepository->save($quote->collectTotals());
         return;
-    }
-
-    protected function getCurrentDiscount($quote) {
-        $totals = $quote->getShippingAddress()->getTotals();
-        $totalDiscountCoupon = $totals['discount_coupon'];
-        return $totalDiscountCoupon->getValue();
     }
 
 }

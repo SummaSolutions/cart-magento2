@@ -939,12 +939,15 @@ var MercadoPagoCustom = (function () {
                 radioButton.click(globalRemoveDiscount);
                 radioButton.click(setTotalAmount);
             });
+            removeDiscountCustom();
+
         }
 
         function initDiscountMercadoPagoCustomTicket() {
             showLogMercadoPago(self.messages.initTicket);
             TinyJ(self.selectors.checkoutTicket).getElem(self.selectors.couponActionApply).click(applyDiscountCustomTicket);
             TinyJ(self.selectors.checkoutTicket).getElem(self.selectors.couponActionRemove).click(removeDiscountCustomTicket);
+            removeDiscountCustomTicket();
         }
 
         function applyDiscountCustom() {
@@ -1048,19 +1051,14 @@ var MercadoPagoCustom = (function () {
             if (formPayment.length == 0) {
                 return false;
             }
-            if (formPayment.getElem(self.selectors.discountAmount).val() == 0){
-                return false;
-            }
-
             return true
         }
 
         function removeDiscount(formPaymentMethod) {
             var $formPayment = TinyJ(formPaymentMethod);
-            if (!shouldRemove($formPayment)){
+            if (!shouldRemove($formPayment)) {
                 return;
             }
-
             var baseUrl = $formPayment.getElem(self.selectors.baseUrl).val();
             var currentAmount = $formPayment.getElem(self.selectors.discountAmount).val();
 

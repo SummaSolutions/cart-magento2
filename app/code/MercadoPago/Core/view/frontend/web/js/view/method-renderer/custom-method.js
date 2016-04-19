@@ -90,11 +90,6 @@ define(
                 }
             },
 
-            setCustomPaymentMethod: function () {
-                this.initApp();
-                return this.selectPaymentMethod();
-            },
-
             getAvailableCards: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     var _customer = window.checkoutConfig.payment[this.getCode()]['customer'];
