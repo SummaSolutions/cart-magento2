@@ -1071,7 +1071,7 @@ var MercadoPagoCustom = (function () {
             if (!shouldRemove($formPayment)) {
                 return;
             }
-            var baseUrl = $formPayment.getElem(self.selectors.baseUrl).val();
+            var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
             var currentAmount = $formPayment.getElem(self.selectors.discountAmount).val();
 
             //hide all info
