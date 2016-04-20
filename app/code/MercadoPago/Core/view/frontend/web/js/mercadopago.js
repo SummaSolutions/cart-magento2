@@ -1118,6 +1118,9 @@ var MercadoPagoCustom = (function () {
             setPaymentService: setPaymentService,
             setPaymentMethodList: setPaymentMethodList,
             setTotalsAction: setTotalsAction,
+            globalRemoveDiscount: globalRemoveDiscount,
+            setTotalAmount: setTotalAmount
+
         };
     }
 

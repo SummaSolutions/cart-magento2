@@ -63,7 +63,7 @@ class Coupon
         $this->coreModel = $coreModel;
         $this->_checkoutSession = $checkoutSession;
         $this->quoteRepository = $quoteRepository;
-        $this->_registry     = $registry;
+        $this->_registry = $registry;
     }
 
     /**
@@ -77,14 +77,10 @@ class Coupon
         if (!empty($coupon_id)) {
             $response = $this->coreModel->validCoupon($coupon_id);
         } else {
-            $response = array(
-                "status"   => 400,
-                "response" => array(
-                    "error"   => "invalid_id",
-                    "message" => "invalid id",
-                    "coupon_amount" => 0
-                )
-            );
+            $response = $this->getArrayErrorResponse();
+        }
+        if ($response['status'] != 200 && $response['status'] != 201) {
+            $response = $this->getArrayErrorResponse();
         }
         //save value to DiscountCoupon collect
         $this->_registry->register('mercadopago_discount_amount', (int)$response['response']['coupon_amount']);
@@ -93,6 +89,25 @@ class Coupon
         $jsonData = json_encode($response);
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody($jsonData);
+    }
+
+    /**
+     * Return array with error response params
+     *
+     * @return array
+     */
+    protected function getArrayErrorResponse()
+    {
+        $result = [
+            "status"   => 400,
+            "response" => [
+                "error"         => "invalid_id",
+                "message"       => "invalid id",
+                "coupon_amount" => 0
+            ]
+        ];
+
+        return $result;
     }
 
 }
