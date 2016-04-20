@@ -107,7 +107,7 @@ define(
                     var _customer = window.checkoutConfig.payment[this.getCode()]['customer'];
                     if (!_customer) return [];
 
-                    var Card = function (value, name, firstSix, securityCodeLength) {
+                    var Card = function(value, name, firstSix, securityCodeLength, secureThumbnail) {
                         this.cardName = name;
                         this.value = value;
                         this.firstSix = firstSix;
