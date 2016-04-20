@@ -11,11 +11,6 @@ class DiscountCoupon
 {
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    protected $request;
-
-    /**
      * @var \Magento\Framework\Registry
      */
     protected $_registry;
@@ -23,29 +18,30 @@ class DiscountCoupon
     /**
      * DiscountCoupon constructor.
      *
-     * @param \Magento\Framework\App\RequestInterface $request
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
-        \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\Registry $registry
     )
     {
         $this->setCode('discount_coupon');
-        $this->request = $request;
-        $this->_registry     = $registry;
+        $this->_registry = $registry;
     }
 
     /**
      * Determine if should apply subtotal
      *
      * @param $address
+     * @param $shippingAssignment
      *
      * @return bool
      */
-    protected function _getDiscountCondition($address,$shippingAssignment)
+    protected function _getDiscountCondition($address, $shippingAssignment)
     {
         $items = $shippingAssignment->getItems();
-        return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING && count($items));
+        $updateFlag = ($this->_registry->registry('mercadopago_discount_amount') !== null);
+
+        return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING && count($items) && $updateFlag);
     }
 
     /**
@@ -53,8 +49,10 @@ class DiscountCoupon
      *
      * @return mixed
      */
-    protected function _getDiscountAmount() {
+    protected function _getDiscountAmount()
+    {
         $amount = $this->_registry->registry('mercadopago_discount_amount');
+
         return $amount * -1;
     }
 
@@ -76,21 +74,19 @@ class DiscountCoupon
     {
         $address = $shippingAssignment->getShipping()->getAddress();
 
-        if ($this->_getDiscountCondition($address,$shippingAssignment)) {
+        if ($this->_getDiscountCondition($address, $shippingAssignment)) {
             parent::collect($quote, $shippingAssignment, $total);
 
             $balance = $this->_getDiscountAmount();
-
             $address->setDiscountCouponAmount($balance);
             $address->setBaseDiscountCouponAmount($balance);
 
             $total->setDiscountCouponDescription($this->getCode());
             $total->setDiscountCouponAmount($balance);
             $total->setBaseDiscountCouponAmount($balance);
-
-            $total->addTotalAmount($this->getCode(),$address->getDiscountCouponAmount());
-            $total->addBaseTotalAmount($this->getCode(),$address->getBaseDiscountCouponAmount());
         }
+        $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
+        $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
 
         return $this;
     }
@@ -106,13 +102,11 @@ class DiscountCoupon
         $result = null;
         $amount = $total->getDiscountCouponAmount();
 
-        if ($amount != 0) {
-            $result = [
-                'code'  => $this->getCode(),
-                'title' => __('Discount Mercado Pago'),
-                'value' => $amount
-            ];
-        }
+        $result = [
+            'code'  => $this->getCode(),
+            'title' => __('Discount Mercado Pago'),
+            'value' => $amount
+        ];
 
         return $result;
     }

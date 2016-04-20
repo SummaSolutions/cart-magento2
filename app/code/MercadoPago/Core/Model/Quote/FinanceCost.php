@@ -11,37 +11,90 @@ class FinanceCost
 {
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var \Magento\Framework\Registry
      */
-    protected $request;
+    protected $_registry;
+
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $_checkoutSession;
 
     /**
      * FinanceCost constructor.
      *
-     * @param \Magento\Framework\App\RequestInterface $request
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
-        \Magento\Framework\App\RequestInterface $request
+        \Magento\Framework\Registry $registry,
+        \Magento\Checkout\Model\Session $checkoutSession
     )
     {
         $this->setCode('finance_cost');
-        $this->request = $request;
+        $this->_registry = $registry;
+        $this->_checkoutSession = $checkoutSession;
     }
+
 
     /**
      * Determine if should apply subtotal
      *
      * @param $address
+     * @param $shippingAssignment
      *
      * @return bool
      */
-    protected function _getFinancingCondition($address)
+    protected function _getFinancingCondition($address, $shippingAssignment)
     {
-        $req = $this->request->getParam('total_amount');
+        $items = $shippingAssignment->getItems();
 
-        return (!empty($req) && $address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING);
-
+        return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING && count($items));
     }
+
+    /**
+     * Return subtotal quote
+     *
+     * @return float
+     */
+    protected function _getSubtotalAmount()
+    {
+        $quote = $this->_checkoutSession->getQuote();
+        $subtotal = $quote->getSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount();
+
+        return $subtotal;
+    }
+
+    /**
+     * Return mp discount
+     *
+     * @return float|int
+     */
+    protected function _getDiscountAmount()
+    {
+        $quote = $this->_checkoutSession->getQuote();
+        $totals = $quote->getShippingAddress()->getTotals();
+        $discount = (isset($totals['discount_coupon']))?$totals['discount_coupon']['value']:0;
+        return $discount;
+    }
+
+    /**
+     * Caluclate finance cost amount
+     *
+     * @return int|mixed
+     */
+    protected function _getFinanceCostAmount()
+    {
+        $totalAmount = $this->_registry->registry('mercadopago_total_amount');
+        if (empty($totalAmount)) {
+            return 0;
+        }
+        $initAmount = $this->_getSubtotalAmount();
+        $discountAmount = $this->_getDiscountAmount();
+        $balance = $totalAmount - $initAmount - $discountAmount;
+
+        return $balance;
+    }
+
 
     /**
      * Collect address discount amount
@@ -61,26 +114,21 @@ class FinanceCost
     {
         $address = $shippingAssignment->getShipping()->getAddress();
 
-        if ($this->_getFinancingCondition($address)) {
-            $postData = $this->request->getPost();
+        if ($this->_getFinancingCondition($address, $shippingAssignment)) {
             parent::collect($quote, $shippingAssignment, $total);
 
-            $totalAmount = (float)$postData['total_amount'];
-            $amount = (float)$postData['amount'] - (float)$postData['mercadopago-discount-amount'];
-            $balance = $totalAmount - $amount;
+            $balance = $this->_getFinanceCostAmount();
 
             $address->setFinanceCostAmount($balance);
             $address->setBaseFinanceCostAmount($balance);
 
-            $this->_setAmount($balance);
-            $this->_setBaseAmount($balance);
+            $total->setFinanceCostDescription($this->getCode());
+            $total->setFinanceCostAmount($balance);
+            $total->setBaseFinanceCostAmount($balance);
 
-            return $this;
-        }
+            $total->addTotalAmount($this->getCode(), $address->getFinanceCostAmount());
+            $total->addBaseTotalAmount($this->getCode(), $address->getBaseFinanceCostAmount());
 
-        if ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING) {
-            $address->setFinanceCostAmount(0);
-            $address->setBaseFinanceCostAmount(0);
         }
 
         return $this;
@@ -97,13 +145,11 @@ class FinanceCost
         $result = null;
         $amount = $total->getFinanceCostAmount();
 
-        if ($amount != 0) {
-            $result = [
-                'code'  => $this->getCode(),
-                'title' => __('Financing Cost'),
-                'value' => $amount
-            ];
-        }
+        $result = [
+            'code'  => $this->getCode(),
+            'title' => __('Financing Cost'),
+            'value' => $amount
+        ];
 
         return $result;
     }
