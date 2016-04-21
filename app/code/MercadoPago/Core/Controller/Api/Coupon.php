@@ -83,7 +83,7 @@ class Coupon
             $response = $this->getArrayErrorResponse();
         }
         //save value to DiscountCoupon collect
-        $this->_registry->register('mercadopago_discount_amount', (int)$response['response']['coupon_amount']);
+        $this->_registry->register('mercadopago_discount_amount', (float)$response['response']['coupon_amount']);
         $quote = $this->_checkoutSession->getQuote();
         $this->quoteRepository->save($quote->collectTotals());
         $jsonData = json_encode($response);
