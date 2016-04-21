@@ -334,7 +334,7 @@ var MercadoPagoCustom = (function () {
             TinyJ(self.selectors.installments).change(setTotalAmount);
 
             returnListCard.show();
-            //actionUseOneClickPayOrNo();
+            actionUseOneClickPayOrNo();
         }
 
         function setTotalAmount() {
@@ -477,7 +477,7 @@ var MercadoPagoCustom = (function () {
 
             showLogMercadoPago(String.format(self.messages.ocpActivatedFormat, ocp));
 
-            if (ocp == true) {
+            if (ocp == "true" || ocp == 1) {
                 TinyJ(self.selectors.oneClickPayment).val(0);
                 TinyJ(self.selectors.cardId).disable();
                 setRequiredFields(true);
