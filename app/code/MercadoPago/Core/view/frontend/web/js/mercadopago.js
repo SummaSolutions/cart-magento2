@@ -275,7 +275,7 @@ var MercadoPagoCustom = (function () {
             cardsHandler();
 
             jQuery.validator.addMethod("mp-validate-docnumber", function(value, element) {
-                return checkDocNumber(alue);
+                return checkDocNumber(value);
             }, 'Document Number is invalid');
 
         }
