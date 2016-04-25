@@ -150,6 +150,7 @@ var MercadoPagoCustom = (function () {
         paymentMethodList:null,
         totalAction: null,
         jqObject: null,
+        fullScreenLoader: null
     };
 
     function getMessages() {
@@ -199,6 +200,10 @@ var MercadoPagoCustom = (function () {
     function setTotalsAction(totalAction,jqObject) {
         self.totalAction = totalAction;
         self.jqObject = jqObject;
+    }
+
+    function setFullScreenLoader(loader) {
+        self.fullScreenLoader = loader;
     }
 
 // MERCADO LOG
@@ -270,7 +275,7 @@ var MercadoPagoCustom = (function () {
             cardsHandler();
 
             jQuery.validator.addMethod("mp-validate-docnumber", function(value, element) {
-                return checkDocNumber(alue);
+                return checkDocNumber(value);
             }, 'Document Number is invalid');
 
         }
@@ -345,6 +350,7 @@ var MercadoPagoCustom = (function () {
             }
             var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
             var url = baseUrl+self.url.subtotals+'?cost='+cost;
+            self.fullScreenLoader.startLoader();
             tiny.ajax( url , {
                 method: http.method.GET,
                 timeout: 5000,
@@ -357,8 +363,10 @@ var MercadoPagoCustom = (function () {
                             self.paymentMethodList()
                         );
                     });
+                    self.fullScreenLoader.stopLoader();
                 },
                 error: function (status, response) {
+                    self.fullScreenLoader.stopLoader();
                 }
             });
         }
@@ -979,7 +987,7 @@ var MercadoPagoCustom = (function () {
 
             //show loading
             $formPayment.getElem(self.selectors.couponLoading).show();
-
+            self.fullScreenLoader.startLoader();
             tiny.ajax({
                 method: http.method.GET,
                 url: baseUrl + String.format(self.url.couponUrlFormat, couponCode),
@@ -1020,6 +1028,7 @@ var MercadoPagoCustom = (function () {
                                 self.paymentMethodList()
                             );
                         });
+                        self.fullScreenLoader.stopLoader();
 
                         if (formPaymentMethod == self.selectors.checkoutCustom) {
                             var event = {};
@@ -1035,6 +1044,7 @@ var MercadoPagoCustom = (function () {
                         console.log(r.response.error);
                         $formPayment.getElem(self.selectors.messageCoupon + " ." + r.response.error).show();
                         $formPayment.getElem(self.selectors.inputCouponDiscount).addClass(self.constants.invalidCoupon);
+                        self.fullScreenLoader.stopLoader();
                     }
                 },
                 error: function (status, response) {
@@ -1081,6 +1091,7 @@ var MercadoPagoCustom = (function () {
             $formPayment.getElem(self.selectors.coupon).val("");
             //show loading
             $formPayment.getElem(self.selectors.couponLoading).show();
+            self.fullScreenLoader.startLoader();
             tiny.ajax({
                 method: http.method.GET,
                 url: baseUrl + String.format(self.url.couponUrlFormat, ''),
@@ -1104,11 +1115,13 @@ var MercadoPagoCustom = (function () {
                             );
                         });
                     }
+                    self.fullScreenLoader.stopLoader();
                     $formPayment.getElem(self.selectors.couponLoading).hide();
                     showLogMercadoPago(self.messages.removeCoupon);
                 },
                 error: function (status, response) {
                     console.log(status, response);
+                    self.fullScreenLoader.stopLoader();
                 }
             });
         }
@@ -1132,8 +1145,8 @@ var MercadoPagoCustom = (function () {
             setPaymentMethodList: setPaymentMethodList,
             setTotalsAction: setTotalsAction,
             globalRemoveDiscount: globalRemoveDiscount,
-            setTotalAmount: setTotalAmount
-
+            setTotalAmount: setTotalAmount,
+            setFullScreenLoader: setFullScreenLoader
         };
     }
 

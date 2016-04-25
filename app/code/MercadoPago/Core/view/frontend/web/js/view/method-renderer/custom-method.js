@@ -6,16 +6,16 @@ define(
         'Magento_Checkout/js/model/payment-service',
         'Magento_Checkout/js/model/payment/method-list',
         'Magento_Checkout/js/action/get-totals',
+        'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Checkout/js/action/set-payment-information',
-        'Magento_Checkout/js/model/full-screen-loader',
         'mage/translate',
         'meli',
         'tinyj',
         'MPcustom',
         'tiny'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader) {
         'use strict';
 
         return Component.extend({
@@ -64,10 +64,12 @@ define(
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     window.PublicKeyMercadoPagoCustom = window.checkoutConfig.payment[this.getCode()]['public_key'];
                     MercadoPagoCustom.enableLog(window.checkoutConfig.payment[this.getCode()]['logEnabled']);
+                    MercadoPagoCustom.getInstance().setFullScreenLoader(fullScreenLoader);
                     MercadoPagoCustom.getInstance().init();
                     MercadoPagoCustom.getInstance().setPaymentService(paymentService);
                     MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
                     MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction, $);
+
                     if (this.isOCPReady()) {
                         MercadoPagoCustom.getInstance().initOCP();
                     }
