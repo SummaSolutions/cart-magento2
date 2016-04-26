@@ -63,7 +63,7 @@ class Page
     /**
      * Send new order Mail
      */
-    protected function sendNewOrderMail()
+    protected function _sendNewOrderMail()
     {
         $order = $this->_getOrder();
         if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
@@ -91,7 +91,7 @@ class Page
      */
     public function execute()
     {
-        $this->sendNewOrderMail();
+        $this->_sendNewOrderMail();
         $checkoutTypeHandle = $this->getCheckoutHandle();
         $this->_view->loadLayout(['default', $checkoutTypeHandle]);
 
