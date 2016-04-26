@@ -32,11 +32,13 @@ class Page
 
 
     /**
-     * Success constructor.
+     * Page cosntructor
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Checkout\Model\Session       $checkoutSession
-     * @param \Magento\Sales\Model\OrderFactory     $orderFactory
+     * @param \Magento\Framework\App\Action\Context               $context
+     * @param \Magento\Checkout\Model\Session                     $checkoutSession
+     * @param \Magento\Sales\Model\OrderFactory                   $orderFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \Psr\Log\LoggerInterface                            $logger
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -58,6 +60,9 @@ class Page
 
     }
 
+    /**
+     * Send new order Mail
+     */
     protected function sendNewOrderMail()
     {
         $order = $this->_getOrder();
