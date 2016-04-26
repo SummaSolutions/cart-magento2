@@ -313,8 +313,10 @@ class Payment
         }
 
         if (empty($info_form['token'])) {
-            $exception = new \MercadoPago\Core\Model\Api\V1\Exception();
-            $exception->setMessage($exception->getUserMessage());
+            $e = "";
+            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(new \Magento\Framework\Phrase($e), $this->_scopeConfig);
+            $e = $exception->getUserMessage();
+            $exception->setPhrase(new \Magento\Framework\Phrase($e));
             throw $exception;
         }
 
