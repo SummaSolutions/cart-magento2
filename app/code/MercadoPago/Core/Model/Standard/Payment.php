@@ -235,6 +235,11 @@ class Payment
             ['params' => $paramsShipment, 'order' => $order]
         );
 
+        if (!isset($paramsShipment['cost'])) {
+            $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
+            $paramsShipment['mode'] = 'custom';
+        }
+
         $arr = [];
         $arr['external_reference'] = $orderIncrementId;
         $arr['items'] = $this->getItems($order);
