@@ -621,7 +621,7 @@ var MercadoPagoCustom = (function () {
             //hide loading
             hideLoading();
 
-            if (status == http.status.OK) {
+            if (status == http.status.OK && response != undefined) {
                 if (response.length == 1) {
                     var paymentMethodId = response[0].id;
                     TinyJ(self.selectors.paymentMethodId).val(paymentMethodId);
@@ -710,6 +710,7 @@ var MercadoPagoCustom = (function () {
                 TinyJ(self.selectors.issuerMp).removeAttribute(self.constants.style);
                 TinyJ(self.selectors.issuerMpLabel).removeAttribute(self.constants.style);
             } else {
+                TinyJ(self.selectors.issuer).empty();
                 TinyJ(self.selectors.issuer).hide();
                 TinyJ(self.selectors.issuerMp).hide();
                 TinyJ(self.selectors.issuerMpLabel).hide();
@@ -848,10 +849,14 @@ var MercadoPagoCustom = (function () {
 
             var submit = true;
             var dataInputs = defineInputs();
+            var issuers = TinyJ(self.selectors.issuer);
+            var issuersFlag = (issuers && issuers.getElem() != null && issuers.getElem().length > 0);
 
             for (var x = 0; x < dataInputs.length; x++) {
                 if (TinyJ(dataInputs[x]).val() == "" || TinyJ(dataInputs[x]).val() == -1) {
-                    submit = false;
+                    if (!(dataInputs[x] == "#issuer" && !issuersFlag)) {
+                        submit = false;
+                    }
                 }
             }
 
