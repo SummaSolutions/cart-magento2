@@ -997,9 +997,9 @@ var MercadoPagoCustom = (function () {
                         var currency = $formPayment.getElem(self.selectors.textCurrency).val();
                         var urlTerm = String.format(self.url.termsUrlFormat, idCoupon);
 
-                        $formPayment.getElem(self.selectors.discountOkAmountDiscount).html(currency + couponAmount);
-                        $formPayment.getElem(self.selectors.discountOkTotalAmount).html(currency + transactionAmount);
-                        $formPayment.getElem(self.selectors.discountOkTotalAmountDiscount).html(currency + (transactionAmount - couponAmount).toFixed(2));
+                        $formPayment.getElem(self.selectors.discountOkAmountDiscount).html(' ' + currency + couponAmount);
+                        $formPayment.getElem(self.selectors.discountOkTotalAmount).html(' ' + currency + transactionAmount);
+                        $formPayment.getElem(self.selectors.discountOkTotalAmountDiscount).html(' ' + currency + (transactionAmount - couponAmount).toFixed(2));
                         $formPayment.getElem(self.selectors.totalAmount).val(transactionAmount - couponAmount);
 
                         $formPayment.getElem(self.selectors.discountOkTerms).attribute("href", urlTerm);
