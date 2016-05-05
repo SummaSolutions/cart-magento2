@@ -749,7 +749,10 @@ var MercadoPagoCustom = (function () {
             var route = TinyJ(self.selectors.mercadoRoute).val();
             var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
             var discountAmount = parseFloat(TinyJ(self.selectors.customDiscountAmount).val());
-
+            var paymentMethodId = TinyJ(self.selectors.paymentMethodId).val();
+            if (paymentMethodId != '') {
+                options['payment_method_id'] = paymentMethodId;
+            }
             if (route != self.constants.checkout) {
                 showLogMercadoPago(self.messages.usingMagentoCustomCheckout);
 
@@ -1079,7 +1082,6 @@ var MercadoPagoCustom = (function () {
             $formPayment.getElem(self.selectors.coupon).val("");
             //show loading
             $formPayment.getElem(self.selectors.couponLoading).show();
-            self.fullScreenLoader.startLoader();
             if (baseUrl != '') {
                 self.fullScreenLoader.startLoader();
                 tiny.ajax({
