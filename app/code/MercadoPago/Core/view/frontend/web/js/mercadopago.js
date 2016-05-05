@@ -1069,7 +1069,7 @@ var MercadoPagoCustom = (function () {
             if (!shouldRemove($formPayment)) {
                 return;
             }
-            var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
+            var baseUrl = $formPayment.getElem(self.selectors.baseUrl).val();
             var currentAmount = $formPayment.getElem(self.selectors.discountAmount).val();
 
             //hide all info
@@ -1080,38 +1080,41 @@ var MercadoPagoCustom = (function () {
             //show loading
             $formPayment.getElem(self.selectors.couponLoading).show();
             self.fullScreenLoader.startLoader();
-            tiny.ajax({
-                method: http.method.GET,
-                url: baseUrl + String.format(self.url.couponUrlFormat, ''),
-                success: function (r, status, xhr) {
-                    showLogMercadoPago(self.messages.removeDiscount);
-                    var $formPayment = TinyJ(formPaymentMethod);
-                    $formPayment.getElem(self.selectors.discountAmount).val(0);
-                    $formPayment.getElem(self.selectors.discountOk).hide();
+            if (baseUrl != '') {
+                self.fullScreenLoader.startLoader();
+                tiny.ajax({
+                    method: http.method.GET,
+                    url: baseUrl + String.format(self.url.couponUrlFormat, ''),
+                    success: function (r, status, xhr) {
+                        showLogMercadoPago(self.messages.removeDiscount);
+                        var $formPayment = TinyJ(formPaymentMethod);
+                        $formPayment.getElem(self.selectors.discountAmount).val(0);
+                        $formPayment.getElem(self.selectors.discountOk).hide();
 
-                    if (formPaymentMethod == self.selectors.checkoutCustom) {
-                        var event = {};
-                        guessingPaymentMethod(event.type = self.constants.keyup);
+                        if (formPaymentMethod == self.selectors.checkoutCustom) {
+                            var event = {};
+                            guessingPaymentMethod(event.type = self.constants.keyup);
+                        }
+                        $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
+                        if (currentAmount != 0) {
+                            var deferred = self.jqObject.Deferred();
+                            self.totalAction([], deferred);
+                            self.jqObject.when(deferred).done(function () {
+                                self.paymentService.setPaymentMethods(
+                                    self.paymentMethodList()
+                                );
+                            });
+                        }
+                        self.fullScreenLoader.stopLoader();
+                        $formPayment.getElem(self.selectors.couponLoading).hide();
+                        showLogMercadoPago(self.messages.removeCoupon);
+                    },
+                    error: function (status, response) {
+                        console.log(status, response);
+                        self.fullScreenLoader.stopLoader();
                     }
-                    $formPayment.getElem(self.selectors.inputCouponDiscount).removeClass(self.constants.invalidCoupon);
-                    if (currentAmount != 0) {
-                        var deferred = self.jqObject.Deferred();
-                        self.totalAction([], deferred);
-                        self.jqObject.when(deferred).done(function () {
-                            self.paymentService.setPaymentMethods(
-                                self.paymentMethodList()
-                            );
-                        });
-                    }
-                    self.fullScreenLoader.stopLoader();
-                    $formPayment.getElem(self.selectors.couponLoading).hide();
-                    showLogMercadoPago(self.messages.removeCoupon);
-                },
-                error: function (status, response) {
-                    console.log(status, response);
-                    self.fullScreenLoader.stopLoader();
-                }
-            });
+                });
+            }
         }
 
         function hideMessageCoupon($formPayment) {
