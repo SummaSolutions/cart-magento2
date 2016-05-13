@@ -21,18 +21,27 @@ class FinanceCost
     protected $_checkoutSession;
 
     /**
+     * Request object
+     *
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    protected $_request;
+
+    /**
      * FinanceCost constructor.
      *
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        \Magento\Checkout\Model\Session $checkoutSession
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\App\RequestInterface $request
     )
     {
         $this->setCode('finance_cost');
         $this->_registry = $registry;
         $this->_checkoutSession = $checkoutSession;
+        $this->_request = $request;
     }
 
 
@@ -48,7 +57,10 @@ class FinanceCost
     {
         $items = $shippingAssignment->getItems();
 
-        return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING && count($items));
+        return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING
+            && count($items)
+            && $this->_request->getModuleName() == 'mercadopago'
+        );
     }
 
     /**
@@ -73,7 +85,8 @@ class FinanceCost
     {
         $quote = $this->_checkoutSession->getQuote();
         $totals = $quote->getShippingAddress()->getTotals();
-        $discount = (isset($totals['discount_coupon']))?$totals['discount_coupon']['value']:0;
+        $discount = (isset($totals['discount_coupon'])) ? $totals['discount_coupon']['value'] : 0;
+
         return $discount;
     }
 
@@ -126,10 +139,10 @@ class FinanceCost
             $total->setFinanceCostAmount($balance);
             $total->setBaseFinanceCostAmount($balance);
 
-            $total->addTotalAmount($this->getCode(), $address->getFinanceCostAmount());
-            $total->addBaseTotalAmount($this->getCode(), $address->getBaseFinanceCostAmount());
-
         }
+
+        $total->addTotalAmount($this->getCode(), $address->getFinanceCostAmount());
+        $total->addBaseTotalAmount($this->getCode(), $address->getBaseFinanceCostAmount());
 
         return $this;
     }
