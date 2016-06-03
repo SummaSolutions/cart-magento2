@@ -61,7 +61,7 @@
                 </field>
                 <field id="shipping_label" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Shipping label download option</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <source_model>MercadoPago\MercadoEnvios\Model\Adminhtml\Source\Label\Mode</source_model>
                 </field>
             </group>
         </section>

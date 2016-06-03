@@ -265,8 +265,7 @@ class Payment
 
         $response = $this->preparePostPayment();
 
-        if ($response !== false):
-
+        if ($response) {
             $payment = $response['response'];
             $this->_helperData->log("Payment response", self::LOG_NAME, $payment);
             //set status
@@ -275,7 +274,7 @@ class Payment
             $this->getInfoInstance()->setAdditionalInformation('payment_id_detail', $payment['id']);
 
             return true;
-        endif;
+        }
 
         return false;
     }
@@ -407,6 +406,7 @@ class Payment
     public function getOrderPlaceRedirectUrl()
     {
         $url = $this->_helperData->getSuccessUrl();
+
         return $this->_urlBuilder->getUrl($url, ['_secure' => true]);
     }
 

@@ -38,6 +38,7 @@ class PaymentMethods
      */
     protected $coreHelper;
 
+    protected $_switcher;
 
     /**
      * PaymentMethods constructor.
@@ -47,11 +48,13 @@ class PaymentMethods
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Helper\Data $coreHelper
+        \MercadoPago\Core\Helper\Data $coreHelper,
+        \Magento\Backend\Block\Store\Switcher $switcher
     )
     {
         $this->scopeConfig = $scopeConfig;
         $this->coreHelper = $coreHelper;
+        $this->_switcher = $switcher;
     }
 
     /**
@@ -79,9 +82,11 @@ class PaymentMethods
             $accessToken = $meHelper->getAccessToken();
         }
 
+        $country = $this->scopeConfig->getValue('payment/mercadopago/country', 'website', $this->_switcher->getWebsiteId());
+
         $meHelper->log("Get payment methods by country... ", 'mercadopago');
         $meHelper->log("API payment methods: " . "/v1/payment_methods?access_token=" . $accessToken, 'mercadopago');
-        $response = \MercadoPago_Core_Lib_RestClient::get("/v1/payment_methods?access_token=" . $accessToken);
+        $response = \MercadoPago_Core_Lib_RestClient::get('/sites/'. strtoupper($country) .'/payment_methods?marketplace=NONE');
 
         $meHelper->log("API payment methods", 'mercadopago', $response);
 

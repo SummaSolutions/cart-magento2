@@ -1,5 +1,7 @@
 <?php
 namespace MercadoPago\MercadoEnvios\Block\Adminhtml\System\Config\Fieldset;
+
+use Magento\Framework\Data\Form\Element\AbstractElement;
 /**
  * Config form FieldSet renderer
  */
@@ -9,7 +11,7 @@ class Carrier
 
     const XML_PATH_STANDARD_ACTIVE = 'payment/mercadopago_standard/active';
 
-    private $helper;
+    private $_helper;
     /**
      * @param \Magento\Backend\Block\Context      $context
      * @param \Magento\Backend\Model\Auth\Session $authSession
@@ -24,7 +26,7 @@ class Carrier
         array $data = []
     )
     {
-        $this->helper = $helper;
+        $this->_helper = $helper;
         parent::__construct($context, $authSession, $jsHelper, $data);
     }
 
@@ -44,7 +46,7 @@ class Carrier
     /**
      * Return header title part of html for payment solution
      *
-     * @param Varien_Data_Form_Element_Abstract $element
+     * @param AbstractElement $element
      * @return string
      */
     protected function _getHeaderTitleHtml($element)
@@ -56,7 +58,7 @@ class Carrier
             $isPaymentEnabled = 'disabled';
             $disabledLegend = __("Checkout Classic Method must be enabled");
         } else {
-            if (!$this->helper->isCountryEnabled()) {
+            if (!$this->_helper->isCountryEnabled()) {
                 $isPaymentEnabled = 'disabled';
                 $disabledLegend = __("MercadoEnvios is not enabled in the country where Mercado Pago is configured");
             }
@@ -82,7 +84,7 @@ class Carrier
     /**
      * Return header comment part of html for payment solution
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -95,7 +97,7 @@ class Carrier
     /**
      * Get collapsed state on-load
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      *
      * @return false
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

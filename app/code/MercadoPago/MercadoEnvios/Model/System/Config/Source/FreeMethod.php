@@ -2,9 +2,9 @@
 namespace MercadoPago\MercadoEnvios\Model\System\Config\Source;
 
 /**
- * Class Category
+ * Class FreeMethod
  *
- * @package MercadoPago\Core\Model\System\Config\Source
+ * @package MercadoPago\MercadoEnvios\Model\System\Config\Source
  */
 class FreeMethod
     extends \MercadoPago\MercadoEnvios\Model\System\Config\Source\Method

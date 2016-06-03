@@ -49,7 +49,7 @@
         "sjparkinson/static-review": "~4.1",
         "fabpot/php-cs-fixer": "~1.2",
         "lusitanian/oauth": "~0.3 <=0.7.0",
-        "magento/product-community-edition": "2.0.2",
+        "magento/product-community-edition": "2.*",
         "composer/composer": "@alpha"
     },
     "config": {

@@ -2,22 +2,21 @@
 namespace MercadoPago\MercadoEnvios\Model\System\Config\Source;
 
 /**
- * Class Category
+ * Class Method
  *
- * @package MercadoPago\Core\Model\System\Config\Source
+ * @package MercadoPago\MercadoEnvios\Model\System\Config\Source
  */
 class Method
     implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * @var \MercadoPago\Core\Helper\Data
-     */
-    protected $coreHelper;
-    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
 
+    /**
+     * @var array
+     */
     protected $_countryOptions = [
         'mla' => [
             ['value' => 73328, 'label' => 'Normal'],
@@ -35,15 +34,12 @@ class Method
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \MercadoPago\Core\Helper\Data                      $coreHelper
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Helper\Data $coreHelper
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
         $this->scopeConfig = $scopeConfig;
-        $this->coreHelper = $coreHelper;
     }
 
     /**
@@ -59,6 +55,9 @@ class Method
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function getAvailableCodes() {
         $methods = $this->toOptionArray();
         $codes = [];
