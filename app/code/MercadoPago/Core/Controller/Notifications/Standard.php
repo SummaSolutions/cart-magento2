@@ -55,6 +55,39 @@ class Standard
         parent::__construct($context);
     }
 
+    protected function _emptyParams($p1, $p2)
+    {
+        return (empty($p1) || empty($p2));
+    }
+
+    protected function _isValidResponse($response)
+    {
+        return ($response['status'] == 200 || $response['status'] == 201);
+    }
+
+    protected function _responseLog()
+    {
+        $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
+    }
+
+    protected function _getShipmentsArray($merchantOrder)
+    {
+        return (isset($merchantOrder['shipments'][0])) ? $merchantOrder['shipments'][0] : [];
+    }
+
+    protected function _getFormattedPaymentData($paymentId, $data = [])
+    {
+        $response = $this->coreModel->getPayment($paymentId);
+        $payment = $response['response']['collection'];
+
+        return $this->formatArrayPayment($data, $payment);
+    }
+
+    protected function _shipmentExists($shipmentData, $merchantOrder)
+    {
+        return (!empty($shipmentData) && !empty($merchantOrder));
+    }
+
     /**
      * Controller Action
      */
@@ -64,62 +97,77 @@ class Standard
         //notification received
         $this->coreHelper->log("Standard Received notification", self::LOG_NAME, $request->getParams());
 
+        $shipmentData = '';
+        $merchantOrder = '';
         $id = $request->getParam('id');
         $topic = $request->getParam('topic');
 
-        if (!empty($id) && $topic == 'merchant_order') {
-            $response = $this->coreModel->getMerchantOrder($id);
-            $this->coreHelper->log("Return merchant_order", self::LOG_NAME, $response);
-            if ($response['status'] == 200 || $response['status'] == 201) {
-                $merchantOrder = $response['response'];
-
-                if (count($merchantOrder['payments']) > 0) {
-                    $data = $this->_getDataPayments($merchantOrder);
-                    if ($merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
-                        $statusFinal = 'approved';
-                    } else {
-                        $statusFinal = $this->_getStatusFinal($data['status'], $merchantOrder['payments']);
-                    }
-
-                    $shipmentData = (isset($merchantOrder['shipments'][0])) ? $merchantOrder['shipments'][0] : [];
-                    $this->coreHelper->log("Update Order", self::LOG_NAME);
-                    $this->coreHelper->setStatusUpdated($data);
-                    $this->coreModel->updateOrder($data);
-
-                    if (!empty($shipmentData)) {
-                        $this->_eventManager->dispatch(
-                            'mercadopago_standard_notification_before_set_status',
-                            ['shipmentData' => $shipmentData, 'orderId' => $merchantOrder['external_reference']]
-                        );
-                    }
-
-                    if ($statusFinal != false) {
-                        $data['status_final'] = $statusFinal;
-                        $this->coreHelper->log("Received Payment data", self::LOG_NAME, $data);
-                        $setStatusResponse = $this->coreModel->setStatusOrder($data);
-                        $this->getResponse()->setBody($setStatusResponse['text']);
-                        $this->getResponse()->setHttpResponseCode($setStatusResponse['code']);
-                    } else {
-                        $this->getResponse()->setBody("Status not final");
-                        $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_OK);
-                    }
-                    if (!empty($shipmentData)) {
-                        $this->_eventManager->dispatch('mercadopago_standard_notification_received',
-                            ['payment'        => $data,
-                             'merchant_order' => $merchantOrder]
-                        );
-                    }
-
-                    return;
-                }
-            }
-        } else {
+        if ($this->_emptyParams($id, $topic)) {
             $this->coreHelper->log("Merchant Order not found", self::LOG_NAME, $request->getParams());
             $this->getResponse()->setBody("Merchant Order not found");
             $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
+
+            return;
         }
 
-        $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
+        if ($topic == 'merchant_order') {
+            $response = $this->coreModel->getMerchantOrder($id);
+            $this->coreHelper->log("Return merchant_order", self::LOG_NAME, $response);
+            if (!$this->_isValidResponse($response)) {
+                $this->_responseLog();
+
+                return;
+            }
+
+            $merchantOrder = $response['response'];
+            if (count($merchantOrder['payments']) == 0) {
+                $this->_responseLog();
+
+                return;
+            }
+            $data = $this->_getDataPayments($merchantOrder);
+            $statusFinal = $this->_getStatusFinal($data['status'], $merchantOrder);
+            $shipmentData = $this->_getShipmentsArray($merchantOrder);
+
+        } elseif ($topic == 'payment') {
+            $data = $this->_getFormattedPaymentData($id);
+            $statusFinal = $data['status'];
+        } else {
+            $this->_responseLog();
+
+            return;
+        }
+
+        $this->coreHelper->log("Update Order", self::LOG_NAME);
+        $this->coreHelper->setStatusUpdated($data);
+        $this->coreModel->updateOrder($data);
+
+        if ($this->_shipmentExists($shipmentData, $merchantOrder)) {
+            $this->_eventManager->dispatch(
+                'mercadopago_standard_notification_before_set_status',
+                ['shipmentData' => $shipmentData, 'orderId' => $merchantOrder['external_reference']]
+            );
+        }
+
+        if ($statusFinal != false) {
+            $data['status_final'] = $statusFinal;
+            $this->coreHelper->log("Received Payment data", self::LOG_NAME, $data);
+            $setStatusResponse = $this->coreModel->setStatusOrder($data);
+            $this->getResponse()->setBody($setStatusResponse['text']);
+            $this->getResponse()->setHttpResponseCode($setStatusResponse['code']);
+        } else {
+            $this->getResponse()->setBody("Status not final");
+            $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_OK);
+        }
+        if ($this->_shipmentExists($shipmentData, $merchantOrder)) {
+            $this->_eventManager->dispatch('mercadopago_standard_notification_received',
+                ['payment'        => $data,
+                 'merchant_order' => $merchantOrder]
+            );
+        }
+
+        $this->_responseLog();
+
     }
 
 
@@ -130,7 +178,8 @@ class Standard
      *
      * @return array
      */
-    protected function _getDataPayments($merchantOrder)
+    protected
+    function _getDataPayments($merchantOrder)
     {
         $data = array();
         foreach ($merchantOrder['payments'] as $payment) {
@@ -151,7 +200,8 @@ class Standard
      *
      * @return mixed
      */
-    protected function _formatArrayPayment($data, $payment)
+    protected
+    function _formatArrayPayment($data, $payment)
     {
         $this->coreHelper->log("Format Array", self::LOG_NAME);
 
@@ -205,7 +255,8 @@ class Standard
         return $data;
     }
 
-    protected function _dateCompare($a, $b)
+    protected
+    function _dateCompare($a, $b)
     {
         $t1 = strtotime($a['value']);
         $t2 = strtotime($b['value']);
@@ -219,7 +270,8 @@ class Standard
      *
      * @return int
      */
-    protected function _getLastPaymentIndex($payments, $status)
+    protected
+    function _getLastPaymentIndex($payments, $status)
     {
         $dates = [];
         foreach ($payments as $key => $payment) {
@@ -247,7 +299,8 @@ class Standard
      *
      * @return string
      */
-    protected function _getStatusFinal($dataStatus, $merchantOrder)
+    protected
+    function _getStatusFinal($dataStatus, $merchantOrder)
     {
         if ($merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
             return 'approved';

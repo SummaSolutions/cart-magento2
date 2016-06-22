@@ -24,6 +24,7 @@ class ConfigObserver
             "mlm" => "http://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_468X60.JPG",
             "mlc" => "https://secure.mlstatic.com/developers/site/cloud/banners/cl/468x60.gif",
             "mlv" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg",
+            "mpe" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
         ],
         "mercadopago_customticket" => [
             "mla" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
@@ -32,6 +33,7 @@ class ConfigObserver
             "mlm" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
             "mlc" => "https://secure.mlstatic.com/developers/site/cloud/banners/cl/468x60.gif",
             "mlv" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg",
+            "mpe" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
         ],
         "mercadopago_standard"     => [
             "mla" => "http://imgmp.mlstatic.com/org-img/banners/ar/medios/online/468X60.jpg",
@@ -39,7 +41,8 @@ class ConfigObserver
             "mco" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
             "mlc" => "https://secure.mlstatic.com/developers/site/cloud/banners/cl/468x60.gif",
             "mlv" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg",
-            "mlm" => "http://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_468X60.JPG"
+            "mlm" => "http://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_468X60.JPG",
+            "mpe" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
         ]
     ];
 
@@ -48,7 +51,7 @@ class ConfigObserver
      *
      * @var array
      */
-    private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm', 'mlv', 'mlc', 'mco'];
+    private $available_transparent_credit_cart = ['mla', 'mlb', 'mlm', 'mlv', 'mlc', 'mco', 'mpe'];
 
     /**
      * Available countries to custom ticket
@@ -137,30 +140,30 @@ class ConfigObserver
 
     /**
      * Check if banner checkout img needs to be updated based on selected country
-     * @param $type_checkout
+     * @param $typeCheckout
      */
-    public function checkBanner($type_checkout)
+    public function checkBanner($typeCheckout)
     {
         //get country
         $country = $this->scopeConfig->getValue('payment/mercadopago/country');
-        if (!isset($this->banners[$type_checkout][$country])) {
+        if (!isset($this->banners[$typeCheckout][$country])) {
             return;
         }
-        $default_banner = $this->banners[$type_checkout][$country];
+        $defaultBanner = $this->banners[$typeCheckout][$country];
 
-        $current_banner = $this->scopeConfig->getValue('payment/' . $type_checkout . '/banner_checkout');
+        $currentBanner = $this->scopeConfig->getValue('payment/' . $typeCheckout . '/banner_checkout');
 
-        $this->coreHelper->log("Type Checkout Path: " . $type_checkout, self::LOG_NAME);
-        $this->coreHelper->log("Current Banner: " . $current_banner, self::LOG_NAME);
-        $this->coreHelper->log("Default Banner: " . $default_banner, self::LOG_NAME);
+        $this->coreHelper->log("Type Checkout Path: " . $typeCheckout, self::LOG_NAME);
+        $this->coreHelper->log("Current Banner: " . $currentBanner, self::LOG_NAME);
+        $this->coreHelper->log("Default Banner: " . $defaultBanner, self::LOG_NAME);
 
-        if (in_array($current_banner, $this->banners[$type_checkout])) {
+        if (in_array($currentBanner, $this->banners[$typeCheckout])) {
             $this->coreHelper->log("Banner default need update...", self::LOG_NAME);
 
-            if ($default_banner != $current_banner) {
-                $this->configResource->saveConfig('payment/' . $type_checkout . '/banner_checkout', $default_banner, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+            if ($defaultBanner != $currentBanner) {
+                $this->configResource->saveConfig('payment/' . $typeCheckout . '/banner_checkout', $defaultBanner, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
 
-                $this->coreHelper->log('payment/' . $type_checkout . '/banner_checkout setted ' . $default_banner, self::LOG_NAME);
+                $this->coreHelper->log('payment/' . $typeCheckout . '/banner_checkout setted ' . $defaultBanner, self::LOG_NAME);
             }
         }
     }
@@ -174,42 +177,44 @@ class ConfigObserver
     {
         $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id'), self::LOG_NAME);
 
-        $sponsor_id = "";
+        $sponsorId = "";
         $this->coreHelper->log("Valid user test", self::LOG_NAME);
 
-        $access_token = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
-        $this->coreHelper->log("Get access_token: " . $access_token, self::LOG_NAME);
+        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
 
-        if (!$access_token) {
+        if (!$accessToken) {
             return;
         }
 
-        $mp = $this->coreHelper->getApiInstance($access_token);
+        $mp = $this->coreHelper->getApiInstance($accessToken);
         $user = $mp->get("/users/me");
         $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
 
         if ($user['status'] == 200 && !in_array("test_user", $user['response']['tags'])) {
 
-            switch ($user['response']['site_id']) {
-                case 'MLA':
-                    $sponsor_id = 186172525;
-                    break;
-                case 'MLB':
-                    $sponsor_id = 186175129;
-                    break;
-                case 'MLM':
-                    $sponsor_id = 186175064;
-                    break;
-                default:
-                    $sponsor_id = "";
-                    break;
+            $sponsors = [
+                'MLA' => 186172525,
+                'MLB' => 186175129,
+                'MLM' => 186175064,
+                'MCO' => 206959966,
+                'MLC' => 206959756,
+                'MLV' => 206960619,
+                'MPE' => 217178514,
+            ];
+            $countryCode = $user['response']['site_id'];
+
+            if (isset($sponsors[$countryCode])) {
+                $sponsorId = $sponsors[$countryCode];
+            } else {
+                $sponsorId = '';
             }
 
-            $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsor_id);
+            $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsorId);
         }
 
-        $this->configResource->saveConfig('payment/mercadopago/sponsor_id', $sponsor_id, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
-        $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsor_id);
+        $this->configResource->saveConfig('payment/mercadopago/sponsor_id', $sponsorId, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+        $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsorId);
     }
 
     /**

@@ -306,7 +306,6 @@ class Payment
         ];
 
         $arr['notification_url'] = $this->_urlBuilder->getUrl("mercadopago/notifications/standard");
-        $arr['notification_url'] = "http://f1c54753.ngrok.io/mercadopago/notifications/standard";
 
         $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods();
         $installments = $this->getConfigData('installments');
