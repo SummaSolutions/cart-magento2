@@ -178,8 +178,7 @@ class Standard
      *
      * @return array
      */
-    protected
-    function _getDataPayments($merchantOrder)
+    protected function _getDataPayments($merchantOrder)
     {
         $data = array();
         foreach ($merchantOrder['payments'] as $payment) {
@@ -200,8 +199,7 @@ class Standard
      *
      * @return mixed
      */
-    protected
-    function _formatArrayPayment($data, $payment)
+    protected function _formatArrayPayment($data, $payment)
     {
         $this->coreHelper->log("Format Array", self::LOG_NAME);
 
@@ -255,8 +253,7 @@ class Standard
         return $data;
     }
 
-    protected
-    function _dateCompare($a, $b)
+    protected function _dateCompare($a, $b)
     {
         $t1 = strtotime($a['value']);
         $t2 = strtotime($b['value']);
@@ -270,8 +267,7 @@ class Standard
      *
      * @return int
      */
-    protected
-    function _getLastPaymentIndex($payments, $status)
+    protected function _getLastPaymentIndex($payments, $status)
     {
         $dates = [];
         foreach ($payments as $key => $payment) {
@@ -299,8 +295,7 @@ class Standard
      *
      * @return string
      */
-    protected
-    function _getStatusFinal($dataStatus, $merchantOrder)
+    protected function _getStatusFinal($dataStatus, $merchantOrder)
     {
         if ($merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
             return 'approved';

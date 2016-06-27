@@ -81,6 +81,7 @@ class ConfigObserver
      * @var $configResource
      */
     protected $configResource;
+    protected $_switcher;
 
     /**
      * ConfigObserver constructor.
@@ -92,12 +93,14 @@ class ConfigObserver
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \MercadoPago\Core\Helper\Data $coreHelper,
-        \Magento\Config\Model\ResourceModel\Config $configResource
+        \Magento\Config\Model\ResourceModel\Config $configResource,
+        \Magento\Backend\Block\Store\Switcher $switcher
     )
     {
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->coreHelper = $coreHelper;
+        $this->_switcher = $switcher;
     }
 
     /**
@@ -130,11 +133,11 @@ class ConfigObserver
         $country = $this->scopeConfig->getValue('payment/mercadopago/country');
 
         if (!in_array($country, $this->available_transparent_credit_cart)) {
-            $this->configResource->saveConfig('payment/mercadopago_custom/active', 0, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+            $this->_saveWebsiteConfig('payment/mercadopago_custom/active', 0);
         }
 
         if (!in_array($country, $this->available_transparent_ticket)) {
-            $this->configResource->saveConfig('payment/mercadopago_customticket/active', 0, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+            $this->_saveWebsiteConfig('payment/mercadopago_customticket/active', 0);
         }
     }
 
@@ -161,7 +164,7 @@ class ConfigObserver
             $this->coreHelper->log("Banner default need update...", self::LOG_NAME);
 
             if ($defaultBanner != $currentBanner) {
-                $this->configResource->saveConfig('payment/' . $typeCheckout . '/banner_checkout', $defaultBanner, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                $this->_saveWebsiteConfig('payment/' . $typeCheckout . '/banner_checkout', $defaultBanner);
 
                 $this->coreHelper->log('payment/' . $typeCheckout . '/banner_checkout setted ' . $defaultBanner, self::LOG_NAME);
             }
@@ -213,7 +216,7 @@ class ConfigObserver
             $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsorId);
         }
 
-        $this->configResource->saveConfig('payment/mercadopago/sponsor_id', $sponsorId, \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+        $this->_saveWebsiteConfig('payment/mercadopago/sponsor_id', $sponsorId);
         $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsorId);
     }
 
@@ -244,5 +247,15 @@ class ConfigObserver
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Classic Checkout: Invalid client id or client secret'));
             }
         }
+    }
+
+    protected function _saveWebsiteConfig($path, $value)
+    {
+        if ($this->_switcher->getWebsiteId() == 0) {
+            $this->scopeConfig->saveConfig($path, $value);
+        } else {
+            $this->scopeConfig->saveConfig($path, $value, 'websites', $this->_switcher->getWebsiteId());
+        }
+
     }
 }
