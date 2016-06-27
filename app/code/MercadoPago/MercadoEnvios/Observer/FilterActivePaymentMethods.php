@@ -3,6 +3,13 @@ namespace MercadoPago\MercadoEnvios\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class FilterActivePaymentMethods
+ *
+ * When shipping method is selected filter available payment methods
+ *
+ * @package MercadoPago\MercadoEnvios\Observer
+ */
 class FilterActivePaymentMethods
     implements ObserverInterface
 {
@@ -11,9 +18,17 @@ class FilterActivePaymentMethods
      */
     protected $shipmentHelper;
 
+    /**
+     * @var
+     */
     protected $_useMercadoEnvios;
 
 
+    /**
+     * FilterActivePaymentMethods constructor.
+     *
+     * @param \MercadoPago\MercadoEnvios\Helper\Data $shipmentHelper
+     */
     public function __construct(
         \MercadoPago\MercadoEnvios\Helper\Data $shipmentHelper
     )
@@ -21,6 +36,11 @@ class FilterActivePaymentMethods
         $this->shipmentHelper = $shipmentHelper;
     }
 
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return \Magento\Framework\Event\Observer
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if ($this->_useMercadoEnvios()) {
@@ -34,6 +54,9 @@ class FilterActivePaymentMethods
         return $observer;
     }
 
+    /**
+     * @return bool
+     */
     protected function _useMercadoEnvios()
     {
         if (empty($this->_useMercadoEnvios)) {
