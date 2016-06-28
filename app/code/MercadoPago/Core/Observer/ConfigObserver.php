@@ -252,9 +252,9 @@ class ConfigObserver
     protected function _saveWebsiteConfig($path, $value)
     {
         if ($this->_switcher->getWebsiteId() == 0) {
-            $this->scopeConfig->saveConfig($path, $value);
+            $this->configResource->saveConfig($path, $value, 'default', 0);
         } else {
-            $this->scopeConfig->saveConfig($path, $value, 'websites', $this->_switcher->getWebsiteId());
+            $this->configResource->saveConfig($path, $value, 'websites', $this->_switcher->getWebsiteId());
         }
 
     }
