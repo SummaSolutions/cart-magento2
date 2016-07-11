@@ -211,8 +211,6 @@ class Payment
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
         \MercadoPago\Core\Model\Core $coreModel,
         \Magento\Framework\App\RequestInterface $request)
     {
