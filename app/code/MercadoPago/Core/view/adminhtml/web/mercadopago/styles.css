@@ -1,0 +1,53 @@
+#meli-logo {
+    padding-left: 85px;
+    background: url(images/logo.png) no-repeat 0 0px;
+    height: 21px;
+}
+
+#meen-logo {
+    padding-left: 85px;
+    background: url(images/mercadoenvios.png) no-repeat 0 0px;
+    height: 47px;
+}
+
+.meli:before {
+    content: url(images/cards.jpg);
+    float: right;
+}
+
+/*.meli {*/
+    /*min-width: 100%;*/
+    /*box-sizing: border-box;*/
+/*}*/
+
+.meli-legend {
+    margin-top: 8px;
+    vertical-align: top;
+    display: inline-block;
+}
+
+.meli-btn {
+    margin-top: 17%;
+}
+
+.meli-payment-btn {
+    /*margin-top: 4%;*/
+}
+
+.config-heading.meli .heading {
+    margin-top: 18px;
+}
+
+.disabled-legend {
+    float: right;
+    margin-top: 12px;
+    margin-right: 15px;
+}
+
+fieldset[id^="payment_mercadopago"] table {
+    width: 100% !important;
+}
+
+fieldset[id^="carriers_mercadoenvios"] table {
+    width: 100% !important;
+}
