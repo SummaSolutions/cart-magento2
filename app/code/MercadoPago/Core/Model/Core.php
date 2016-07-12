@@ -229,7 +229,7 @@ class Core
      *
      * @return \Magento\Sales\Model\Order
      */
-    protected function _getOrder($incrementId)
+    public function _getOrder($incrementId)
     {
         return $this->_orderFactory->create()->loadByIncrementId($incrementId);
     }
@@ -702,6 +702,21 @@ class Core
         return $details_discount;
     }
 
+    protected function _createInvoice($order, $message)
+    {
+        if (!$order->hasInvoices()) {
+            $invoice = $order->prepareInvoice();
+            $invoice->register();
+            $invoice->pay();
+            $this->_transactionFactory->create()
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder())
+                ->save();
+
+            $this->_invoiceSender->send($invoice, true, $message);
+        }
+    }
+
     /**
      * Updates order status ond creates invoice
      *
@@ -710,7 +725,7 @@ class Core
      *
      * @return array
      */
-    public function setStatusOrder($payment, $stateObject = null)
+    public function setStatusOrder($payment)
     {
         $helper = $this->_coreHelper;
         $order = $this->_getOrder($payment["external_reference"]);
@@ -724,22 +739,11 @@ class Core
         if ($this->_coreHelper->isStatusUpdated()) {
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         }
-
         try {
             if ($status == 'approved') {
                 $this->_coreHelper->setOrderSubtotals($payment, $order);
+                $this->_createInvoice($order, $message);
 
-                if (!$order->hasInvoices()) {
-                    $invoice = $order->prepareInvoice();
-                    $invoice->register()->pay();
-                    $this->_transactionFactory->create()
-                        ->addObject($invoice)
-                        ->addObject($invoice->getOrder())
-                        ->save();
-
-                    $this->_invoiceSender->send($invoice, true, $message);
-
-                }
                 //Associate card to customer
                 $additionalInfo = $order->getPayment()->getAdditionalInformation();
                 if (isset($additionalInfo['token'])) {
@@ -751,19 +755,11 @@ class Core
                 $order->cancel();
             }
 
-            $statusOrder = $helper->getStatusOrder($status);
-            if ($stateObject) {
-                $stateObject->setStatus($statusOrder);
-                $stateObject->setState($helper->_getAssignedState($statusOrder));
-                $stateObject->setIsNotified(true);
-            }
+            //if state is not complete updates according to setting
+            $this->_updateStatus($order, $helper, $status, $message);
 
-            $order->setState($helper->_getAssignedState($statusOrder));
-            $order->addStatusToHistory($statusOrder, $message, true);
-            $this->_orderSender->send($order, true, $message);
-
-            $status_save = $order->save();
-            $helper->log("Update order", 'mercadopago.log', $status_save->getData());
+            $statusSave = $order->save();
+            $helper->log("Update order", 'mercadopago.log', $statusSave->getData());
             $helper->log($message, 'mercadopago.log');
 
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
@@ -774,6 +770,19 @@ class Core
         }
     }
 
+
+    protected function _updateStatus($order, $helper, $status, $message)
+    {
+        if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
+            $statusOrder = $helper->getStatusOrder($status);
+
+            $order->setState($helper->_getAssignedState($statusOrder));
+            $order->addStatusToHistory($statusOrder, $message, true);
+            $this->_orderSender->send($order, true, $message);
+        }
+    }
+
+
     /**
      * Set order and payment info
      *
@@ -782,7 +791,7 @@ class Core
     public function updateOrder($data, $order = null)
     {
         $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
-        if (!$this->_coreHelper->isStatusUpdated()) {
+        if (true or !$this->_coreHelper->isStatusUpdated()) {
             try {
                 if (!$order) {
                     $order = $this->_getOrder($data["external_reference"]);
@@ -815,19 +824,6 @@ class Core
 
                 $payment_status = $payment_order->save();
                 $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
-
-                if ($data['payer_first_name']) {
-                    $order->setCustomerFirstname($data['payer_first_name']);
-                }
-
-                if ($data['payer_last_name']) {
-                    $order->setCustomerLastname($data['payer_last_name']);
-                }
-
-                if ($data['payer_email']) {
-                    $order->setCustomerEmail($data['payer_email']);
-                }
-
 
                 $status_save = $order->save();
                 $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());

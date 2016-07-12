@@ -9,13 +9,14 @@ define(
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Checkout/js/action/set-payment-information',
+        'Magento_Checkout/js/action/place-order',
         'mage/translate',
         'meli',
         'tinyj',
         'MPcustom',
         'tiny'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction) {
         'use strict';
 
         return Component.extend({
@@ -153,9 +154,9 @@ define(
 
             getInitialGrandTotal: function () {
                 var initialTotal = quote.totals().base_subtotal
-                                    + quote.totals().base_shipping_incl_tax
-                                    + quote.totals().base_tax_amount
-                                    + quote.totals().base_discount_amount;
+                    + quote.totals().base_shipping_incl_tax
+                    + quote.totals().base_tax_amount
+                    + quote.totals().base_discount_amount;
                 return initialTotal;
             },
 
@@ -246,6 +247,46 @@ define(
             },
             validate: function () {
                 return this.validateHandler();
+            },
+
+            /**
+             * Place order.
+             */
+            placeOrder: function (data, event) {
+                var self = this;
+
+                if (event) {
+                    event.preventDefault();
+                }
+
+                if (this.validate() && additionalValidators.validate()) {
+                    this.isPlaceOrderActionAllowed(false);
+
+                    this.getPlaceOrderDeferredObject()
+                        .fail(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
+                            }
+                        ).done(
+                        function () {
+                            self.afterPlaceOrder();
+
+                            if (self.redirectAfterPlaceOrder) {
+                                redirectOnSuccessAction.execute();
+                            }
+                        }
+                    );
+
+                    return true;
+                }
+
+                return false;
+            },
+
+            getPlaceOrderDeferredObject: function () {
+                return $.when(
+                    placeOrderAction(this.getData(), this.messageContainer)
+                );
             }
 
 

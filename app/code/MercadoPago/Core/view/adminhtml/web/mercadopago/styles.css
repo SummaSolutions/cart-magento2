@@ -21,7 +21,9 @@
 /*}*/
 
 .meli-legend {
-    margin-top: 18px;
+    margin-top: 8px;
+    vertical-align: top;
+    display: inline-block;
 }
 
 .meli-btn {
@@ -38,7 +40,7 @@
 
 .disabled-legend {
     float: right;
-    margin-top: 18px;
+    margin-top: 12px;
     margin-right: 15px;
 }
 

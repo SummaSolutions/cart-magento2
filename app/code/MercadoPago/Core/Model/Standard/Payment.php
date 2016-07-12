@@ -108,6 +108,11 @@ class Payment
     protected $_urlBuilder;
 
     /**
+     * @var string
+     */
+    protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
+
+    /**
      * @param \MercadoPago\Core\Helper\Data                                $helperData
      * @param \Magento\Catalog\Helper\Image                                $helperImage
      * @param \Magento\Checkout\Model\Session                              $checkoutSession
@@ -228,17 +233,13 @@ class Payment
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
         $customer = $this->_customerSession->getCustomer();
         $payment = $order->getPayment();
-        $paramsShipment = [];
+        $paramsShipment = new \Magento\Framework\DataObject();
+        $paramsShipment->setParams([]);
 
         $this->_eventManager->dispatch(
             'mercadopago_standard_make_preference_before',
             ['params' => $paramsShipment, 'order' => $order]
         );
-
-        if (!isset($paramsShipment['cost'])) {
-            $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
-            $paramsShipment['mode'] = 'custom';
-        }
 
         $arr = [];
         $arr['external_reference'] = $orderIncrementId;
@@ -267,15 +268,15 @@ class Payment
             $this->_helperData->log("Difference add itens: " . $diff_price, 'mercadopago-standard.log');
         }
         if ($order->canShip()) {
-            $shipping = $order->getShippingAddress()->getData();
+            $shippingAddress = $order->getShippingAddress();
+            $shipping = $shippingAddress->getData();
 
             $arr['payer']['phone'] = [
                 "area_code" => "-",
                 "number"    => $shipping['telephone']
             ];
 
-            $paramsShipment['receiver_address'] = $this->getReceiverAddress($order->getShippingAddress());
-            $arr['shipments'] = $paramsShipment;
+            $arr['shipments'] = $this->_getParamShipment($paramsShipment, $order, $shippingAddress);
         }
 
         $billing_address = $order->getBillingAddress()->getData();
@@ -323,6 +324,17 @@ class Payment
         }
 
         return $arr;
+    }
+
+    protected function _getParamShipment($params, $order, $shippingAddress) {
+        $paramsShipment = $params->getParams();
+        if (empty($paramsShipment)) {
+            $paramsShipment = $params->getData();
+            $paramsShipment['cost'] = (float)$order->getBaseShippingAmount();
+            $paramsShipment['mode'] = 'custom';
+        }
+        $paramsShipment['receiver_address'] = $this->getReceiverAddress($shippingAddress);
+        return $paramsShipment;
     }
 
     /**
