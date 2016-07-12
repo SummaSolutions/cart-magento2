@@ -1,4 +1,4 @@
-# Magento - Mercado Pago Module (v1.0.5)
+# Magento (v2.0.x - v2.1) - Mercado Pago Module
 
 * [Features](#features)
 * [Installation](#installation)
