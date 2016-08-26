@@ -303,7 +303,7 @@ class Payment
             $data = new \Magento\Framework\DataObject($data);
         }
 
-        $info_form = $data->getData();
+        $info_form = $data->getData('additional_data');
         //$info_form = $info_form['mercadopago_custom'];
         if (isset($info_form['one_click_pay']) && $info_form['one_click_pay'] == 1) {
             $info_form = $this->cleanFieldsOcp($info_form);
