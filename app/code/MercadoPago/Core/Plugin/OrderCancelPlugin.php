@@ -1,7 +1,11 @@
 <?php
 
 namespace MercadoPago\Core\Plugin;
-
+/**
+ * Class OrderCancelPlugin
+ *
+ * @package MercadoPago\Core\Plugin
+ */
 class OrderCancelPlugin
 {
     /**
@@ -26,6 +30,12 @@ class OrderCancelPlugin
         $this->dataHelper = $dataHelper;
     }
 
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     * @param \Closure                   $proceed
+     *
+     * @return mixed
+     */
     public function aroundCancel (\Magento\Sales\Model\Order $order, \Closure $proceed) {
         $a = 0;
         $this->order = $order;
@@ -34,6 +44,9 @@ class OrderCancelPlugin
         return $result;
     }
 
+    /**
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function salesOrderBeforeCancel () {
 
         if ($this->order->getExternalRequest()) {
@@ -76,6 +89,12 @@ class OrderCancelPlugin
         }
     }
 
+    /**
+     * @param $paymentID
+     * @param $paymentMethod
+     *
+     * @return bool
+     */
     protected function checkCancelationBasicData ($paymentID, $paymentMethod) {
 
         if ($paymentID == null) {
@@ -96,6 +115,13 @@ class OrderCancelPlugin
         return true;
     }
 
+    /**
+     * @param $orderStatus
+     * @param $orderPaymentStatus
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function checkCancelationData ($orderStatus, $orderPaymentStatus) {
         $isValidaData = true;
 
@@ -116,6 +142,9 @@ class OrderCancelPlugin
         return $isValidaData;
     }
 
+    /**
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function throwCancelationException () {
         throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Mercado Pago - Cancellations not made'));
     }

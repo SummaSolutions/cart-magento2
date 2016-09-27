@@ -148,7 +148,7 @@ class Standard
             return;
         }
 
-        // se supone que si pasa esto, hubo una peticion externa de refund
+        // if this happens, we need to generate a credit memo
         if (isset($data["amount_refunded"]) && $data["amount_refunded"] > 0) {
             $this->_generateCreditMemo($data);
         }
@@ -185,6 +185,9 @@ class Standard
 
     }
 
+    /**
+     * @param $payment \Magento\Sales\Model\Order\Payment
+     */
     protected function _generateCreditMemo($payment)
     {
         $order = $this->_orderFactory->create()->loadByIncrementId($payment["order_id"]);
@@ -199,12 +202,14 @@ class Standard
         }
     }
 
-    protected function _createCreditmemo ($order, $data) {
-        /**
-         * @var $order \Magento\Sales\Model\Order
-         * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
-         * @var $payment \Magento\Sales\Model\Order\Payment
-         */
+
+    /**
+     * @var $order \Magento\Sales\Model\Order
+     * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
+     * @var $payment \Magento\Sales\Model\Order\Payment
+     */
+    protected function _createCreditmemo ($order, $data)
+    {
         $order->setExternalRequest(true);
         $creditMemos = $order->getCreditmemosCollection()->getItems();
 
@@ -338,8 +343,7 @@ class Standard
                 $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
             }
         }
-        //usort($dates, array(get_class($this), "_dateCompare"));
-        usort($dates, array('MercadoPago\Core\Controller\Notifications\Standard', "_dateCompare"));
+        usort($dates, ['MercadoPago\Core\Controller\Notifications\Standard', "_dateCompare"]);
         if ($dates) {
             $lastModified = array_pop($dates);
 
