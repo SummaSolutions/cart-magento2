@@ -74,7 +74,7 @@ class RefundObserverBeforeSave implements ObserverInterface
 
         $isTotalRefund = $payment->getAmountPaid() == $payment->getAmountRefunded();
 
-        $isValidBasicData = $this->checkRefundBasicData ($paymentMethod);
+        $isValidBasicData = $this->checkRefundBasicData ($paymentMethod, $paymentDate);
 
         $isValidaData = $this->checkRefundData ($isCreditCardPayment,
             $orderStatus,
@@ -90,11 +90,17 @@ class RefundObserverBeforeSave implements ObserverInterface
 
     /**
      * @param $paymentMethod
+     * @param $paymentDate
      *
      * @return bool
      */
-    protected function checkRefundBasicData ($paymentMethod) {
+    protected function checkRefundBasicData ($paymentMethod, $paymentDate) {
         $refundAvailable = $this->_dataHelper->isRefundAvailable();
+
+        if ($paymentDate == null) {
+            $this->_messageManager->addErrorMessage(__('No payment is recorded. You can\'t make a refund on a unpaid order'));
+            return false;
+        }
 
         if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
             $this->_messageManager->addErrorMessage(__('Order payment wasn\'t made by Mercado Pago. The refund will be made through Magento'));
