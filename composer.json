@@ -53,6 +53,6 @@
   "minimum-stability": "beta",
   "prefer-stable": true,
   "extra": {
-    "map" : [["app/code/MercadoPago", "MercadoPago"]]
+    "map" : [["app/code/MercadoPago/MercadoEnvios", "MercadoPago/MercadoEnvios"], ["app/code/MercadoPago/Core", "MercadoPago/Core"]]
   }
 }
