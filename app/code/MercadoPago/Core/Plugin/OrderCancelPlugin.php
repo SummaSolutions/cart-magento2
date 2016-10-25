@@ -37,7 +37,6 @@ class OrderCancelPlugin
      * @return mixed
      */
     public function aroundCancel (\Magento\Sales\Model\Order $order, \Closure $proceed) {
-        $a = 0;
         $this->order = $order;
         $this->salesOrderBeforeCancel();
         $result = $proceed();
@@ -52,11 +51,17 @@ class OrderCancelPlugin
         if ($this->order->getExternalRequest()) {
             return;
         }
+
+        $paymentMethod = $this->order->getPayment()->getMethodInstance()->getCode();
+
+        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+            return;
+        }
+
         $orderStatus = $this->order->getData('status');
         $orderPaymentStatus = $this->order->getPayment()->getData('additional_information')['status'];
 
         $paymentID = $this->order->getPayment()->getData('additional_information')['id'];
-        $paymentMethod = $this->order->getPayment()->getMethodInstance()->getCode();
 
         $isValidBasicData = $this->checkCancelationBasicData ($paymentID, $paymentMethod);
         $isValidaData = $this->checkCancelationData ($orderStatus, $orderPaymentStatus);
