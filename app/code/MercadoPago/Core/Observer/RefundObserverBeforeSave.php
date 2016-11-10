@@ -9,8 +9,8 @@ use Magento\Framework\Event\ObserverInterface;
  *
  * @package MercadoPago\Core\Observer
  */
-
-class RefundObserverBeforeSave implements ObserverInterface
+class RefundObserverBeforeSave
+    implements ObserverInterface
 {
 
     protected $_session;
@@ -27,9 +27,10 @@ class RefundObserverBeforeSave implements ObserverInterface
 
     /**
      * RefundObserverBeforeSave constructor.
-     * @param \Magento\Backend\Model\Session $session
+     *
+     * @param \Magento\Backend\Model\Session        $session
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \MercadoPago\Core\Helper\Data $dataHelper
+     * @param \MercadoPago\Core\Helper\Data         $dataHelper
      */
     public function __construct(\Magento\Backend\Model\Session $session,
                                 \Magento\Framework\App\Action\Context $context,
@@ -40,18 +41,26 @@ class RefundObserverBeforeSave implements ObserverInterface
         $this->_dataHelper = $dataHelper;
     }
 
-    public function execute(\Magento\Framework\Event\Observer $observer) {
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
         $creditMemo = $observer->getData('creditmemo');
         $order = $creditMemo->getOrder();
         $this->creditMemoRefundBeforeSave($order, $creditMemo);
     }
 
     /**
-     * @param $order \Magento\Sales\Model\Order
+     * @param $order      \Magento\Sales\Model\Order
      * @param $creditMemo \Magento\Sales\Model\Order\Creditmemo
      */
-    protected function creditMemoRefundBeforeSave ($order, $creditMemo)
+    protected function creditMemoRefundBeforeSave($order, $creditMemo)
     {
+
+        $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
+        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+
+            return;
+        }
+
         if ($order->getExternalRequest()) {
             return; // si la peticion de crear un credit memo viene de mercado pago, no hace falta mandar el request nuevamente
         }
@@ -74,9 +83,9 @@ class RefundObserverBeforeSave implements ObserverInterface
 
         $isTotalRefund = $payment->getAmountPaid() == $payment->getAmountRefunded();
 
-        $isValidBasicData = $this->checkRefundBasicData ($paymentMethod, $paymentDate);
+        $isValidBasicData = $this->checkRefundBasicData($paymentMethod, $paymentDate);
 
-        $isValidaData = $this->checkRefundData ($isCreditCardPayment,
+        $isValidaData = $this->checkRefundData($isCreditCardPayment,
             $orderStatus,
             $orderPaymentStatus,
             $paymentDate,
@@ -94,21 +103,25 @@ class RefundObserverBeforeSave implements ObserverInterface
      *
      * @return bool
      */
-    protected function checkRefundBasicData ($paymentMethod, $paymentDate) {
+    protected function checkRefundBasicData($paymentMethod, $paymentDate)
+    {
         $refundAvailable = $this->_dataHelper->isRefundAvailable();
 
         if ($paymentDate == null) {
             $this->_messageManager->addErrorMessage(__('No payment is recorded. You can\'t make a refund on a unpaid order'));
+
             return false;
         }
 
         if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
             $this->_messageManager->addErrorMessage(__('Order payment wasn\'t made by Mercado Pago. The refund will be made through Magento'));
+
             return false;
         }
 
         if (!$refundAvailable) {
             $this->_messageManager->addErrorMessage(__('Mercado Pago refunds are disabled. The refund will be made through Magento'));
+
             return false;
         }
 
@@ -125,11 +138,11 @@ class RefundObserverBeforeSave implements ObserverInterface
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function checkRefundData ($isCreditCardPayment,
-                                        $orderStatus,
-                                        $orderPaymentStatus,
-                                        $paymentDate,
-                                        $order)
+    protected function checkRefundData($isCreditCardPayment,
+                                       $orderStatus,
+                                       $orderPaymentStatus,
+                                       $paymentDate,
+                                       $order)
     {
 
         $maxDays = $this->_dataHelper->getMaximumDaysRefund();
@@ -171,14 +184,16 @@ class RefundObserverBeforeSave implements ObserverInterface
     }
 
     /**
-     * @param $order \Magento\Sales\Model\Order
-     * @param $creditMemo \Magento\Sales\Model\Order\Creditmemo
+     * @param $order         \Magento\Sales\Model\Order
+     * @param $creditMemo    \Magento\Sales\Model\Order\Creditmemo
      * @param $paymentMethod string
      * @param $isTotalRefund boolean
-     * @param $paymentID int
+     * @param $paymentID     int
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function sendRefundRequest ($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID) {
+    protected function sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID)
+    {
         $clientId = $this->_dataHelper->getClientId();
         $clientSecret = $this->_dataHelper->getClientSecret();
 
@@ -193,11 +208,11 @@ class RefundObserverBeforeSave implements ObserverInterface
             } else {
                 $order->setMercadoPagoRefundType('partial');
                 $metadata = [
-                    "reason" => '',
+                    "reason"             => '',
                     "external_reference" => $order->getIncrementId(),
                 ];
                 $params = [
-                    "amount" => $amount,
+                    "amount"   => $amount,
                     "metadata" => $metadata,
                 ];
                 $response = $mp->post("/collections/$paymentID/refunds?access_token=$access_token", $params);
@@ -226,7 +241,8 @@ class RefundObserverBeforeSave implements ObserverInterface
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function throwRefundException () {
+    protected function throwRefundException()
+    {
         throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Mercado Pago - Refund not made'));
     }
 
@@ -237,8 +253,9 @@ class RefundObserverBeforeSave implements ObserverInterface
      */
     private function daysSince($date)
     {
-        $now = strtotime (date('Y-m-d', time()));
-        $date = strtotime ($date);
+        $now = strtotime(date('Y-m-d', time()));
+        $date = strtotime($date);
+
         return (abs($now - $date) / 86400);
     }
 }
