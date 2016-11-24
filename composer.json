@@ -38,6 +38,14 @@
   "psr-4": {
     "MercadoPago\\": "app/code/MercadoPago/"
   },
+  "autoload": {
+    "psr-0": {
+      "": "app/code/"
+    },
+    "files": [
+      "app/etc/NonComposerComponentRegistration.php"
+    ]
+  },
   "autoload-dev": {
     "psr-4": {
       "Magento\\Sniffs\\": "dev/tests/static/framework/Magento/Sniffs/",
