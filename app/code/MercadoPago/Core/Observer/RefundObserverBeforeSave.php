@@ -97,16 +97,18 @@ class RefundObserverBeforeSave
         $isTotalRefund = $payment->getAmountPaid() == $payment->getAmountRefunded();
 
         $isValidBasicData = $this->checkRefundBasicData($paymentMethod, $paymentDate);
+        if ($isValidBasicData) {
+            $isValidaData = $this->checkRefundData($isCreditCardPayment,
+                $orderStatus,
+                $orderPaymentStatus,
+                $paymentDate,
+                $order);
 
-        $isValidaData = $this->checkRefundData($isCreditCardPayment,
-            $orderStatus,
-            $orderPaymentStatus,
-            $paymentDate,
-            $order);
-
-        if ($isValidBasicData && $isValidaData) {
-            $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID);
+            if ($isValidBasicData && $isValidaData) {
+                $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID);
+            }
         }
+
 
     }
 

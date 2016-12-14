@@ -106,14 +106,14 @@ class OrderCancelPlugin
             return false;
         }
 
-        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
-            $this->messageManager->addWarningMessage(__('Order payment wasn\'t made by Mercado Pago. The cancellation will be made through Magento'));
-            return false;
-        }
-
         $refundAvailable = $this->dataHelper->isRefundAvailable();
         if (!$refundAvailable) {
             $this->messageManager->addWarningMessage(__('Mercado Pago cancellation are disabled. The cancellation will be made through Magento'));
+            return false;
+        }
+
+        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+            $this->messageManager->addWarningMessage(__('Order payment wasn\'t made by Mercado Pago. The cancellation will be made through Magento'));
             return false;
         }
 
