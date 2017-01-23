@@ -458,9 +458,9 @@ class Core
         $preference = array();
 
         $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
-        $preference['description'] = __("Order # %1 in store %2", $orderId, $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
+        $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
         $preference['transaction_amount'] = (float)$this->getAmount($quote);
-        $preference['external_reference'] = $orderId;
+        $preference['external_reference'] = $order->getIncrementId();
         $preference['payer']['email'] = $customerInfo['email'];
 
         if (!empty($payment_info['identification_type'])) {

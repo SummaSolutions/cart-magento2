@@ -24,10 +24,13 @@ class OrderCancelPlugin
     protected $dataHelper;
 
     public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \MercadoPago\Core\Helper\Data $dataHelper)
+                                \MercadoPago\Core\Helper\Data $dataHelper,
+                                \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    )
     {
         $this->messageManager = $context->getMessageManager();
         $this->dataHelper = $dataHelper;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -36,17 +39,20 @@ class OrderCancelPlugin
      *
      * @return mixed
      */
-    public function aroundCancel (\Magento\Sales\Model\Order $order, \Closure $proceed) {
+    public function aroundCancel(\Magento\Sales\Model\Order $order, \Closure $proceed)
+    {
         $this->order = $order;
         $this->salesOrderBeforeCancel();
         $result = $proceed();
+
         return $result;
     }
 
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function salesOrderBeforeCancel () {
+    protected function salesOrderBeforeCancel()
+    {
 
         if ($this->order->getExternalRequest()) {
             return;
@@ -61,10 +67,10 @@ class OrderCancelPlugin
         $orderStatus = $this->order->getData('status');
         $orderPaymentStatus = $this->order->getPayment()->getData('additional_information')['status'];
 
-        $paymentID = $this->order->getPayment()->getData('additional_information')['id'];
+        $paymentID = $this->order->getPayment()->getData('additional_information')['payment_id_detail'];
 
-        $isValidBasicData = $this->checkCancelationBasicData ($paymentID, $paymentMethod);
-        $isValidaData = $this->checkCancelationData ($orderStatus, $orderPaymentStatus);
+        $isValidBasicData = $this->checkCancelationBasicData($paymentID, $paymentMethod);
+        $isValidaData = $this->checkCancelationData($orderStatus, $orderPaymentStatus);
 
         if ($isValidBasicData && $isValidaData) {
             $clientId = $this->dataHelper->getClientId();
@@ -73,7 +79,7 @@ class OrderCancelPlugin
             $mp = $this->dataHelper->getApiInstance($clientId, $clientSecret);
             $response = null;
 
-            $access_token = $this->dataHelper->getAccessToken();
+            $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
 
             if ($paymentMethod == 'mercadopago_standard') {
                 $response = $mp->cancel_payment($paymentID);
@@ -81,7 +87,7 @@ class OrderCancelPlugin
                 $data = [
                     "status" => 'cancelled',
                 ];
-                $response = $mp->put("/v1/payments/$paymentID?access_token=$access_token", $data);
+                $response = $mp->put("/v1/payments/$paymentID?access_token=$accessToken", $data);
             }
 
             if ($response['status'] == 200) {
@@ -100,20 +106,23 @@ class OrderCancelPlugin
      *
      * @return bool
      */
-    protected function checkCancelationBasicData ($paymentID, $paymentMethod) {
+    protected function checkCancelationBasicData($paymentID, $paymentMethod)
+    {
 
         if ($paymentID == null) {
-            return false;
-        }
-
-        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
-            $this->messageManager->addWarningMessage(__('Order payment wasn\'t made by Mercado Pago. The cancellation will be made through Magento'));
             return false;
         }
 
         $refundAvailable = $this->dataHelper->isRefundAvailable();
         if (!$refundAvailable) {
             $this->messageManager->addWarningMessage(__('Mercado Pago cancellation are disabled. The cancellation will be made through Magento'));
+
+            return false;
+        }
+
+        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+            $this->messageManager->addWarningMessage(__('Order payment wasn\'t made by Mercado Pago. The cancellation will be made through Magento'));
+
             return false;
         }
 
@@ -127,7 +136,8 @@ class OrderCancelPlugin
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function checkCancelationData ($orderStatus, $orderPaymentStatus) {
+    protected function checkCancelationData($orderStatus, $orderPaymentStatus)
+    {
         $isValidaData = true;
 
         if (!($orderStatus == 'processing' || $orderStatus == 'pending')) {
@@ -135,7 +145,7 @@ class OrderCancelPlugin
             $isValidaData = false;
         }
 
-        if (!($orderPaymentStatus == 'pending' || $orderPaymentStatus == 'in_process' || $orderPaymentStatus == 'rejected' )) {
+        if (!($orderPaymentStatus == 'pending' || $orderPaymentStatus == 'in_process' || $orderPaymentStatus == 'rejected')) {
             $this->messageManager->addErrorMessage(__('You can only make cancellations on orders whose payment status is Rejected, Pending o In Process'));
             $isValidaData = false;
         }
@@ -150,7 +160,8 @@ class OrderCancelPlugin
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function throwCancelationException () {
+    protected function throwCancelationException()
+    {
         throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Mercado Pago - Cancellations not made'));
     }
 }
