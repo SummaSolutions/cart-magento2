@@ -13,4 +13,8 @@
     <event name="sales_order_payment_refund">
         <observer name="mercadopago_payment_refund_observer" instance="MercadoPago\Core\Observer\RefundObserverAfterSave"/>
     </event>
+
+    <event name="email_order_set_template_vars_before">
+        <observer name="mercadopago_email_order_set_template_before" instance="MercadoPago\Core\Observer\OrderSendEmailBefore" />
+    </event>
 </config>
