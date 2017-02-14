@@ -44,6 +44,13 @@ class Data
      */
     const TYPE = 'magento';
 
+    //calculator
+    const XML_PATH_CALCULATOR_AVAILABLE = 'payment/mercadopago/calculalator_available';
+    const XML_PATH_CALCULATOR_PAGES = 'payment/mercadopago/show_in_pages';
+
+    const STATUS_ACTIVE = 'active';
+    const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
+
     /**
      * @var \MercadoPago\Core\Helper\Message\MessageInterface
      */
@@ -246,7 +253,6 @@ class Data
         } catch (\Exception $e) {
             $accessToken = false;
         }
-
         return $accessToken;
     }
 
@@ -453,10 +459,46 @@ class Data
     }
 
     public function getPublicKey() {
-        return $this->scopeConfig->getValue('payment/mercadopago_custom_checkout/public_key');
+        return $this->scopeConfig->getValue(self::XML_PATH_PUBLIC_KEY);
     }
 
     public function getOrderStatusRefunded() {
         return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded');
     }
+
+    /**
+     * @return boolean
+     */
+    public function isAvailableCalculator(){
+        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPagesToShow(){
+        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_PAGES);
+    }
+
+    /**
+     * return the list of payment methods or null
+     *
+     * @param mixed|null $accessToken
+     *
+     * @return mixed
+     */
+    public function getMercadoPagoPaymentMethods($accessToken){
+        $mp = $this->getApiInstance($accessToken);
+        try {
+            $response = $mp->get("/v1/payment_methods");
+            if ($response['status'] == 401 || $response['status'] == 400) {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return $response['response'];
+    }
+
 }
