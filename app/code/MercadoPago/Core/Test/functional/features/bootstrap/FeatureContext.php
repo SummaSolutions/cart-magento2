@@ -524,4 +524,21 @@ class FeatureContext
         $product->setPrice($arg2)->save();
     }
 
+    /**
+     * @Given /^I reset the session$/
+     */
+    public function iResetTheSession() {
+        $this->getSession()->reload();
+    }
+
+    /**
+     * @Then I should not see :arg1
+     */
+    public function iShouldNotSee($arg1)
+    {
+        $actual = $this->getSession()->getPage()->getHtml();
+        if ($this->_stringMatch($actual, $arg1)) {
+            throw new ExpectationException('Element' . $arg1 . ' found', $this->getSession()->getDriver());
+        }
+    }
 }

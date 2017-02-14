@@ -75,6 +75,19 @@
                     <comment>If set this config with NO, magento success page will be used</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <!-- BEGIN : Mercado Pago - Payments Calculator -->
+                <field id="calculalator_available" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Enable Mercado Pago Installments Calculator</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>if set to YES, Calculator will appear on the selected pages</comment>
+                </field>
+                <field id="show_in_pages" translate="label" type="multiselect" sortOrder="125" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <!--<can_be_empty>1</can_be_empty>-->
+                    <label>Show Calculator on selected pages</label>
+                    <source_model>MercadoPago\Core\Model\System\Config\Source\ListPages</source_model>
+                </field>
+                <!-- END : Mercado Pago - Payments Calculator -->
+
             </group>
             <group id="mercadopago_custom" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Mercado Pago - Custom Checkout</label>

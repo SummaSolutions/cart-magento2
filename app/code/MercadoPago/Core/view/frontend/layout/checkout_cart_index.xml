@@ -38,5 +38,13 @@
                 </argument>
             </arguments>
         </referenceBlock>
+
+        <referenceContainer name="checkout.cart.methods">
+            <block class="MercadoPago\Core\Block\Calculator\CalculatorLink"
+                   name="checkout.cart.calculator"
+                   template="MercadoPago_Core::calculator/calculatorLink.phtml"
+                   after="checkout.cart.methods.onepage.bottom"/>
+        </referenceContainer>
+
     </body>
 </page>

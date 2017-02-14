@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<body>
+    <referenceContainer name="product.info.extrahint">
+        <block class="MercadoPago\Core\Block\Calculator\CalculatorLink"
+               name="product.info.calculator"
+               template="MercadoPago_Core::calculator/calculatorLink.phtml"
+               before="product.info.social"/>
+    </referenceContainer>
+</body>
