@@ -28,9 +28,9 @@ Feature: Validation of payments options calculator
 
   @frontend  @Availability @PdpActive
   Scenario: See MercadoPago option calculator in PDP
-    Given I am on page "push-it-messenger-bag.html"
-    And Setting Config "payment/mercadopago/calculalator_available" is "1"
+    Given Setting Config "payment/mercadopago/calculalator_available" is "1"
     And Setting Config "payment/mercadopago/show_in_pages" is "product.info.calculator"
+    And I am on page "push-it-messenger-bag.html"
     And I reset the session
 
     Then I should see "Calculate your payments"
@@ -48,16 +48,13 @@ Feature: Validation of payments options calculator
 
   #----
   # verificar si la api no funca, no tiene que mostrarse.
-  #
-  #
-  #
   #---
 
   @frontend  @Availability @PdpAndCartActive
   Scenario: See MercadoPago option calculator in PDP
-    Given I am on page "push-it-messenger-bag.html"
-    And Setting Config "payment/mercadopago/calculalator_available" is "1"
+    Given Setting Config "payment/mercadopago/calculalator_available" is "1"
     And Setting Config "payment/mercadopago/show_in_pages" is "product.info.calculator,checkout.cart.calculator"
+    And I am on page "push-it-messenger-bag.html"
     And I reset the session
 
     Then I should see "Calculate your payments"
