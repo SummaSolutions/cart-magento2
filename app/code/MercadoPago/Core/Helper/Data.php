@@ -268,6 +268,10 @@ class Data
         switch ($status) {
             case 'approved': {
                 $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_approved', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+                //if ($statusDetail == 'partially_refunded' && $this->_order->canCreditMemo()) {
+                //  $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_partially_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                //}
                 break;
             }
             case 'refunded': {
