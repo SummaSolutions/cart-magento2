@@ -64,8 +64,8 @@ class CalculatorLink
     public function isAvailableCalculator(){
 
         $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
-        return  ($this->_helperData->isValidAccessToken($accessToken)
-                            & $this->_helperData->isAvailableCalculator());
+        $isValidAccessToken = $this->_helperData->isValidAccessToken($accessToken);
+        return  ($isValidAccessToken & !empty($this->_helperData->getPublicKey()) & $this->_helperData->isAvailableCalculator());
     }
 
     /**
