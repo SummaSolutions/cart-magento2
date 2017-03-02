@@ -16,11 +16,6 @@ class CalculatorLink
     protected $_helperData;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
-
-    /**
      * @var \Magento\Framework\Registry
      */
     protected $_registry;
@@ -35,13 +30,12 @@ class CalculatorLink
      *
      * @param \Magento\Framework\View\Element\Template\Context   $context
      * @param \MercadoPago\Core\Helper\Data                      $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param  \Magento\Framework\Registry                       $registry
      * @param array                                              $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context    $context,
         \MercadoPago\Core\Helper\Data                       $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig,
         \Magento\Framework\Registry                         $registry,
         \Magento\Checkout\Model\Session                     $session,
 
@@ -50,8 +44,7 @@ class CalculatorLink
     ) {
         parent::__construct($context, $data);
         $this->_helperData = $helper;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_registry     = $registry;
+        $this->_registry = $registry;
         $this->_mysession = $session;
     }
 
@@ -69,33 +62,33 @@ class CalculatorLink
     }
 
     /**
-     * @param $nameLayoutConteiner string
+     * @param $nameLayoutContainer string
      * @return bool
      */
-    public function isPageToShow($nameLayoutConteiner){
+    public function isPageToShow($nameLayoutContainer){
 
         $valueConfig = $this->_helperData->getPagesToShow();
         $pages = explode(',', $valueConfig);
 
-        return in_array($nameLayoutConteiner, $pages);
+        return in_array($nameLayoutContainer, $pages);
     }
 
     /**
-     * @param $nameLayoutConteiner string
+     * @param $nameLayoutContainer string
      * @return bool
      */
-    public function inPagePDP($nameLayoutConteiner){
+    public function inPagePDP($nameLayoutContainer){
 
-        return $nameLayoutConteiner === self::PAGE_PDP;
+        return $nameLayoutContainer === self::PAGE_PDP;
     }
 
     /**
-     * @param $nameLayoutConteiner string
+     * @param $nameLayoutContainer string
      * @return bool
      */
-    public function inPageCheckoutCart($nameLayoutConteiner){
+    public function inPageCheckoutCart($nameLayoutContainer){
 
-        return $nameLayoutConteiner === self::PAGE_CART;
+        return $nameLayoutContainer === self::PAGE_CART;
     }
 
     public function getUrlCalculatorPayment(){
