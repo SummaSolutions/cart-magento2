@@ -3,10 +3,10 @@
         <input type="radio" name="payment[method]" class="radio" data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
+            <span data-bind="text: getTitle()"></span>
+            <!-- Mercado Pago Logo -->
             <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}"
                  class="payment-icon"/>
-            <!-- Mercado Pago Logo -->
-            <span data-bind="text: getTitle()"></span>
         </label>
     </div>
     <div class="payment-method-content">
