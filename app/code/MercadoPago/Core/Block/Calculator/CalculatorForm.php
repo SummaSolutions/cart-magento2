@@ -12,29 +12,22 @@ class CalculatorForm
      */
     protected $_helperData;
 
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
 
     /**
      * CalculatorForm constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context   $context
      * @param \MercadoPago\Core\Helper\Data                      $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param array                                              $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context    $context,
         \MercadoPago\Core\Helper\Data                       $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig,
 
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_helperData = $helper;
-        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
