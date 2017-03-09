@@ -81,7 +81,7 @@ class RefundObserverBeforeSave
         $orderStatus = $order->getData('status');
         $orderPaymentStatus = $order->getPayment()->getData('additional_information')['status'];
         $payment = $order->getPayment();
-        $paymentID = $order->getPayment()->getData('additional_information')['id'];
+
         $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
         $orderStatusHistory = $order->getAllStatusHistory();
         $isCreditCardPayment = ($order->getPayment()->getData('additional_information')['installments'] != null ? true : false);
@@ -105,7 +105,7 @@ class RefundObserverBeforeSave
                 $order);
 
             if ($isValidBasicData && $isValidaData) {
-                $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID);
+                $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund);
             }
         }
 
@@ -124,6 +124,7 @@ class RefundObserverBeforeSave
 
         if (!$refundAvailable) {
             $this->_messageManager->addNoticeMessage(__('Mercado Pago refunds are disabled. The refund will be made through Magento'));
+
             return false;
         }
 
@@ -135,6 +136,7 @@ class RefundObserverBeforeSave
 
         if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
             $this->_messageManager->addErrorMessage(__('Order payment wasn\'t made by Mercado Pago. The refund will be made through Magento'));
+
             return false;
         }
 
@@ -205,14 +207,16 @@ class RefundObserverBeforeSave
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID)
+    protected function sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund)
     {
-        $access_token = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN);
-        $mp = $this->_dataHelper->getApiInstance($access_token);
         $response = null;
         $amount = $creditMemo->getGrandTotal();
 
         if ($paymentMethod == 'mercadopago_standard') {
+            $paymentID = $order->getPayment()->getData('additional_information')['id'];
+            $clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID);
+            $clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET);
+            $mp = $this->_dataHelper->getApiInstance($clientId, $clientSecret);
             if ($isTotalRefund) {
                 $response = $mp->refund_payment($paymentID);
                 $order->setMercadoPagoRefundType('total');
@@ -226,16 +230,19 @@ class RefundObserverBeforeSave
                     "amount"   => $amount,
                     "metadata" => $metadata,
                 ];
-                $response = $mp->post("/collections/$paymentID/refunds?access_token=$access_token", $params);
+                $response = $mp->post('/collections/' . $paymentID . '/refunds?access_token=' . $mp->get_access_token(), $params);
             }
         } else {
+            $paymentID = $order->getPayment()->getData('additional_information')['payment_method_id'];
+            $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN);
+            $mp = $this->_dataHelper->getApiInstance($accessToken, $accessToken);
             if ($isTotalRefund) {
-                $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$access_token", null);
+                $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", null);
             } else {
                 $params = [
                     "amount" => $amount,
                 ];
-                $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$access_token", $params);
+                $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", $params);
             }
         }
 
