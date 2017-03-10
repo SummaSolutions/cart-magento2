@@ -49,8 +49,8 @@
                         <!-- ko if: isOCPReady() -->
                         <div id="mercadopago_checkout_custom_ocp" class="fields">
                             <div id="cardId__mp" class="field">
-                                <div><a id="use_other_card_mp" class="action_ocp">Use other card</a></div>
-                                <label for="cardNumber" class="label">Payment Method</label>
+                                <div><a id="use_other_card_mp" class="action_ocp"><!-- ko i18n: 'Use other card'--><!-- /ko --></a></div>
+                                <label for="cardNumber" class="label"><!-- ko i18n: 'Payment Method'--><!-- /ko --></label>
                                 <select id="cardId" data-checkout="cardId" data-element-id="#cardId__mp" data-bind="attr: {name: getTokenCodeArray('cardId')}, options: getAvailableCards(), optionsText: 'cardName', optionsValue: 'value', optionsAfterRender: setOptionsExtraValues" >
                                 </select>
                                 <input type="hidden" id="customer_id" data-bind="attr: {name: getTokenCodeArray('customer_id'), value: getCustomerAttribute('id')}">
@@ -90,7 +90,7 @@
 
                         <div id="mercadopago_checkout_custom_card" class="fields field">
                             <div id="cardNumber__mp" class="field number required">
-                                <div><a id="return_list_card_mp" class="action_ocp">Return to cards list</a></div>
+                                <div><a id="return_list_card_mp" class="action_ocp"><!-- ko i18n: 'Return to cards list'--><!-- /ko --></a></div>
 
                                 <label for="cardNumber" class="label">
                                     <span><!-- ko i18n: 'Card Number'--><!-- /ko --></span></label>
@@ -117,7 +117,7 @@
                             </div>
 
                             <div id="paymentMethod__mp" class="field">
-                                <label for="paymentMethod" class="label">Payment Method</label>
+                                <label for="paymentMethod" class="label"><!-- ko i18n: 'Payment Method'--><!-- /ko --></label>
                                 <select id="paymentMethod" data-checkout="paymentMethod"
                                         data-bind="attr: {name: getTokenCodeArray('paymentMethod')}"
                                         data-element-id="#paymentMethod__mp" class="validate-select"></select>
@@ -209,7 +209,7 @@
                             </div>
 
                             <div id="doc_type__mp" class="field required">
-                                <label for="docType" class="label">Document Type</label>
+                                <label for="docType" class="label"><!-- ko i18n: 'Document Type'--><!-- /ko --></label>
                                 <select id="docType" data-checkout="docType" data-element-id="#doc_type__mp"
                                         data-bind="attr: {name: getTokenCodeArray('doc_type')}"></select>
 
@@ -230,7 +230,7 @@
                         </div>
 
                         <div id="installments__mp" class="field">
-                            <label for="installments" class="label">Installments</label>
+                            <label for="installments" class="label"><!-- ko i18n: 'Installments'--><!-- /ko --></label>
                             <select id="installments" data-bind="attr: {name: getTokenCodeArray('installments')}"
                                     data-element-id="#installments__mp" class="validate-select"></select>
                             <p class="message-error error-installment-not-work validation-advice"><!-- ko i18n: 'It was not possible to calculate the installments, click here and try again.'--><!-- /ko --></p>
