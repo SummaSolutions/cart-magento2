@@ -11,7 +11,7 @@ var MercadoPagoCustomCalculator = (function () {
         constants: {
             undefined: 'undefined',
             codeCft: 'CFT',
-            codeRecommended: 'recommended',
+            codeRecommended: 'recommended_installment',
             loading: 'loading',
             atributeInstallments: 'installments',
             atributeDataRate: 'data-installment-rate',
@@ -22,8 +22,10 @@ var MercadoPagoCustomCalculator = (function () {
             atributeSelected: 'selected'
         },
         selectors: {
+            popup: '#mercadopago-popup',
             sectionPaymentCalculator: '#id-order-profile-app-wrapper',
             paymentCardsList: '#op-payment-cards-list',
+            paymentCardLi: '#op-payment-cards-list li',
             paymentCardSelected: '#op-payment-cards-list input:checked',
             opBankSelect: '#op-bank-select',
             issuerSelect: "#issuerSelect",
@@ -33,7 +35,9 @@ var MercadoPagoCustomCalculator = (function () {
             installmentPTF: "#installmentPTF",
             installmentTEA: "#installmentTEA",
             installmentCFT: "#installmentCFT",
-            installmentsInterestFreeText: "#installmentsInterestFreeText"
+            installmentsInterestFreeText: "#installmentsInterestFreeText",
+            calculatorTrigger: "#calculatorTrigger",
+            calculatorTriggerHide: ".calculatorTriggerHide"
         },
         url: {
         },
@@ -47,12 +51,20 @@ var MercadoPagoCustomCalculator = (function () {
         return instance;
     }
 
+    function showPopup() {
+        TinyJ(self.selectors.popup).show();
+    }
+
+    function hidePopup() {
+        TinyJ(self.selectors.popup).hide();
+    }
+
     function Initializelibrary() {
         if (typeof PublicKeyMercadoPagoCustom != self.constants.undefined) {
             Mercadopago.setPublishableKey(PublicKeyMercadoPagoCustom);
         }
-
-        // getAllPaymentMethods();
+        TinyJ(self.selectors.calculatorTrigger).click(showPopup);
+        TinyJ(self.selectors.calculatorTriggerHide).click(hidePopup);
 
         TinyJ(self.selectors.paymentCardsList).change(getSelectedCard);
         TinyJ(self.selectors.issuerSelect).change(setPaymentCost);
@@ -63,11 +75,25 @@ var MercadoPagoCustomCalculator = (function () {
         // add class loading
         TinyJ(self.selectors.sectionPaymentCalculator).addClass(self.constants.loading);
 
+        // add class to <li>
+        var arrLi = TinyJ(self.selectors.paymentCardLi);
+        arrLi.forEach(function(obj, key) {
+            obj.removeClass('selected');
+        });
+        // TinyJ(self.selectors.paymentCardLiSelected).removeClass('selected');
+
+
+        var liId = TinyJ(self.selectors.paymentCardSelected).val();
+        TinyJ('#'+liId+'-li').addClass('selected'); // <li class="selected">
+
         //show options
         var paymentCardSelected = getSelectedRadio();
+        // begin clear price and installment select
+        TinyJ(self.selectors.installmentSelect).empty();
+        TinyJ(self.selectors.installmentsPrice).empty();
+        // end clear price and installment select
+
         getPaymentMethods(paymentCardSelected);
-
-
     }
 
     function getSelectedRadio() {
@@ -181,6 +207,9 @@ var MercadoPagoCustomCalculator = (function () {
             var value = paymentOptions[i].installment_amount;
             var price = value.toString().split('.');
             if (price.length > 1){
+                if (price[1].length == 1) { // ie: 10.5 to 10.50
+                    price[1] += '0';
+                }
                 TinyJ(option).attribute(self.constants.atributeDataPrice, "$ " + price[0] + "<sup>" + price[1] + "</sup>");
             }
             else {
@@ -188,7 +217,13 @@ var MercadoPagoCustomCalculator = (function () {
             }
 
             TinyJ(option).attribute(self.constants.atributeDataRate, paymentOptions[i].installment_rate);
-            TinyJ(option).attribute(self.constants.atributeDataPtf, paymentOptions[i].total_amount);
+
+            var totalAmount = paymentOptions[i].total_amount.toString(),
+                totalAmountSplit =totalAmount.split('.');
+            if ((totalAmountSplit.length > 1) && (totalAmountSplit[1].length == 1)) { // ie: 10.5 to 10.50
+                totalAmount += '0';
+            }
+            TinyJ(option).attribute(self.constants.atributeDataPtf, totalAmount);
 
             var labels = paymentOptions[i].labels;
             //split information from cft and ptf field.
@@ -224,10 +259,12 @@ var MercadoPagoCustomCalculator = (function () {
             TinyJ(self.selectors.installmentsInterestFreeText).show();
         }
 
-        TinyJ(self.selectors.installmentPTF).html(selectorPaymentOptions.attribute(self.constants.atributeDataPtf));
+        TinyJ(self.selectors.installmentPTF).html("$"+selectorPaymentOptions.attribute(self.constants.atributeDataPtf));
     }
 
     return {
-        getCalculator: getCalculator
+        getCalculator: getCalculator,
+        showPopup: showPopup,
+        hidePopup: hidePopup
     };
 })();

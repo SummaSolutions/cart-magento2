@@ -297,3 +297,20 @@
     padding: 5px;
     margin-bottom: -12px !important;
 }
+
+
+#mercadopago_calculator_link {
+    display: block;
+    margin: 5px 0 15px;
+}
+
+#mercadopago_calculator_link a,
+#mercadopago_calculator_link p,
+#mercadopago_calculator_link img {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#mercadopago_calculator_link p{
+    margin: 0px;
+}
