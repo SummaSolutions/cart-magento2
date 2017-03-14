@@ -8,10 +8,11 @@ class CalculatorForm
     const CALCULATOR_JS = 'mercadopago/mercadopago_calculator.js';
 
     /**
-     * @var $helperData \MercadoPago\Core\Helper\Data
+     * @var $_helperData \MercadoPago\Core\Helper\Data
      */
     protected $_helperData;
 
+    protected $_amount;
 
     /**
      * CalculatorForm constructor.
@@ -52,6 +53,10 @@ class CalculatorForm
         return $this->_helperData->getMercadoPagoPaymentMethods($accessToken);
     }
 
+    public function setAmount($amount){
+        $this->_amount = $amount;
+    }
+
     /**
      * return the current value of amount
      *
@@ -59,7 +64,7 @@ class CalculatorForm
      */
     public function getAmount()
     {
-        return $this->getRequest()->getParam('currentAmount');
+        return $this->_amount;
     }
 
 }

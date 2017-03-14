@@ -103,5 +103,19 @@ class CalculatorLink
         return $this->_mysession->getQuote()->getGrandTotal();
     }
 
+    public function getUrlLogo(){
+        return $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png");
+    }
+
+    /**
+     * @param $nameLayout string
+     *
+     * @return bool
+     */
+    public function isHasToShowing($nameLayout){
+        return $this->isAvailableCalculator() & $this->isPageToShow($nameLayout);
+    }
+
+
 
 }
