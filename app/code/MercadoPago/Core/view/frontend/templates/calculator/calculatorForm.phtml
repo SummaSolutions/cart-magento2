@@ -90,26 +90,7 @@ $amount = $this->getAmount();
         var PublicKeyMercadoPagoCustom = '<?php echo $pk; ?>';
         var AllPaymentMethods = '<?php echo json_encode($list); ?>';
         var Amount = '<?php echo $amount ?>';
-        <!--        --><?php
-        //
-        //
-        //        // get the current amount
-        //        $isProductPage = Mage::registry('current_product');
-        //        /*$request = $this->getRequest();
-        //        $module = $request->getModuleName();
-        //        $controller = $request->getControllerName();
-        //        $action = $request->getActionName();
-        //        $isCartPage = ($module == 'checkout' && $controller == 'cart' && $action == 'index');*/
-        //        if ( $isProductPage ) {
-        //            $currentAmount = Mage::registry('current_product')->getPrice();
-        //        } else/*if( $isCartPage )*/ {
-        //            $currentAmount = Mage::helper('checkout/cart')->getQuote()->getGrandTotal();
-        //        }
-        //        ?>
-        //        var Amount = '<?php //echo $currentAmount; ?>//';
     </script>
-
-
     <script>
         require(['MPcustom', 'tinyj', 'tiny', 'meli', 'calculator'],
             function() {
@@ -118,16 +99,5 @@ $amount = $this->getAmount();
         );
 
     </script>
-
-
-<!--<script>-->
-<!--    require(['MPcustom', 'tinyj', 'tiny', 'meli', 'calculator'],-->
-<!--        function() {-->
-<!--            MercadoPagoCustomCalculator.getCalculator();-->
-<!--        }-->
-<!--    );-->
-<!---->
-<!--</script>-->
-
 </div>
 

@@ -2,11 +2,7 @@
 $currentAmount = 0;
 $link_to_calculator = $this->getUrlCalculatorPayment();
 
-    if($this->isHasToShowing($this->getNameInLayout())
-//        $this->isAvailableCalculator()
-//            & $this->isPageToShow($this->getNameInLayout())
-    ):
-        // get the current amount.
+    if($this->isHasToShowing($this->getNameInLayout())):
         if ( $this->inPagePDP($this->getNameInLayout())):{
             $currentAmount = $this->getCurrentProductPrice();
         } elseif( $this->inPageCheckoutCart($this->getNameInLayout())):{
