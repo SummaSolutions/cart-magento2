@@ -305,12 +305,13 @@
 }
 
 #mercadopago_calculator_link a,
-#mercadopago_calculator_link p,
 #mercadopago_calculator_link img {
     display: inline-block;
     vertical-align: middle;
 }
 
 #mercadopago_calculator_link p{
-    margin: 0px;
+    margin-bottom: 0px;
+    display: inline-block;
+    vertical-align: middle;
 }
