@@ -210,10 +210,10 @@ var MercadoPagoCustomCalculator = (function () {
                 if (price[1].length == 1) { // ie: 10.5 to 10.50
                     price[1] += '0';
                 }
-                TinyJ(option).attribute(self.constants.atributeDataPrice, "$ " + price[0] + "<sup>" + price[1] + "</sup>");
+                TinyJ(option).attribute(self.constants.atributeDataPrice, "$" + price[0] + "<sup>" + price[1] + "</sup>");
             }
             else {
-                TinyJ(option).attribute(self.constants.atributeDataPrice, "$ " + price[0]);
+                TinyJ(option).attribute(self.constants.atributeDataPrice, "$" + price[0]);
             }
 
             TinyJ(option).attribute(self.constants.atributeDataRate, paymentOptions[i].installment_rate);
