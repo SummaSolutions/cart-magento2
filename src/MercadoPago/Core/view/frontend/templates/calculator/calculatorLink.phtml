@@ -1,0 +1,25 @@
+<?php
+$currentAmount = 0;
+$link_to_calculator = $this->getUrlCalculatorPayment();
+
+    if($this->isHasToShowing($this->getNameInLayout())):
+        if ( $this->inPagePDP($this->getNameInLayout())):{
+            $currentAmount = $this->getCurrentProductPrice();
+        } elseif( $this->inPageCheckoutCart($this->getNameInLayout())):{
+            $currentAmount = $this->getCheckoutCartGrandTotal();
+        }
+        endif;
+        ?>
+        <div id="mercadopago_calculator_link">
+            <a href="javascript:void(0)" id="calculatorTrigger">
+                <?php echo __('Calculate your payments ')?>
+            </a>
+            <p><?php echo __('with ')?></p>
+            <img id="meli-logo" src="<?php echo $this->getUrlLogo() ?>" alt="MercadoPago"/>
+        </div>
+        <?php
+        $this->getChildBlock("mercadopago.calculator.form")->setAmount($currentAmount);
+        echo $this->getChildHtml('mercadopago.calculator.form') ?>
+    <?php endif; ?>
+
+

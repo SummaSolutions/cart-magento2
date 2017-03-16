@@ -1,0 +1,92 @@
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio" name="payment[method]" class="radio" data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label class="label" data-bind="attr: {'for': getCode()}">
+            <!-- Mercado Pago Logo -->
+            <span data-bind="text: getTitle()"></span>
+            <!-- Mercado Pago Logo -->
+            <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}"
+                 class="payment-icon"/>
+        </label>
+    </div>
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <form class="form" id="co-mercadopago-form" action="#" method="post" data-bind="mageInit: {
+            'transparent':{
+                'context': context(),
+            }, 'validation':[]}">
+
+        <fieldset class="form-list">
+            <div id="mercadopago_checkout_custom_ticket" >
+                <ul class="form-list form-mercadopago" id="payment_form_mercadopago_customticket">
+                    <!-- ko if: (couponActive() == 1)-->
+                        <li class="mercadopago-discount-options">
+                        <!-- ko template: 'MercadoPago_Core/payment/discount' --><!-- /ko -->
+                        </li>
+                        </br>
+                    <!-- /ko -->
+                    <li class="mercadopago-discount-options">
+                        <!-- ko if: (getCountTickets() == 1)-->
+                            <input type="hidden" name="payment[mercadopago_customticket][payment_method_ticket]" class="optionsTicketMp" data-bind="'attr':{value: getFirstTicketId()}" id="payment_method_ticket"/>
+                        <!-- /ko -->
+                        <!-- ko if: (getCountTickets() > 1) -->
+
+                            <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
+                                <br/>
+                                <input type="radio" class="optionsTicketMp" name="payment[mercadopago_customticket][payment_method_ticket]"
+                                       data-bind="'attr':{value: ticket.id,'data-validate': JSON.stringify({'validate-one-required-by-name':true})}">
+                                <img data-bind="'attr':{src: ticket.secure_thumbnail}">
+                                <label class="mercadopago-ticket-label" data-bind="text:ticket.name"></label><br/>
+                            <!--/ko-->
+                        <!-- /ko -->
+
+                        <input type="hidden" class="total_amount" name="total_amount" data-bind="'attr':{value: getGrandTotal()}"/>
+                        <input type="hidden" class="amount" name="amount" data-bind="'attr':{value: getGrandTotal()}" />
+                        <input type="hidden" class="site_id" name="site_id" data-bind="'attr':{value: getCountry()}"/>
+                        <input type="hidden" class="mercadopago-discount-amount" name="mercadopago-discount-amount" value="0"/>
+                        <input type="hidden" class="mercadopago-text-currency" data-bind="'attr':{value: $t('$')}" />
+                        <input type="hidden" class="mercadopago-text-choice" data-bind="'attr':{value: $t('Choice')}" >
+                        <input type="hidden" class="mercadopago-text-default-issuer" data-bind="'attr':{value: $t('Default issuer')}">
+                        <input type="hidden" class="mercadopago-text-installment" data-bind="'attr':{value: $t('Enter the card number')}">
+                        <input type="hidden" class="mercado_base_url" data-bind="'attr':{value: getBaseUrl()}">
+                        <input type="hidden" class="mercado_route" data-bind="'attr':{value: getRoute()}">
+                    </li>
+
+                </ul>
+            </div>
+            <br/>
+            <img class="banner_checkout_mp" data-bind="attr: {src: getBannerUrl()}" />
+
+        </fieldset>
+        </form>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button data-role="review-save"
+                        type="submit"
+                        data-bind="
+                        attr: {title: $t('Place Order')},
+                        enable: (getCode() == isChecked()),
+                        click: placeOrder,
+                        css: {disabled: !isPlaceOrderActionAllowed()}
+                        "
+                        class="action primary checkout"
+                        disabled>
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
