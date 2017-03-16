@@ -68,7 +68,7 @@ This feature adds a intallment calculator inside Magento Product Page and Cart. 
 <a name="installation"></a>
 ## Installation copying files:
 
-1. Copy the folder **app/code/MercadoPago** to the Magento root installation. Make sure to keep the Magento folders structure intact.
+1. Copy the folder **src/MercadoPago** to the Magento root installation. Make sure to keep the Magento folders structure intact.
 
 2. Enable modules from console.
 
