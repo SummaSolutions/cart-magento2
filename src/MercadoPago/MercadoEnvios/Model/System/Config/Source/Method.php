@@ -49,7 +49,7 @@ class Method
     public function toOptionArray()
     {
         $country = $this->scopeConfig->getValue('payment/mercadopago/country');
-        if ($this->_countryOptions[$country]) {
+        if (isset($this->_countryOptions[$country])) {
             return $this->_countryOptions[$country];
         }
         return null;
