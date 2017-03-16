@@ -128,8 +128,7 @@
 }
 
 #op-bank-select select {
-    display: block;
-    margin-top: 3px;
+    display: inline-block;
     margin-right: -2px;
     width: 260px;
 }
@@ -288,4 +287,14 @@
 
 #op-payment-cards-list{
     padding-left: 0px;
+    margin-bottom: 0px;
+}
+
+.payment-titles .title-border-line{
+    margin-top: 0px;
+    margin-bottom: 0.5em;
+}
+
+#title-payment-cards{
+    margin-top: 0px;
 }
