@@ -44,6 +44,11 @@ This feature allows to setup and integrate with MercadoEnvios shipment method as
 *Available for Argentina, Brazil and Mexico only with Standard Checkout*
 
 <a name="composer_installation"></a>
+
+**Installments calculator**
+
+This feature adds a intallment calculator inside Magento Product Page and Cart. It can be enabled/disabled from plugin configuration.
+
 ## Installation using composer:
 
 1. Add repository to your Magento installation composer.json file
