@@ -22,6 +22,8 @@ class Country
         $country[] = ['value' => "mlm", 'label' => __("Mexico"), 'code' => 'MX'];
         $country[] = ['value' => "mlc", 'label' => __("Chile"), 'code' => 'CL'];
         $country[] = ['value' => "mlv", 'label' => __("Venezuela"), 'code' => 'VE'];
+        $country[] = ['value' => "mpe", 'label' => __("Perú"), 'code' => 'PE'];
+        $country[] = ['value' => "mlu", 'label' => __("Uruguay"), 'code' => 'UY'];
 
         //force order by key
         ksort($country);
