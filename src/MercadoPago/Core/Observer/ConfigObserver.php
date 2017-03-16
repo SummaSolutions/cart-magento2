@@ -199,13 +199,14 @@ class ConfigObserver
         if ($user['status'] == 200 && !in_array("test_user", $user['response']['tags'])) {
 
             $sponsors = [
-                'MLA' => 186172525,
-                'MLB' => 186175129,
-                'MLM' => 186175064,
-                'MCO' => 206959966,
-                'MLC' => 206959756,
-                'MLV' => 206960619,
-                'MPE' => 217178514,
+                'MLA' => 222568987,
+                'MLB' => 222567845,
+                'MLM' => 222568246,
+                'MCO' => 222570694,
+                'MLC' => 222570571,
+                'MLV' => 222569730,
+                'MPE' => 222568315,
+                'MPU' => 247030424,
             ];
             $countryCode = $user['response']['site_id'];
 
