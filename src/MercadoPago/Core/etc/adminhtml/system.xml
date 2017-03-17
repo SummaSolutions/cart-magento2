@@ -32,6 +32,7 @@
                     <frontend_class>validate-number-range number-range-1-20</frontend_class>
                     <comment>It must be a number between 1 and 20</comment>
                 </field>
+
                 <field id="maximum_days_refund" translate="label comment" type="text" sortOrder="27" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Maximum amount of days until refund is not accepted</label>
                     <frontend_class>validate-number-range number-range-1-90</frontend_class>
@@ -110,7 +111,7 @@
                 <field id="calculalator_available" translate="label" type="select" sortOrder="105" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Enable Mercado Pago Installments Calculator</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>if set to YES, Calculator will appear on the selected pages</comment>
+                    <comment>if set to YES, Calculator will appear on the selected pages - Custom checkout credentials (Public Key and Access Token) must be set</comment>
                 </field>
                 <field id="show_in_pages" translate="label" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
                     <!--<can_be_empty>1</can_be_empty>-->
