@@ -206,7 +206,7 @@ class ConfigObserver
                 'MLC' => 222570571,
                 'MLV' => 222569730,
                 'MPE' => 222568315,
-                'MPU' => 247030424,
+                'MLU' => 247030424,
             ];
             $countryCode = $user['response']['site_id'];
 
