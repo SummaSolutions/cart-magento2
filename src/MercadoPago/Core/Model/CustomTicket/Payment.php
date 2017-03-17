@@ -84,8 +84,8 @@ class Payment
 
         $this->_helperData->log("info form", self::LOG_NAME, $info_form);
         $info = $this->getInfoInstance();
-        $info->setAdditionalInformation('payment_method', $info_form['additional_data']['payment_method_ticket']);
-        
+        $info->setAdditionalInformation('payment_method', $info_form['payment_method_ticket']);
+
         if (!empty($info_form['coupon_code'])) {
             $info->setAdditionalInformation('coupon_code', $info_form['coupon_code']);
         }
