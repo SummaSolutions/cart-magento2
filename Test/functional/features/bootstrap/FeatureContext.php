@@ -161,7 +161,7 @@ class FeatureContext
     public function iSelectShippingMethod($method)
     {
         $page = $this->getSession()->getPage();
-        $page->fillField('shipping_method', $method);
+        $page->fillField('s_method_flatrate_flatrate', $method);
     }
 
     /**
@@ -190,12 +190,18 @@ class FeatureContext
         try {
             $this->findElement('.selected-item');
         } catch (ElementNotFoundException $e) {
-            $page = $this->getSession()->getPage();
-            $page->fillField('street[0]', 'Street 123');
-            $page->fillField('city', 'City');
-            $page->selectFieldOption('country_id', 'AR');
-            $page->fillField('postcode', '7000');
-            $page->fillField('telephone', '123456');
+            try {
+                $button = $this->findElement('.action-select-shipping-item');
+                $button->press();
+            } catch (ElementNotFoundException $e) {
+                $page = $this->getSession()->getPage();
+                $page->fillField('street[0]', 'Street 123');
+                $page->fillField('city', 'City');
+                $page->selectFieldOption('country_id', 'AR');
+                $page->fillField('postcode', '7000');
+                $page->fillField('telephone', '123456');
+            }
+
         }
     }
 
@@ -326,6 +332,15 @@ class FeatureContext
     }
 
     /**
+     * @When I test
+     */
+    public function iTest()
+    {
+        $page = $this->getSession()->getPage();
+        var_dump($page->getHtml());
+    }
+
+    /**
      * @When I am logged in MP as :arg1 :arg2
      */
     public function iAmLoggedInMPAs($arg1, $arg2)
@@ -406,11 +421,14 @@ class FeatureContext
         $clientId = $dataCountry[$arg1]['client_id'];
         $clientSecret = $dataCountry[$arg1]['client_secret'];
         $this->settingConfig('payment/mercadopago/country', $arg1);
+        $this->settingConfig('payment/mercadopago/debug_mode', "1");
         $this->settingConfig('payment/mercadopago_standard/client_id', $clientId);
         $this->settingConfig('payment/mercadopago_standard/client_secret', $clientSecret);
+        $this->settingConfig('payment/mercadopago/use_successpage_mp', "1");
         if (isset($dataCountry[$arg1]['public_key'])) {
             $publicKey = $dataCountry[$arg1]['public_key'];
             $accessToken = $dataCountry[$arg1]['access_token'];
+            $this->settingConfig('payment/mercadopago_custom/active', "1");
             $this->settingConfig('payment/mercadopago_custom/public_key', $publicKey);
             $this->settingConfig('payment/mercadopago_custom/access_token', $accessToken);
         }
@@ -438,9 +456,9 @@ class FeatureContext
     }
 
     /**
-     * @Given I select payment method option field :arg1 with :arg2
+     * @Given I select shipping method option field :arg1 with :arg2
      */
-    public function iSelectPaymentMethodOptionFieldWith($arg1, $arg2)
+    public function iSelectShippingMethodOptionFieldWith($arg1, $arg2)
     {
         $page = $this->getSession()->getPage();
         $field = $page->find('css', $arg1);
@@ -524,21 +542,4 @@ class FeatureContext
         $product->setPrice($arg2)->save();
     }
 
-    /**
-     * @Given /^I reset the session$/
-     */
-    public function iResetTheSession() {
-        $this->getSession()->reload();
-    }
-
-    /**
-     * @Then I should not see :arg1
-     */
-    public function iShouldNotSee($arg1)
-    {
-        $actual = $this->getSession()->getPage()->getHtml();
-        if ($this->_stringMatch($actual, $arg1)) {
-            throw new ExpectationException('Element' . $arg1 . ' found', $this->getSession()->getDriver());
-        }
-    }
 }
