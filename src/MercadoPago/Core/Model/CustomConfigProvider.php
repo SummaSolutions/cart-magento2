@@ -95,6 +95,7 @@ class CustomConfigProvider
                     'success_url'      => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'logEnabled'       => $this->_scopeConfig->getValue('payment/mercadopago/logs', 'default', $this->_storeManager->getStore()->getId()),
                     'discount_coupon'  => $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/coupon_mercadopago', 'default', $this->_storeManager->getStore()->getId()),
+                    'second_card'      => $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/allow_2_cards', 'default', $this->_storeManager->getStore()->getId()),
                     'route'            => $this->_request->getRouteName(),
                     'public_key'       => $this->_scopeConfig->getValue('payment/mercadopago_custom/public_key', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'customer'         => $this->methodInstance->getCustomerAndCards(),

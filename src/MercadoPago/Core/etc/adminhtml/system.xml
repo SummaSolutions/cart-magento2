@@ -155,6 +155,11 @@
                                         <a href="https://www.mercadopago.com.ar/developers/solutions/payments/custom-checkout/appliance-requirements/" target="_blank">Learn More</a>]]>
                         </comment>
                     </field>
+                    <field id="allow_2_cards" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Allow Payment with 2 Cards</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/mercadopago_custom/allow_2_cards</config_path>
+                    </field>
                     <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment Title</label>
                         <config_path>payment/mercadopago_custom/title</config_path>
