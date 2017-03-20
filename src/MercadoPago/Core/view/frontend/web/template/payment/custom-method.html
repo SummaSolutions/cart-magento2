@@ -46,11 +46,17 @@
                         <!-- ko template: 'MercadoPago_Core/payment/discount' --><!-- /ko -->
                         <!-- /ko -->
 
+                        <div id="first_card_amount_fields" class="show_second_card">
+                            <h3><!-- ko i18n: '1st Card'--><!-- /ko --></h3>
+                            <label for="first_card_amount"><!-- ko i18n: 'Amount'--><!-- /ko --></label>
+                            <input type="text" id="first_card_amount" class="required-entry" max="" />
+                        </div>
+
                         <!-- ko if: isOCPReady() -->
                         <div id="mercadopago_checkout_custom_ocp" class="fields">
                             <div id="cardId__mp" class="field">
-                                <div><a id="use_other_card_mp" class="action_ocp"><!-- ko i18n: 'Use other card'--><!-- /ko --></a></div>
-                                <label for="cardNumber" class="label"><!-- ko i18n: 'Payment Method'--><!-- /ko --></label>
+                                <div><a id="use_other_card_mp" class="action_ocp">Use other card</a></div>
+                                <label for="cardNumber" class="label">Payment Method</label>
                                 <select id="cardId" data-checkout="cardId" data-element-id="#cardId__mp" data-bind="attr: {name: getTokenCodeArray('cardId')}, options: getAvailableCards(), optionsText: 'cardName', optionsValue: 'value', optionsAfterRender: setOptionsExtraValues" >
                                 </select>
                                 <input type="hidden" id="customer_id" data-bind="attr: {name: getTokenCodeArray('customer_id'), value: getCustomerAttribute('id')}">
@@ -90,7 +96,7 @@
 
                         <div id="mercadopago_checkout_custom_card" class="fields field">
                             <div id="cardNumber__mp" class="field number required">
-                                <div><a id="return_list_card_mp" class="action_ocp"><!-- ko i18n: 'Return to cards list'--><!-- /ko --></a></div>
+                                <div><a id="return_list_card_mp" class="action_ocp">Return to cards list</a></div>
 
                                 <label for="cardNumber" class="label">
                                     <span><!-- ko i18n: 'Card Number'--><!-- /ko --></span></label>
@@ -117,7 +123,7 @@
                             </div>
 
                             <div id="paymentMethod__mp" class="field">
-                                <label for="paymentMethod" class="label"><!-- ko i18n: 'Payment Method'--><!-- /ko --></label>
+                                <label for="paymentMethod" class="label">Payment Method</label>
                                 <select id="paymentMethod" data-checkout="paymentMethod"
                                         data-bind="attr: {name: getTokenCodeArray('paymentMethod')}"
                                         data-element-id="#paymentMethod__mp" class="validate-select"></select>
@@ -209,7 +215,7 @@
                             </div>
 
                             <div id="doc_type__mp" class="field required">
-                                <label for="docType" class="label"><!-- ko i18n: 'Document Type'--><!-- /ko --></label>
+                                <label for="docType" class="label">Document Type</label>
                                 <select id="docType" data-checkout="docType" data-element-id="#doc_type__mp"
                                         data-bind="attr: {name: getTokenCodeArray('doc_type')}"></select>
 
@@ -230,7 +236,7 @@
                         </div>
 
                         <div id="installments__mp" class="field">
-                            <label for="installments" class="label"><!-- ko i18n: 'Installments'--><!-- /ko --></label>
+                            <label for="installments" class="label">Installments</label>
                             <select id="installments" data-bind="attr: {name: getTokenCodeArray('installments')}"
                                     data-element-id="#installments__mp" class="validate-select"></select>
                             <p class="message-error error-installment-not-work validation-advice"><!-- ko i18n: 'It was not possible to calculate the installments, click here and try again.'--><!-- /ko --></p>
@@ -238,6 +244,16 @@
                             <p class="message-error error-other validation-advice"><!-- ko i18n: 'Please validate your data.'--><!-- /ko --></p>
 
                         </div>
+
+                        <!-- ko if: isSecondCardEnabled() -->
+                        <!-- ko template: 'MercadoPago_Core/payment/second_card' --><!-- /ko -->
+                        <!-- /ko -->
+
+                        <div class="total_buy">
+                            <label><!-- ko i18n: 'Total amount'--><!-- /ko --> :</label>
+                            <span class="total_buy_price" data-bind="html: getInitialGrandTotal()"> </span>
+                        </div>
+
                         <div>
                             <div id="mercadopago-loading">
                                 <!--<img src="<?php echo $this->getSkinUrl('mercadopago/images/loading.gif'); ?>" alt="loading"/>-->
@@ -264,8 +280,8 @@
                             <input type="hidden" class="mercadopago-text-installment" value="Enter the card number">
                             <input type="hidden" class="mercado_base_url" data-bind="attr: {value: getBaseUrl()}">
                             <input type="hidden" class="mercado_route" data-bind="attr: {value: getRoute()}">
-                            <input type="hidden" data-bind="attr: {name: getTokenCodeArray('token')}" value="" class="token"/>
-                            <input type="hidden" data-bind="attr: {name: getTokenCodeArray('payment_method_id')}" value="" class="payment_method_id"/>
+                            <input type="hidden" data-bind="attr: {name: getTokenCodeArray('token')}" value="" id='token' class="token"/>
+                            <input type="hidden" data-bind="attr: {name: getTokenCodeArray('payment_method_id')}" value="" id="payment_method_id" class="payment_method_id"/>
                             <input type="hidden" id="one_click_pay_mp" data-bind="attr: {name: getTokenCodeArray('one_click_pay'), value:isOCPReady()}">
                         </div>
                         <div id="mercadopago-init" data-bind="template: {afterRender: initApp()}"></div>
