@@ -80,7 +80,7 @@ class Payment
      *
      * @var bool
      */
-    protected $_canUseInternal = true;
+    protected $_canUseInternal = false;
 
     /**
      * Availability option

@@ -39,7 +39,11 @@ class Category
     {
         $this->coreHelper->log("Get Categories... ", 'mercadopago');
 
-        $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories");
+        try {
+            $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories");
+        } catch (\Exception $e) {
+            return [];
+        }
         $this->coreHelper->log("API item_categories", 'mercadopago', $response);
 
         $response = $response['response'];

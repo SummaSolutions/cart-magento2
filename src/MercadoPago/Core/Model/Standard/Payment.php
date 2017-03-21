@@ -68,6 +68,13 @@ class Payment
     protected $_canVoid = true;
 
     /**
+     * Availability option
+     *
+     * @var bool
+     */
+    protected $_canUseInternal = false;
+
+    /**
      * {@inheritdoc}
      */
     protected $_canFetchTransactionInfo = true;

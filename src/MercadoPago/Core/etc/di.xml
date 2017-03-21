@@ -36,4 +36,7 @@
     <type name="Magento\Sales\Model\Order">
         <plugin name="mercadopago_order_cancel_plugin" type="MercadoPago\Core\Plugin\OrderCancelPlugin"/>
     </type>
+    <type name="Magento\Framework\View\Asset\Minification">
+        <plugin name="mercadopago_minification_plugin" type="MercadoPago\Core\Plugin\MinificationIsExcludedPlugin"/>
+    </type>
 </config>
