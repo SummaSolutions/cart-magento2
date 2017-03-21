@@ -23,7 +23,7 @@ class RestClient {
      */
     private static function get_connect($uri, $method, $content_type, $extra_params = array()) {
         if (!extension_loaded ("curl")) {
-            throw new Exception("cURL extension not found. You need to enable cURL in your php.ini or another configuration you have.");
+            throw new \Exception("cURL extension not found. You need to enable cURL in your php.ini or another configuration you have.");
         }
 
         $connect = curl_init(self::API_BASE_URL . $uri);
@@ -60,7 +60,7 @@ class RestClient {
             if(function_exists('json_last_error')) {
                 $json_error = json_last_error();
                 if ($json_error != JSON_ERROR_NONE) {
-                    throw new Exception("JSON Error [{$json_error}] - Data: {$data}");
+                    throw new \Exception("JSON Error [{$json_error}] - Data: {$data}");
                 }
             }
         }
@@ -88,7 +88,7 @@ class RestClient {
         $api_http_code = curl_getinfo($connect, CURLINFO_HTTP_CODE);
 
         if ($api_result === FALSE) {
-            throw new Exception (curl_error ($connect));
+            throw new \Exception (curl_error ($connect));
         }
 
         $response = array(
