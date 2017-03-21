@@ -78,7 +78,7 @@ class OrderCancelPlugin
 
             $response = null;
 
-            $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN);
+            $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
             if ($paymentMethod == 'mercadopago_standard') {
                 $mp = $this->dataHelper->getApiInstance($clientId, $clientSecret);
