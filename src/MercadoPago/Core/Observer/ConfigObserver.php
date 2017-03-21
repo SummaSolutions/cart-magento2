@@ -132,7 +132,7 @@ class ConfigObserver
      */
     public function availableCheckout()
     {
-        $country = $this->scopeConfig->getValue('payment/mercadopago/country');
+        $country = $this->scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         if (!in_array($country, $this->available_transparent_credit_cart)) {
             $this->_saveWebsiteConfig('payment/mercadopago_custom/active', 0);
@@ -150,13 +150,13 @@ class ConfigObserver
     public function checkBanner($typeCheckout)
     {
         //get country
-        $country = $this->scopeConfig->getValue('payment/mercadopago/country');
+        $country = $this->scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (!isset($this->banners[$typeCheckout][$country])) {
             return;
         }
         $defaultBanner = $this->banners[$typeCheckout][$country];
 
-        $currentBanner = $this->scopeConfig->getValue('payment/' . $typeCheckout . '/banner_checkout');
+        $currentBanner = $this->scopeConfig->getValue('payment/' . $typeCheckout . '/banner_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         $this->coreHelper->log("Type Checkout Path: " . $typeCheckout, self::LOG_NAME);
         $this->coreHelper->log("Current Banner: " . $currentBanner, self::LOG_NAME);
@@ -180,12 +180,12 @@ class ConfigObserver
      */
     public function setSponsor()
     {
-        $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id'), self::LOG_NAME);
+        $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE), self::LOG_NAME);
 
         $sponsorId = "";
         $this->coreHelper->log("Valid user test", self::LOG_NAME);
 
-        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
 
         if (!$accessToken) {
@@ -229,7 +229,7 @@ class ConfigObserver
      */
     protected function validateAccessToken()
     {
-        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (!empty($accessToken)) {
             if (!$this->coreHelper->isValidAccessToken($accessToken)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
@@ -243,8 +243,8 @@ class ConfigObserver
      */
     protected function validateClientCredentials()
     {
-        $clientId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID);
-        $clientSecret = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET);
+        $clientId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $clientSecret = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (!empty($clientId) && !empty($clientSecret)) {
             if (!$this->coreHelper->isValidClientCredentials($clientId, $clientSecret)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Classic Checkout: Invalid client id or client secret'));
