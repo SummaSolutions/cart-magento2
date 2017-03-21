@@ -82,7 +82,7 @@ var MercadoPagoCustom = (function () {
         selectors: {
             checkoutCustom: '#mercadopago_checkout_custom',
             checkoutTicket: '#mercadopago_checkout_custom_ticket',
-            siteId: '.site_id',
+            siteId: '#mercadopago_checkout_custom .site_id',
             cardNumberInput: '#cardNumber__mp input[data-checkout="cardNumber"]',
             installmentsDontWork: '.error-installment-not-work',
             mercadopagoCustomOpt: '#mercadopago_custom',
