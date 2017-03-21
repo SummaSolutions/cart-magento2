@@ -214,8 +214,8 @@ class RefundObserverBeforeSave
 
         if ($paymentMethod == 'mercadopago_standard') {
             $paymentID = $order->getPayment()->getData('additional_information')['id'];
-            $clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID);
-            $clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET);
+            $clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
             $mp = $this->_dataHelper->getApiInstance($clientId, $clientSecret);
             if ($isTotalRefund) {
                 $response = $mp->refund_payment($paymentID);
@@ -234,7 +234,7 @@ class RefundObserverBeforeSave
             }
         } else {
             $paymentID = $order->getPayment()->getData('additional_information')['payment_method_id'];
-            $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN);
+            $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
             $mp = $this->_dataHelper->getApiInstance($accessToken, $accessToken);
             if ($isTotalRefund) {
                 $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", null);

@@ -18,7 +18,7 @@ class ListPages
     {
         $pages = [];
         $pages[] = ['value' => "product.info.calculator",  'label' => __("Product Detail Page")];
-        $pages[] = ['value' => "checkout.cart.calculator", 'label' => __("Basket page")];
+        $pages[] = ['value' => "checkout.cart.calculator", 'label' => __("Cart page")];
 
         //force order by key
         ksort($pages);

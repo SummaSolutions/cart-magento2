@@ -506,9 +506,11 @@ var MercadoPagoCustom = (function () {
             hideMessageError();
 
             checkCreateCardToken();
+            var event = {};
 
             //update payment_id
-            guessingPaymentMethod(event.type = self.constants.keyup);
+            event.type = self.constants.keyup;
+            guessingPaymentMethod(event);
 
 
         }

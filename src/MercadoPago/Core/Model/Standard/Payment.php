@@ -68,6 +68,13 @@ class Payment
     protected $_canVoid = true;
 
     /**
+     * Availability option
+     *
+     * @var bool
+     */
+    protected $_canUseInternal = false;
+
+    /**
      * {@inheritdoc}
      */
     protected $_canFetchTransactionInfo = true;
@@ -193,7 +200,7 @@ class Payment
 
         if ($response['status'] == 200 || $response['status'] == 201) {
             $payment = $response['response'];
-            if ($this->_scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {
+            if ($this->_scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
                 $init_point = $payment['sandbox_init_point'];
             } else {
                 $init_point = $payment['init_point'];
