@@ -52,7 +52,7 @@ class Exception
     public function getUserMessage($error = null)
     {
         if (!empty($error)) {
-            if ($this->_scopeConfig->isSetFlag('payment/mercadopago/debug_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+            if ($this->_scopeConfig->isSetFlag('payment/mercadopago/debug_mode', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)) {
                 return $error['description'];
             } else {
                 $code = $error['code'];

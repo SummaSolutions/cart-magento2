@@ -419,17 +419,17 @@ class Payment
     {
         $parent = parent::isAvailable($quote);
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
         if (!$this->_publicKey) {
-            $this->_publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY);
+            $this->_publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
         $custom = (!empty($this->_publicKey) && !empty($this->_accessToken));
         if (!$parent || !$custom) {
             return false;
         }
 
-        $debugMode = $this->_scopeConfig->getValue('payment/mercadopago/debug_mode');
+        $debugMode = $this->_scopeConfig->getValue('payment/mercadopago/debug_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $secure = $this->_request->isSecure();
         if (!$secure && !$debugMode) {
             return false;
@@ -528,7 +528,7 @@ class Payment
         }
         //get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         $mp = $this->_helperData->getApiInstance($this->_accessToken);
