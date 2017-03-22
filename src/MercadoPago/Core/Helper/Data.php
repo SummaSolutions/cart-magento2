@@ -185,7 +185,7 @@ class Data
             $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0), func_get_arg(1));
             $api->set_platform(self::PLATFORM_STD);
         }
-        if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {
+        if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $api->sandbox_mode(true);
         }
 
@@ -436,7 +436,7 @@ class Data
      */
     public function getSuccessUrl()
     {
-        if ($this->scopeConfig->getValue('payment/mercadopago/use_successpage_mp')) {
+        if ($this->scopeConfig->getValue('payment/mercadopago/use_successpage_mp', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $url = 'mercadopago/success/page';
         } else {
             $url = 'checkout/onepage/success';
@@ -446,45 +446,45 @@ class Data
     }
 
     public function isRefundAvailable () {
-        return $this->scopeConfig->getValue('payment/mercadopago/refund_available');
+        return $this->scopeConfig->getValue('payment/mercadopago/refund_available', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     public function getMaximumDaysRefund () {
-        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_days_refund');
+        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_days_refund', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     public function getMaximumPartialRefunds () {
-        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_partial_refunds');
+        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_partial_refunds', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
     public function getClientId () {
-        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_id');
+        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
     public function getClientSecret() {
-        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_secret');
+        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_secret', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     public function getPublicKey() {
-        return $this->scopeConfig->getValue(self::XML_PATH_PUBLIC_KEY);
+        return $this->scopeConfig->getValue(self::XML_PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     public function getOrderStatusRefunded() {
-        return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded');
+        return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return boolean
      */
     public function isAvailableCalculator(){
-        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
     public function getPagesToShow(){
-        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_PAGES);
+        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_PAGES, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
