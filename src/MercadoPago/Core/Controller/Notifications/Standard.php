@@ -41,6 +41,11 @@ class Standard
     protected $_creditmemoFactory;
 
     /**
+     * @var \MercadoPago\Core\Helper\StatusUpdate
+     */
+    protected $_statusHelper;
+
+    /**
      * Standard constructor.
      *
      * @param \Magento\Framework\App\Action\Context           $context
@@ -52,6 +57,7 @@ class Standard
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory,
         \MercadoPago\Core\Helper\Data $coreHelper,
+        \MercadoPago\Core\Helper\StatusUpdate $statusHelper,
         \MercadoPago\Core\Model\Core $coreModel,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
@@ -62,6 +68,7 @@ class Standard
         $this->coreModel = $coreModel;
         $this->_orderFactory = $orderFactory;
         $this->_creditmemoFactory = $creditmemoFactory;
+        $this->_statusHelper = $statusHelper;
         parent::__construct($context);
     }
 
@@ -154,7 +161,7 @@ class Standard
         }
 
         $this->coreHelper->log("Update Order", self::LOG_NAME);
-        $this->coreHelper->setStatusUpdated($data);
+        $this->_statusHelper->setStatusUpdated($data);
         $this->coreModel->updateOrder($data);
 
         if ($this->_shipmentExists($shipmentData, $merchantOrder)) {
@@ -311,6 +318,10 @@ class Standard
 
         if (isset($payment['statement_descriptor'])) {
             $data['statement_descriptor'] = $payment['statement_descriptor'];
+        }
+
+        if (isset($payment['merchant_order_id'])) {
+            $data['merchant_order_id'] = $payment['merchant_order_id'];
         }
 
         $data['external_reference'] = $payment['external_reference'];

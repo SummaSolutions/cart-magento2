@@ -13,8 +13,10 @@ class RefundObserverAfterSave
     implements ObserverInterface
 {
     /**
-     * @var \MercadoPago\Core\Helper\Data
+     * @var \MercadoPago\Core\Helper\StatusUpdate
      */
+    protected $_statusHelper;
+
     protected $_dataHelper;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -30,11 +32,13 @@ class RefundObserverAfterSave
      */
     public function __construct(
         \MercadoPago\Core\Helper\Data                       $dataHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig,
+        \MercadoPago\Core\Helper\StatusUpdate               $statusHelper
     )
     {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;
+        $this->_statusHelper = $statusHelper;
     }
 
     /**
@@ -55,6 +59,7 @@ class RefundObserverAfterSave
          * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
          */
         $creditMemo = $observer->getData('creditmemo');
+        $status = $this->_statusHelper->getOrderStatusRefunded();
         $order = $creditMemo->getOrder();
         $scopeCode = $order->getStoreId();
 
@@ -66,6 +71,7 @@ class RefundObserverAfterSave
 
         $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
         if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+
             return;
         }
 
@@ -77,7 +83,7 @@ class RefundObserverAfterSave
                     ->addStatusHistoryComment('Partially Refunded ' . $message);
                 $notificationData ["external_reference"] = $order->getIncrementId();
                 $notificationData ["status"] = $status;
-                $this->_dataHelper->setStatusUpdated($notificationData);
+                $this->_statusHelper->setStatusUpdated($notificationData);
             }
         }
     }
