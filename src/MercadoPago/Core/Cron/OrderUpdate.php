@@ -69,8 +69,10 @@ class OrderUpdate
             )
             ->addFieldToFilter('status' ,["nin" => ['canceled','complete']])
             ->addFieldToFilter('created_at', ['from'=>$fromDate, 'to'=>$toDate])
-//            ->addFieldToFilter('payment_method', ["in" => ["mercadopago_custom","mercadopago_customticket","mercadopago_standard"]])
+            ->addFieldToFilter('payment_method', ["in" => ["mercadopago_custom","mercadopago_customticket","mercadopago_standard"]])
         ;
+
+        echo (string) $collection2->getSelect();
 
         $collection = $collection2;
 
@@ -102,9 +104,10 @@ class OrderUpdate
 
             $method = $paymentOrder->getMethod();
 
+            $order->canCreditmemo();
+
             if ($method == "mercadopago_custom" || $method == "mercadopago_customticket" || $method == "mercadopago_standard"){
-                $order->getData();
-                $paymentOrder->getData();
+
                 if (isset($infoPayments['merchant_order_id']) && $order->getStatus() !== 'complete') {
 
                     $merchantOrderId =  $infoPayments['merchant_order_id'];
@@ -114,44 +117,19 @@ class OrderUpdate
                     if ($response['status'] == 201 || $response['status'] == 200) {
                         $merchantOrderData = $response['response'];
 
-//                        $paymentData = $this->getDataPayments($merchantOrderData);
-//                        $statusFinal = $this->_statusHelper->getStatusFinal($paymentData['status'], $merchantOrderData);
-//                        $statusDetail = $infoPayments['status_detail'];
-//
-//                        $statusOrder = $this->_statusHelper->getStatusOrder($statusFinal, $statusDetail);
-//                        if (isset($statusOrder) && ($order->getStatus() !== $statusOrder)) {
-//                            $this->_updateOrder($order, $statusOrder, $paymentOrder);
-//
-//                        }
+                        $paymentData = $this->getDataPayments($merchantOrderData);
+                        $statusFinal = $this->_statusHelper->getStatusFinal($paymentData['status'], $merchantOrderData);
+                        $statusDetail = $infoPayments['status_detail'];
+
+                        $statusOrder = $this->_statusHelper->getStatusOrder($statusFinal, $statusDetail, $order->canCreditmemo());
+                        if (isset($statusOrder) && ($order->getStatus() !== $statusOrder)) {
+                            $this->_updateOrder($order, $statusOrder, $paymentOrder);
+
+                        }
                     } else{
                         $this->_helper->log('Error updating status order using cron whit the merchantOrder num: '. $merchantOrderId .'mercadopago.log');
                     }
                 }
-            }
-
-            //method
-
-            if (isset($infoPayments['merchant_order_id']) && $order->getStatus() !== 'complete') {
-
-//                $merchantOrderId =  $infoPayments['merchant_order_id'];
-//
-//                $response = $this->_core->getMerchantOrder($merchantOrderId);
-//
-//                if ($response['status'] == 201 || $response['status'] == 200) {
-//                    $merchantOrderData = $response['response'];
-//
-//                    $paymentData = $this->getDataPayments($merchantOrderData);
-//                    $statusFinal = $this->_statusHelper->getStatusFinal($paymentData['status'], $merchantOrderData);
-//                    $statusDetail = $infoPayments['status_detail'];
-//
-//                    $statusOrder = $this->_statusHelper->getStatusOrder($statusFinal, $statusDetail);
-//                    if (isset($statusOrder) && ($order->getStatus() !== $statusOrder)) {
-//                        $this->_updateOrder($order, $statusOrder, $paymentOrder);
-//
-//                    }
-//                } else{
-//                    $this->_helper->log('Error updating status order using cron whit the merchantOrder num: '. $merchantOrderId .'mercadopago.log');
-//                }
             }
         }
     }

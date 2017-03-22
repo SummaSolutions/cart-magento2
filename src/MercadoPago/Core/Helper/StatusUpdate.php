@@ -10,6 +10,10 @@ namespace MercadoPago\Core\Helper;
 class StatusUpdate
     extends \Magento\Payment\Helper\Data
 {
+
+    protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charge_back'];
+    protected $_notFinalStatus = ['authorized', 'process', 'in_mediation'];
+
     /**
      * @var bool flag indicates when status was updated by notifications.
      */
@@ -156,6 +160,61 @@ class StatusUpdate
         $rawMessage .= __('<br/> Status Detail: %1', $payment['status_detail']);
 
         return $rawMessage;
+    }
+
+    /**
+     * Returns status that must be set to order, if a not final status exists
+     * then the last of this statuses is returned. Else the last of final statuses
+     * is returned
+     *
+     * @param $dataStatus
+     * @param $merchantOrder
+     *
+     * @return string
+     */
+    public function getStatusFinal($dataStatus, $merchantOrder)
+    {
+        if (isset($merchantOrder['paid_amount']) && $merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
+            return 'approved';
+        }
+        $payments = $merchantOrder['payments'];
+        $statuses = explode('|', $dataStatus);
+        foreach ($statuses as $status) {
+            $status = str_replace(' ', '', $status);
+            if (in_array($status, $this->_notFinalStatus)) {
+                $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $this->_notFinalStatus);
+
+                return $payments[$lastPaymentIndex]['status'];
+            }
+        }
+
+        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $this->_finalStatus);
+
+        return $payments[$lastPaymentIndex]['status'];
+    }
+
+    /**
+     * @param $payments
+     * @param $status
+     *
+     * @return int
+     */
+    protected function _getLastPaymentIndex($payments, $status)
+    {
+        $dates = [];
+        foreach ($payments as $key => $payment) {
+            if (in_array($payment['status'], $status)) {
+                $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
+            }
+        }
+        usort($dates, ['MercadoPago\Core\Controller\Notifications\Standard', "_dateCompare"]);
+        if ($dates) {
+            $lastModified = array_pop($dates);
+
+            return $lastModified['key'];
+        }
+
+        return 0;
     }
 
 }
