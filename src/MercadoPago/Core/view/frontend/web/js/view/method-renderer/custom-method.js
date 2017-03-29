@@ -252,6 +252,16 @@ define(
                 if (this.isOCPReady()) {
                     dataObj.additional_data['customer_id'] = this.getCustomerAttribute('id');
                 }
+
+                if (this.isSecondCardEnabled()) {
+                    dataObj.additional_data['second_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_amount').val();
+                    dataObj.additional_data['second_card_installments'] = TinyJ('#second_card_installments').val();
+                    dataObj.additional_data['second_card_payment_method_id'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_payment_method_id').val();
+                    dataObj.additional_data['second_card_token'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_token').val();
+                    dataObj.additional_data['first_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.first_card_amount').val();
+
+                }
+
                 return dataObj;
             },
             afterPlaceOrder: function () {

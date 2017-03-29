@@ -29,15 +29,14 @@
                         <input type="number"
                                autocomplete="off"
                                class="input-text cvv"
-                               name="payment[cc_cid]"
+
                                id="second_card_securityCodeOCP"
                                data-checkout="securityCode"
                                data-element-id="#second_card_securityCodeOCP__mp"
                                data-bind="attr: {title: $t('Card Verification Number'),
                                                 'data-container': getCode() + '-cc-cvv',
                                                 'data-validate': JSON.stringify({'required-number':true})},
-                                                enable: isActive($parents),
-                                                value: creditCardVerificationNumber"/>
+                                                enable: isActive($parents)"/>
                         <div class="field-tooltip toggle">
                                         <span class="field-tooltip-action action-cvv"
                                               tabindex="0"
