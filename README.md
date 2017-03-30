@@ -1,6 +1,7 @@
 # Magento (v2.0.x - v2.1) - Mercado Pago Module
 
 * [Features](#features)
+* [installation by Composer](#composer_installation)
 * [Installation](#installation)
 * [Configuration](#configuration)
 * [MercadoEnvios](#mercadoenvios)
@@ -22,15 +23,16 @@ Offer a checkout fully customized to your brand experience with our simple-to-us
 * Accept tickets in addition to cards.
 * Accept Mercado Pago's discount coupons.
 * Improve conversion rate.
+* Debug Mode.
 
-*Available for Argentina, Brazil, Colombia, Mexico, Peru, Chile and Venezuela*
+*Available for Argentina, Brazil, Chile, Colombia, Mexico, Peru and Venezuela**
 
-**Standard Checkout**
+**Clasic Checkout**
 
 Great for merchants who want to get going quickly and easily.
 
-* Easy website integration— no coding required.
-* Limited control of buying experience— display Checkout window as redirect, modal or iframe.
+* Easy website integration —no coding required-.
+* Limited control of buying experience —display Checkout window as redirect, modal or iframe-.
 * Store buyer’s card for fast checkout.
 * Accept tickets, bank transfer and account money in addition to cards.
 * Accept Mercado Pago's discount coupons.
@@ -39,16 +41,39 @@ Great for merchants who want to get going quickly and easily.
 
 **Shipment integration**
 
-This feature allows to setup and integrate with MercadoEnvios shipment method as another shipment option for customers. It includes the possibility to print the shipping label directly from the Magento Admin Panel. Free shipping is also available.
+This feature allows to setup and integrate with MercadoEnvios shipment method as another shipment option for customers. 
+It includes the possibility to print the shipping label directly from the Magento Admin Panel. 
+Free shipping is also available.
 
 *Available for Argentina, Brazil and Mexico only with Standard Checkout*
 
-<a name="composer_installation"></a>
+**Returns and Cancellations between MercadoPago and Magento**
+
+This feature synchronizes orders between MercadoPago and Magento. 
+Returns and cancellations made from Magento are reflected in MercadoPago and vice versa.
+On store administration the returns can be enabled/disabled. 
+Also, you can define the maximum amount of partial refunds on the same order 
+and the maximum amount of days until refund is not accepted.
+
+**Configurable success page**
+
+This feature allows configure the success page to which Magento redirects once the customer made a payment with MercadoPago.
+On store administration, you can select between success page from MercadoPago or standard page from Magento (checkout/success).
+
+**Debug Mode in custom checkout**
+
+This feature enabled allows testing the plugin without a SSL certificate. 
+The custon chechuot does not appear as a payment method if you operate over HTTP and with the configuration disabled.
+It is not recommended enable this option in production environment.
 
 **Installments calculator**
 
-This feature adds a intallment calculator inside Magento Product Page and Cart. It can be enabled/disabled from plugin configuration.
+This feature adds an instalment calculator into the Magento pages. 
+It can be enabled/disabled from the add-on configuration.
+The calculator can be visualized in product page, in the cart page, or in both pages.
+The customer can use the intallment calculator to see the financing options available and the final amount to be paid.
 
+<a name="composer_installation"></a>
 ## Installation using composer:
 
 1. Add repository to your Magento installation composer.json file
@@ -87,20 +112,32 @@ This feature adds a intallment calculator inside Magento Product Page and Cart. 
 2. Set your Country to the same where your account was created on, and save config.
 	**Note: If you change the Country where your account was created you need save configuration in order to refresh the excluded payment methods.**
 	
-3. Other general configurations:<br />
-	* **Category of your store**: Sets up the category of the store.
-	* **Choose the status of approved orders**: Sets up the order status when payments are approved.
-	* **Choose the status of refunded orders**: Sets up the order status when payments are refunded.
-	* **Choose the status when payment is pending**: Sets up the order status when payments are pending.
-	* **Choose the status when client open a mediation**: Sets up the order status when client opens a mediation.
-	* **Choose the status when payment was reject**: Sets up the order status when payments are rejected.
-	* **Choose the status when payment was canceled**: Sets up the order status when payments are canceled.
-	* **Choose the status when payment was chargeback**: Sets up the order status when payments are chargeback.
-	* **Logs**: Enables/disables system logs.
-	* **Debug Mode**: If enabled, displays the raw response from the API instead of a friendly message.
+3. Other general configurations:
+
+    * **Category of your store**: Sets up the category of the store.
+    * **Use Mercado Pago success page**: Use success page from MercadoPago or standard page from Magento.
+  - **Refund Options**
+    * **Refund Available**: Enables/disables Refund.
+    * **Maximum amount of partial refunds on the same order**: Set the maximum amount of partial refunds on the same order.
+    * **Maximum amount of days until refund is not accepted**: Set the maximum amount of days until refund is not accepted.
+    * **Choose the status when payment was partially refunded**: Sets up the order status when payments are partially refunded.
+  - **Order Status Options**
+    * **Choose the status of approved orders**: Sets up the order status when payments are approved.
+    * **Choose the status of refunded orders**: Sets up the order status when payments are refunded.
+    * **Choose the status when payment is pending**: Sets up the order status when payments are pending.
+    * **Choose the status when client open a mediation**: Sets up the order status when client opens a mediation.
+    * **Choose the status when payment was reject**: Sets up the order status when payments are rejected.
+    * **Choose the status when payment was canceled**: Sets up the order status when payments are canceled.
+    * **Choose the status when payment was chargeback**: Sets up the order status when payments are chargeback.
+  - **Developer Options**
+    * **Logs**: Enables/disables system logs.
+    * **Debug Mode**: If enabled, displays the raw response from the API instead of a friendly message.
+  - **Payments Calculator**
+    * **Enable MercadoPago Installments Calculator**: If enabled, show the Installments Calculator on the selected pages.
+    * **Show Calculator on selected pages**: Select the pages to show the Instalments Calculator.
 
 <a name="checkout_custom"></a>
-###Custom Checkout Payment Solution:###
+###Custom Checkout Payment Solution: ###
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **Mercado Pago - Custom Checkout**.
 ![Mercado Pago Custom Checkout Configuration](/README.img/mercadopago_custom_checkout_configuration.png?raw=true)<br /> 
@@ -109,12 +146,11 @@ This feature adds a intallment calculator inside Magento Product Page and Cart. 
 	
 	* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
 	* Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
-    * Chile: [https://www.mercadopago.com/mlc/herramientas/aplicaciones](https://www.mercadopago.com/mlc/herramientas/aplicaciones)
+    * Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
 	* Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
 	* Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
-	* Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
 	* Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
-
+	* Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
 
 If you want to enable credit card solution, check the configurations under **Checkout Custom - Credit Card**:
 ![Mercado Pago Custom Checkout Credit Card](/README.img/mercadopago_custom_checkout_cc.png?raw=true)<br /> 
@@ -136,20 +172,20 @@ If you want to enable ticket solution, check the configurations under **Checkout
 * **Marketing - Coupon Mercado Pago**: Enables/disables the coupon form.
 
 <a name="checkout_standard"></a>
-###Standard Checkout Payment Solution:###
+###Clasic Checkout Payment Solution: ###
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **Mercado Pago - Classic Checkout**.
 
 2. Enable the solution and set your **Client Id** and **Client Secret**. <br />
 Get them in the following address:
-	* Argentina: [https://www.mercadopago.com/mla/herramientas/aplicaciones](https://www.mercadopago.com/mla/herramientas/aplicaciones)
-	* Brazil: [https://www.mercadopago.com/mlb/ferramentas/aplicacoes](https://www.mercadopago.com/mlb/ferramentas/aplicacoes)
-	* Chile: [https://www.mercadopago.com/mlc/herramientas/aplicaciones](https://www.mercadopago.com/mlc/herramientas/aplicaciones)
-	* Colombia: [https://www.mercadopago.com/mco/herramientas/aplicaciones](https://www.mercadopago.com/mco/herramientas/aplicaciones)
-	* Mexico: [https://www.mercadopago.com/mlm/herramientas/aplicaciones](https://www.mercadopago.com/mlm/herramientas/aplicaciones)
-	* Venezuela: [https://www.mercadopago.com/mlv/herramientas/aplicaciones](https://www.mercadopago.com/mlv/herramientas/aplicaciones)
-	* Peru: [https://www.mercadopago.com/mpe/herramientas/aplicaciones](https://www.mercadopago.com/mpe/herramientas/aplicaciones)
-	* Uruguay: [https://www.mercadopago.com/mlu/account/credentials](https://www.mercadopago.com/mlu/account/credentials)
+	* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
+    * Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
+    * Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
+    * Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
+    * Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
+    * Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
+    * Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
+    * Uruguay: [https://www.mercadopago.com/mlu/account/credentials](https://www.mercadopago.com/mlu/account/credentials)
 
 3. Check the additional configurations:
 	* **Payment Title**: Sets the payment title.
@@ -159,13 +195,25 @@ Get them in the following address:
 		*  *Iframe*: Opens a Magento URL with a iframe as the content.
 		*  *Redirect*: Redirects to Mercado Pago URL.
 		*  *Lightbox*: Similar to Iframe option but opens a lightbox instead of an iframe. 
-
+	* **Auto Redirect**: If enable, the web return to your store when the payment is approved.
+	* **Exclude Payment Methods**: Select the payment methods that you want to not work with MercadoPago.
+	* **Maximum number of accepted installments**: Set the maximum installments allowed for your customers.
+	* **Width Checkout Iframe**: Set width -in pixels- Checkout Iframe .
+	* **Height Checkout Iframe**: Set height -in pixels- Checkout Iframe.
+	* **Sandbox Mode**:  Enables/disables MercadoPago sandbox environment.
+	
 <a name="mercadoenvios">
+
 ## MercadoEnvios ##
-In order to setup MercadoEnvios follow these instructions:<br />
-1. Setup MercadoPago Standard Checkout following [these instructions](#checkout_standard). <br />
-2. Go to **Sales > Configuration > Sales > Shipping Methods > MercadoEnvios**.<br />
-3. Setup the plugin:<br />
+
+In order to setup MercadoEnvios follow these instructions:
+
+1. Setup MercadoPago Standard Checkout following [these instructions](#checkout_standard).
+
+2. Go to **Sales > Configuration > Sales > Shipping Methods > MercadoEnvios**.
+
+3. Setup the plugin:
+
 
 ![MercadoEnvios Configuration](/README.img/mercadoenvios.png?raw=true)
 
@@ -175,11 +223,13 @@ In order to setup MercadoEnvios follow these instructions:<br />
 * **Available shipping methods**: Sets up the shipping options visible in the checkout process.
 * **Free Method**: Sets up the method to use as free shipping.
 * **Free Shipping with Minimum Order Amount**: Enables/disables the order minimum for free shipping to be available.
+* **Minimum Order Amount for Free Shipping**: Define Minimum Order Amount for Free Shipping
 * **Show method if not applicable**: If enabled, the shipping method is displayed when it's not available.
 * **Displayed Error Message**: Sets up the text to be displayed when the shipping method is not available.
+* **Log**: Enables/disables system logs.
 * **Debug Mode**: If enabled, displays the raw response from the API instead of a friendly message.
 * **Sort order**: Sets up the sort order to be displayed in the shipping step in checkout process.
-
+* **Shipping label download option**: Set the format option for downloading shipping labels.
 <a name="Feedback"></a>
 ## Feedback ##
 

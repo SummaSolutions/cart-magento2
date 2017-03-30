@@ -6,7 +6,7 @@
                 <title>MercadoEnvíos</title>
                 <model>MercadoPago\MercadoEnvios\Model\Carrier\MercadoEnvios</model>
                 <sort_order>10</sort_order>
-                <sallowspecific>0</sallowspecific>
+                <allowspecific>0</allowspecific>
                 <name>MercadoEnvios</name>
                 <specificerrmsg>This shipping method is currently unavailable.</specificerrmsg>
             </mercadoenvios>

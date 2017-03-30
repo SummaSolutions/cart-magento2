@@ -22,11 +22,11 @@
                     <label>Available shipping methods</label>
                     <source_model>MercadoPago\MercadoEnvios\Model\System\Config\Source\Method</source_model>
                 </field>
-                <field id="allowspecific" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1">
+                <field id="allowspecific" translate="label" type="select" sortOrder="40" showInDefault="0" showInWebsite="0">
                     <label>Allow Specific Country</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                 </field>
-                <field id="specificcountry" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1">
+                <field id="specificcountry" translate="label" type="select" sortOrder="50" showInDefault="0" showInWebsite="0">
                     <label>Specific Country</label>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Country</source_model>
                 </field>
