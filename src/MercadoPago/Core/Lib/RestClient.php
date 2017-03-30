@@ -31,6 +31,7 @@ class RestClient {
         curl_setopt($connect, CURLOPT_USERAGENT, "MercadoPago Magento-1.9.x-transparent Cart v1.0.2");
         curl_setopt($connect, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($connect, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($connect, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
         $header_opt = array("Accept: application/json", "Content-Type: " . $content_type);
         if (count($extra_params) > 0) {
