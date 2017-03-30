@@ -13,6 +13,11 @@ use Magento\Framework\View\LayoutFactory;
 class Data
     extends \Magento\Payment\Helper\Data
 {
+    /**
+     *path to mercadopago custom ticket active
+     */
+    const XML_PATH_MERCADOPAGO_TICKET_ACTIVE = 'payment/mercadopago_customticket/active';
+
 
     /**
      *path to access token config
@@ -23,6 +28,13 @@ class Data
      */
     const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
     /**
+     *path to mercadopago custom active config
+     */
+    const XML_PATH_MERCADOPAGO_CUSTOM_ACTIVE = 'payment/mercadopago_custom/active';
+
+
+
+    /**
      *path to client id config
      */
     const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
@@ -30,6 +42,47 @@ class Data
      *path to client secret config
      */
     const XML_PATH_CLIENT_SECRET = 'payment/mercadopago_standard/client_secret';
+
+
+
+    /**
+     *path to mercadopago country config
+     */
+    const XML_PATH_COUNTRY = 'payment/mercadopago/country';
+    /**
+     *path to payment calculator available
+     */
+    const XML_PATH_CALCULATOR_AVAILABLE = 'payment/mercadopago/calculalator_available';
+    /**
+     *path to the list of pages on which to display the calculator
+     */
+    const XML_PATH_CALCULATOR_PAGES = 'payment/mercadopago/show_in_pages';
+    /**
+     *path to mercadopago refund available config
+     */
+    const XML_PATH_REFUND_AVAILABLE ='payment/mercadopago/refund_available';
+    /**
+     *path to maximum days refund config
+     */
+    const XML_PATH_MAXIMUM_DAYS_REFUND ='payment/mercadopago/maximum_days_refund';
+    /**
+     *path to maximum partial refunds config
+     */
+    const XML_PATH_MAXIMUM_PARTIAL_REFUNDS ='payment/mercadopago/maximum_partial_refunds';
+    /**
+     *path to order status refunded config
+     */
+    const XML_PATH_ORDER_STATUS_REFUNDED ='payment/mercadopago/order_status_refunded';
+    /**
+     *path to use successpage mp config
+     */
+    const XML_PATH_USE_SUCCESSPAGE_MP ='payment/mercadopago/use_successpage_mp';
+    /**
+     *path to sponsor id config
+     */
+    const XML_PATH_SPONSOR_ID = 'payment/mercadopago/sponsor_id';
+
+
 
     /**
      *api platform openplatform
@@ -44,10 +97,9 @@ class Data
      */
     const TYPE = 'magento';
 
-    //calculator
-    const XML_PATH_CALCULATOR_AVAILABLE = 'payment/mercadopago/calculalator_available';
-    const XML_PATH_CALCULATOR_PAGES = 'payment/mercadopago/show_in_pages';
-
+    /**
+     * payment calculator
+     */
     const STATUS_ACTIVE = 'active';
     const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
 
@@ -84,6 +136,11 @@ class Data
     protected $_orderFactory;
 
     /**
+     * @var \Magento\Backend\Block\Store\Switcher
+     */
+    protected $_switcher;
+
+    /**
      * Data constructor.
      *
      * @param Message\MessageInterface                             $messageInterface
@@ -108,7 +165,8 @@ class Data
         \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
         \MercadoPago\Core\Logger\Logger $logger,
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Backend\Block\Store\Switcher $switcher
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
@@ -117,6 +175,7 @@ class Data
         $this->_moduleContext = $moduleContext;
         $this->_statusFactory = $statusFactory;
         $this->_orderFactory = $orderFactory;
+        $this->_switcher = $switcher;
     }
 
     /**
@@ -185,9 +244,16 @@ class Data
             $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0), func_get_arg(1));
             $api->set_platform(self::PLATFORM_STD);
         }
-        if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {
-            $api->sandbox_mode(true);
+        if ($this->_switcher->getWebsiteId()!= 0){
+            if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode',\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,$this->_switcher->getWebsiteId())) {
+                $api->sandbox_mode(true);
+            }
+        }else{
+            if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {
+                $api->sandbox_mode(true);
+            }
         }
+
 
         $api->set_type(self::TYPE);
 
@@ -243,14 +309,16 @@ class Data
     /**
      * Return the access token proved by api
      *
-     * @return mixed
+     * @param null $scopeCode
+     *
+     * @return bool|mixed
      * @throws \Exception
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getAccessToken()
+    public function getAccessToken($scopeCode = null)
     {
-        $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, $scopeCode);
+        $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, $scopeCode);
         try {
             $accessToken = $this->getApiInstance($clientId, $clientSecret)->get_access_token();
         } catch (\Exception $e) {
@@ -436,7 +504,7 @@ class Data
      */
     public function getSuccessUrl()
     {
-        if ($this->scopeConfig->getValue('payment/mercadopago/use_successpage_mp')) {
+        if ($this->scopeConfig->getValue(self::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $url = 'mercadopago/success/page';
         } else {
             $url = 'checkout/onepage/success';
@@ -445,46 +513,42 @@ class Data
         return $url;
     }
 
-    public function isRefundAvailable () {
-        return $this->scopeConfig->getValue('payment/mercadopago/refund_available');
+    public function isRefundAvailable() {
+        return $this->scopeConfig->getValue(self::XML_PATH_REFUND_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
-    public function getMaximumDaysRefund () {
-        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_days_refund');
+    public function getMaximumDaysRefund() {
+        return (int) $this->scopeConfig->getValue(self::XML_PATH_MAXIMUM_DAYS_REFUND, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
-    public function getMaximumPartialRefunds () {
-        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_partial_refunds');
+    public function getMaximumPartialRefunds() {
+        return (int) $this->scopeConfig->getValue(self::XML_PATH_MAXIMUM_PARTIAL_REFUNDS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
-    public function getClientId () {
-        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_id');
+    public function getClientId() {
+        return $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
     public function getClientSecret() {
-        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_secret');
+        return $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     public function getPublicKey() {
-        return $this->scopeConfig->getValue(self::XML_PATH_PUBLIC_KEY);
-    }
-
-    public function getOrderStatusRefunded() {
-        return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded');
+        return $this->scopeConfig->getValue(self::XML_PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return boolean
      */
     public function isAvailableCalculator(){
-        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
     public function getPagesToShow(){
-        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_PAGES);
+        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_PAGES, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
