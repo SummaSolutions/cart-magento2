@@ -32,6 +32,11 @@ class StatusUpdate
      */
     protected $_statusFactory;
 
+    /**
+     * @var \Magento\Sales\Model\Order\CreditmemoFactory
+     */
+    protected $_creditmemoFactory;
+
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
         \Magento\Framework\App\Helper\Context $context,
@@ -41,13 +46,15 @@ class StatusUpdate
         \Magento\Payment\Model\Config $paymentConfig,
         \Magento\Framework\App\Config\Initial $initialConfig,
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_orderFactory = $orderFactory;
         $this->_statusFactory = $statusFactory;
+        $this->_creditmemoFactory = $creditmemoFactory;
     }
 
     /**
@@ -215,6 +222,68 @@ class StatusUpdate
         }
 
         return 0;
+    }
+
+    /**
+     * @param $merchantOrder
+     *
+     * @return array
+     */
+    public function getShipmentsArray($merchantOrder)
+    {
+        return (isset($merchantOrder['shipments'][0])) ? $merchantOrder['shipments'][0] : [];
+    }
+
+    /**
+     * @param $payment \Magento\Sales\Model\Order\Payment
+     */
+    public function generateCreditMemo($payment, $order = null )
+    {
+        if (empty($order)){
+            $order = $this->_orderFactory->create()->loadByIncrementId($payment["order_id"]);
+        }
+
+        if ($payment['amount_refunded'] == $payment['total_paid_amount']) {
+            $this->_createCreditmemo($order, $payment);
+            $order->setForcedCanCreditmemo(false);
+            $order->setActionFlag('ship', false);
+            $order->save();
+        } else {
+            $this->_createCreditmemo($order, $payment);
+        }
+    }
+
+    /**
+     * @var $order \Magento\Sales\Model\Order
+     * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
+     * @var $payment \Magento\Sales\Model\Order\Payment
+     */
+    protected function _createCreditmemo ($order, $data)
+    {
+        $order->setExternalRequest(true);
+        $creditMemos = $order->getCreditmemosCollection()->getItems();
+
+        $previousRefund = 0;
+        foreach ($creditMemos as $creditMemo) {
+            $previousRefund = $previousRefund + $creditMemo->getGrandTotal();
+        }
+        $amount = $data['amount_refunded'] - $previousRefund;
+        if ($amount > 0) {
+            $order->setExternalType('partial');
+            $creditmemo = $this->_creditmemoFactory->createByOrder($order, [-1]);
+            if (count($creditMemos) > 0) {
+                $creditmemo->setAdjustmentPositive($amount);
+            } else {
+                $creditmemo->setAdjustmentNegative($amount);
+            }
+            $creditmemo->setGrandTotal($amount);
+            $creditmemo->setBaseGrandTotal($amount);
+            //status "Refunded" for creditMemo
+            $creditmemo->setState(2);
+            $creditmemo->getResource()->save($creditmemo);
+            $order->setTotalRefunded($data['amount_refunded']);
+            $order->getResource()->save($order);
+        }
     }
 
 }

@@ -42,6 +42,7 @@ class OrderUpdate
         \MercadoPago\Core\Helper\StatusUpdate $statusUpdate,
         \MercadoPago\Core\Helper\Data $helper,
         \MercadoPago\Core\Model\Core $core,
+        \Magento\Framework\Event\ManagerInterface $eventManager,
         array $data = []
     )
     {
@@ -50,6 +51,7 @@ class OrderUpdate
         $this->_statusHelper = $statusUpdate;
         $this->_helper = $helper;
         $this->_core = $core;
+        $this->_eventManager = $eventManager;
     }
 
     public function execute(){
@@ -122,9 +124,26 @@ class OrderUpdate
                         $statusDetail = $infoPayments['status_detail'];
 
                         $statusOrder = $this->_statusHelper->getStatusOrder($statusFinal, $statusDetail, $order->canCreditmemo());
-                        if (isset($statusOrder) && ($order->getStatus() !== $statusOrder)) {
-                            $this->_updateOrder($order, $statusOrder, $paymentOrder);
 
+                        $shipmentData = $this->_statusHelper->getShipmentsArray($merchantOrderData);
+
+                        if (isset($statusOrder) && ($order->getStatus() !== $statusOrder)) {
+                            $this->_helper->log("OrderUpdate merchant_order:", self::LOG_FILE, $merchantOrderData);
+
+                            // if this happens, we need to generate a credit memo
+                            if (isset($paymentData["amount_refunded"]) && $paymentData["amount_refunded"] > 0) {
+                                $this->_statusHelper->generateCreditMemo($paymentData, $order);
+                                $this->_helper->log("Update Order generated CreditMemo", self::LOG_FILE);
+                            }
+
+                            if ((!empty($shipmentData) && !empty($merchantOrderData))) {
+                                $this->_eventManager->dispatch(
+                                    'mercadopago_standard_notification_before_set_status',
+                                    ['shipmentData' => $shipmentData, 'orderId' => $merchantOrderData['external_reference']]
+                                );
+                            }
+
+                            $this->_updateOrder($order, $statusOrder, $paymentOrder);
                         }
                     } else{
                         $this->_helper->log('Error updating status order using cron whit the merchantOrder num: '. $merchantOrderId .'mercadopago.log');
