@@ -1,26 +1,35 @@
-<div>
-    <a id="show_second_card" class="action_ocp button">Use 2 Cards</a>
-</div>
 <div id="mercadopago_checkout_custom_second_card" style="display: none">
-    <a data-toggle="tooltip" title="Back to only one card" id="hide_second_card" class="action_ocp button" >X</a>
-    <div class="form-list" id="payment_form_mercadopago_custom" style="">
+    <button type="button" data-toggle="tooltip" title="Back to only one card" id="hide_second_card" class="action_ocp action primary">X</button>
+
+    <div class="second_card_total_buy" style="display: none;">
+        <label><!-- ko i18n: 'Total amount'--><!-- /ko --> :</label>
+        <span class="second_card_total_buy_price" data-bind="html: getInitialGrandTotal()">.-</span>
+    </div>
+
+    <div class="form-list" id="second_card_payment_form_mercadopago_custom">
         <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: 'payment_form_' + getCode()}">
-            <li id="secondCardAmount">
+            <li id="secondCardAmount" class="field">
                 <h3><!-- ko i18n: '2nd Card'--><!-- /ko --></h3>
-                <label for="second_card_amount"><!-- ko i18n: 'Remaining Amount'--><!-- /ko --></label>
-                <input type="text" id="second_card_amount" class="required-entry" readonly/>
+                <label for="second_card_amount" class="label"><!-- ko i18n: 'Remaining Amount'--><!-- /ko --></label>
+                <input type="text" id="second_card_amount" class="required-entry" readonly disabled />
             </li>
 
             <!-- ko if: isOCPReady() -->
             <div id="second_card_payment" class="fields">
+                <div class="field">
+                    <button id="second_card_use_other_card_mp" class="action_ocp action primary" type="button"><!-- ko i18n: 'Use other card'--><!-- /ko --></button>
+                </div>
 
                 <div id="second_card_cardId__mp" class="field">
-                    <div><a id="second_card_use_other_card_mp" class="action_ocp">Use other card</a></div>
-                    <label for="second_card_cardId" class="label">Payment Method</label>
-                    <select id="second_card_cardId" data-checkout="cardId" data-element-id="#second_card_cardId__mp" data-bind="attr: {name: getTokenCodeArray('cardId')}, options: getAvailableCards(), optionsText: 'cardName', optionsValue: 'value', optionsAfterRender: setOptionsExtraValues" >
+                    <label for="second_card_cardId" class="label"><!-- ko i18n: 'Payment Method'--><!-- /ko --></label>
+                    <select id="second_card_cardId" data-checkout="cardId" data-element-id="#second_card_cardId__mp"
+                            data-bind="attr: {name: getTokenCodeArray('cardId')},
+                                       options: getAvailableCards(), optionsText: 'cardName', optionsValue: 'value',
+                                       optionsAfterRender: setOptionsExtraValues" >
                     </select>
                     <input type="hidden" id="customer_id" data-bind="attr: {name: getTokenCodeArray('customer_id'), value: getCustomerAttribute('id')}">
                 </div>
+
                 <div class="field cvv required" id="second_card_securityCodeOCP__mp">
                     <label data-bind="attr: {for: getCode() + '_cc_cid'}" class="label">
                         <span><!-- ko i18n: 'Card Verification Number'--><!-- /ko --></span>
@@ -47,24 +56,26 @@
                             <div class="field-tooltip-content" data-target="dropdown" data-bind="html: getCvvImageHtml()"></div>
                         </div>
                     </div>
-                    <p class="message-error error-E302 error-224 validation-advice"><!-- ko i18n: 'CVV is invalid.'--><!-- /ko --></p>
+                    <p class="message-error second_card_error-E302 second_card_error-224 validation-advice"><!-- ko i18n: 'CVV is invalid.'--><!-- /ko --></p>
                 </div>
             </div>
-            <div><a id="second_card_return_list_card_mp" class="action_ocp">Return to cards list</a></div>
+
+            <div class="field">
+                <button id="second_card_return_list_card_mp" class="action_ocp action primary" type="button"><span><!-- ko i18n: 'Return to cards list'--><!-- /ko --></span></button>
+            </div>
 
             <!-- /ko -->
 
-            <div id="mercadopago_checkout_custom_card" class="fields field">
+            <div id="second_card_mercadopago_checkout_custom" class="fields">
                 <div id="second_card_cardNumber__mp" class="field number required">
-
                     <label for="second_card_cardNumber" class="label">
                         <span><!-- ko i18n: 'Card Number'--><!-- /ko --></span></label>
                     <div class="control">
                         <input type="text" id="second_card_cardNumber" data-checkout="cardNumber"
                                data-element-id="#second_card_cardNumber__mp" class="input-text"
-                               data-bind="attr: {'data-validate': JSON.stringify({'required-number':true, 'validate-card-number':'#second_card_cardNumber'})}"/>
+                               data-bind="attr: {'data-validate': JSON.stringify({'required-number':true})}"/>
                     </div>
-                    <p class="message-error second_card_error-payment-method-not-found error-E301 error-205 validation-advice"><!-- ko i18n: 'Card number is invalid.'--><!-- /ko --></p>
+                    <p class="message-error second_card_error-payment-method-not-found second_card_error-E301 second_card_error-205 validation-advice"><!-- ko i18n: 'Card number is invalid.'--><!-- /ko --></p>
                     <p class="message-error second_card_error-payment-method-min-amount validation-advice"><!-- ko i18n: 'Cannot pay this amount with this payment_method_id.'--><!-- /ko --></p>
                 </div>
 
@@ -99,7 +110,7 @@
                         <span><!-- ko i18n: 'Expiration Date'--><!-- /ko --></span>
                     </label>
                     <div class="control">
-                        <div class="fields group group-2">
+                        <div class="fields group">
                             <div class="field no-label month">
                                 <div class="control">
                                     <select name="payment[second_card_cc_exp_month]"
@@ -112,8 +123,7 @@
                                             options: getCcMonthsValues(),
                                             optionsValue: 'value',
                                             optionsText: 'month',
-                                            optionsCaption: $t('Month'),
-                                            value: creditCardExpMonth">
+                                            optionsCaption: $t('Month')">
                                     </select>
                                 </div>
                                 <p class="message-error second_card_error-325 second_card_error-208 validation-advice"><!-- ko i18n: 'Month is invalid.'--><!-- /ko --></p>
@@ -130,8 +140,7 @@
                                            options: getCcYearsValues(),
                                            optionsValue: 'value',
                                            optionsText: 'year',
-                                           optionsCaption: $t('Year'),
-                                           value: creditCardExpYear">
+                                           optionsCaption: $t('Year')">
                                     </select>
                                 </div>
                                 <p class="message-error second_card_error-326 second_card_error-209 validation-advice"><!-- ko i18n: 'Year is invalid.'--><!-- /ko --></p>
@@ -148,15 +157,13 @@
                         <input type="number"
                                autocomplete="off"
                                class="input-text cvv"
-                               name="payment[cc_cid]"
                                id="second_card_securityCode"
                                data-checkout="securityCode"
                                data-element-id="#second_card_securityCode__mp"
                                data-bind="attr: {title: $t('Card Verification Number'),
                                                 'data-container': getCode() + '-cc-cvv',
                                                 'data-validate': JSON.stringify({'required-number':true})},
-                                                enable: isActive($parents),
-                                                value: creditCardVerificationNumber"/>
+                                                enable: isActive($parents)"/>
                         <div class="field-tooltip toggle">
                                         <span class="field-tooltip-action action-cvv"
                                               tabindex="0"
@@ -174,21 +181,19 @@
                 </div>
 
                 <div id="second_card_doc_type__mp" class="field required">
-                    <label for="second_card_docType" class="label">Document Type</label>
+                    <label for="second_card_docNumber" class="label"><!-- ko i18n: 'Document'--><!-- /ko --></label>
                     <select id="second_card_docType" data-checkout="docType" data-element-id="#second_card_doc_type__mp"
                             data-bind="attr: {name: getTokenCodeArray('second_card_doc_type')}"></select>
-
                     <p class="message-error second_card_error-322 error-212 validation-advice"><!-- ko i18n: 'Document Type is invalid.'--><!-- /ko --></p>
                 </div>
 
                 <div id="second_card_doc_number__mp" class="field number required">
-                    <label for="second_card_docNumber" class="label">
-                        <span><!-- ko i18n: 'Document Number'--><!-- /ko --></span>
-                    </label>
                     <div class="control">
                         <input type="text" id="second_card_docNumber" class="mp-validate-docnumber" data-checkout="docNumber"
                                data-element-id="#second_card_doc_number__mp"
-                               data-bind="attr: {name: getTokenCodeArray('second_card_docNumber'), 'data-validate': JSON.stringify({'required-number':true, 'mp-validate-docnumber':'#docNumber'})}" />
+                               data-bind="attr: {name: getTokenCodeArray('second_card_docNumber'),
+                                         'data-validate': JSON.stringify({'required-number':true,
+                                         'mp-validate-docnumber':'#docNumber'})}" />
                     </div>
                     <p class="message-error second_card_error-324 second_card_error-213 second_card_error-214 validation-advice"><!-- ko i18n: 'Document Number is invalid'--><!-- /ko --></p>
                 </div>
@@ -209,46 +214,20 @@
                 <p class="cft-info cft-info-second-card">CFT: 0,00%</p>
             </div>
 
-            <!--&lt;!&ndash; ko if: isSecondCardEnabled() &ndash;&gt;-->
-            <!--&lt;!&ndash; ko template: 'MercadoPago_Core/payment/second_card' &ndash;&gt;&lt;!&ndash; /ko &ndash;&gt;-->
-            <!--&lt;!&ndash; /ko &ndash;&gt;-->
-
-            <!--<div>-->
-                <!--<div id="mercadopago-loading">-->
-                    <!--&lt;!&ndash;<img src="<?php echo $this->getSkinUrl('mercadopago/images/loading.gif'); ?>" alt="loading"/>&ndash;&gt;-->
-                <!--</div>-->
-            <!--</div>-->
-
-            <!--<div>-->
-
-                <!--<input type="hidden" class="total_amount" name="total_amount"-->
-                       <!--data-bind="attr: {value: getGrandTotal()}"/>-->
-                <!--<input type="hidden" class="amount" name="amount" data-bind="attr: {value: getInitialGrandTotal()}"/>-->
-                <!--<input type="hidden" class="mercadopago-discount-amount" name="mercadopago-discount-amount"-->
-                       <!--value="0"/>-->
-                <!--<input type="hidden" class="site_id" name="site_id" data-bind="attr: {value: getCountry()}"/>-->
-                <!--&lt;!&ndash;TODO translate strings below&ndash;&gt;-->
-                <!--<input type="hidden" class="mercadopago-text-currency" value="$">-->
-                <!--<input type="hidden" class="mercadopago-text-choice" value="Choice">-->
-                <!--<input type="hidden" class="mercadopago-text-default-issuer" value="Default issuer">-->
+            <div>
                 <input type="hidden" class="second_card_mercadopago-text-installment" value="Enter the card number">
-
-            <!--<input type="hidden" class="mercado_base_url" data-bind="attr: {value: getBaseUrl()}">-->
-                <!--<input type="hidden" class="mercado_route" data-bind="attr: {value: getRoute()}">-->
                 <input type="hidden" data-bind="attr: {name: getTokenCodeArray('is_second_card_used')}" value="false" class="is_second_card_used"/>
                 <input type="hidden" data-bind="attr: {name: getTokenCodeArray('second_card_token')}" value="" class="second_card_token"/>
                 <input type="hidden" data-bind="attr: {name: getTokenCodeArray('first_card_amount')}" value="" class="first_card_amount"/>
                 <input type="hidden" data-bind="attr: {name: getTokenCodeArray('second_card_amount')}" value="" class="second_card_amount"/>
                 <input type="hidden" data-bind="attr: {name: getTokenCodeArray('second_card_payment_method_id')}" value="" class="second_card_payment_method_id" id="second_card_payment_method_id"/>
                 <input type="hidden" id="second_card_one_click_pay_mp" data-bind="attr: {name: getTokenCodeArray('second_card_one_click_pay'), value:isOCPReady()}">
-            <!--</div>-->
+            </div>
             <div id="mercadopago-init" data-bind="template: {afterRender: initSecondCard()}"></div>
         </fieldset>
     </div>
 </div>
-<div class="second_card_total_buy">
-    <label><!-- ko i18n: 'Total amount'--><!-- /ko --> :</label>
-    <span class="second_card_total_buy_price" data-bind="html: getInitialGrandTotal()">.-</span>
+
+<div class="fieldset use-2-cards-box">
+    <button id="show_second_card" class="action_ocp action primary field"  type="button"><span><!-- ko i18n: 'Use 2 cards'--><!-- /ko --></span></button>
 </div>
-
-
