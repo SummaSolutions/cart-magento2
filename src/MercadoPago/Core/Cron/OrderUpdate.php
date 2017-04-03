@@ -2,10 +2,6 @@
 
 namespace MercadoPago\Core\Cron;
 
-//use Sportotal\DataImport\Model\Import\Adapter as ImportAdapter;
-//use \Magento\ImportExport\Model\Import;
-//use Magento\Framework\App\Filesystem\DirectoryList;
-
 class OrderUpdate
 {
 
@@ -55,14 +51,13 @@ class OrderUpdate
     }
 
     public function execute(){
-//        $hours = $this->_scopeConfig->getValue("config_horas");
-        $hours = 24;
+       $hours = $this->_scopeConfig->getValue('payment/mercadopago/number_of_hours');
 
         // filter to date:
         $fromDate = date('Y-m-d H:i:s', strtotime('-'.$hours. ' hours'));
         $toDate = date('Y-m-d H:i:s', strtotime("now"));
 
-        $collection2 = $this->_orderCollectionFactory->create()
+        $collection = $this->_orderCollectionFactory->create()
             ->addAttributeToSelect('*')
             ->join(
                 ['payment' => 'sales_order_payment'],
@@ -71,31 +66,6 @@ class OrderUpdate
             )
             ->addFieldToFilter('status' ,["nin" => ['canceled','complete']])
             ->addFieldToFilter('created_at', ['from'=>$fromDate, 'to'=>$toDate])
-            ->addFieldToFilter('payment_method', ["in" => ["mercadopago_custom","mercadopago_customticket","mercadopago_standard"]])
-        ;
-
-        echo (string) $collection2->getSelect();
-
-        $collection = $collection2;
-
-//        $collection2 = $this->_orderCollectionFactory->create()
-//            ->addAttributeToSelect('*')
-//            ->join(['payment' => 'sales_order_payment'],
-//                'main_table.entity_id=payment.parent_id',
-//                ['payment_method' => 'payment.method']
-//            );
-
-//        $collection = $this->_orderCollectionFactory->create();
-//        $collection->addAttributeToSelect('*');
-//        $collection->addFieldToFilter(
-//            'payment_method', ['in' => ['mercadopago_custom',
-//            'mercadopago_customticket',
-//            'mercadopago_standard']])
-////            ->addFieldToFilter('status',  array('nin' => array(
-////                'canceled',
-////                'complete')))
-////            ->addFieldToFilter('created_at', array('from'=>$fromDate, 'to'=>$toDate)
-////                )
         ;
 
         // For all Orders to analyze

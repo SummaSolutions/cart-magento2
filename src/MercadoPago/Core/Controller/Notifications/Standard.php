@@ -38,8 +38,6 @@ class Standard
      */
     protected $_orderFactory;
 
-//    protected $_creditmemoFactory;
-
     /**
      * @var \MercadoPago\Core\Helper\StatusUpdate
      */
@@ -60,14 +58,12 @@ class Standard
         \MercadoPago\Core\Helper\StatusUpdate $statusHelper,
         \MercadoPago\Core\Model\Core $coreModel,
         \Magento\Sales\Model\OrderFactory $orderFactory
-//        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
     )
     {
         $this->_paymentFactory = $paymentFactory;
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
         $this->_orderFactory = $orderFactory;
-//        $this->_creditmemoFactory = $creditmemoFactory;
         $this->_statusHelper = $statusHelper;
         parent::__construct($context);
     }
@@ -94,7 +90,7 @@ class Standard
         $response = $this->coreModel->getPayment($paymentId);
         $payment = $response['response']['collection'];
 
-        return $this->_formatArrayPayment($data, $payment);
+        return  $this->_statusHelper->formatArrayPayment($data, $payment, self::LOG_NAME);
     }
 
     protected function _shipmentExists($shipmentData, $merchantOrder)
@@ -140,8 +136,8 @@ class Standard
                 return;
             }
             $data = $this->_getDataPayments($merchantOrder);
-            $statusFinal = $this->_getStatusFinal($data['status'], $merchantOrder);
-            $shipmentData = $this->coreHelper->getShipmentsArray($merchantOrder);
+            $statusFinal = $this->_statusHelper->getStatusFinal($data['status'], $merchantOrder);
+            $shipmentData = $this->_statusHelper->getShipmentsArray($merchantOrder);
 
         } elseif ($topic == 'payment') {
             $data = $this->_getFormattedPaymentData($id);
@@ -189,57 +185,6 @@ class Standard
 
     }
 
-//    /**
-//     * @param $payment \Magento\Sales\Model\Order\Payment
-//     */
-//    protected function _generateCreditMemo($payment)
-//    {
-//        $order = $this->_orderFactory->create()->loadByIncrementId($payment["order_id"]);
-//
-//        if ($payment['amount_refunded'] == $payment['total_paid_amount']) {
-//            $this->_createCreditmemo($order, $payment);
-//            $order->setForcedCanCreditmemo(false);
-//            $order->setActionFlag('ship', false);
-//            $order->save();
-//        } else {
-//            $this->_createCreditmemo($order, $payment);
-//        }
-//    }
-
-
-//    /**
-//     * @var $order \Magento\Sales\Model\Order
-//     * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
-//     * @var $payment \Magento\Sales\Model\Order\Payment
-//     */
-//    protected function _createCreditmemo ($order, $data)
-//    {
-//        $order->setExternalRequest(true);
-//        $creditMemos = $order->getCreditmemosCollection()->getItems();
-//
-//        $previousRefund = 0;
-//        foreach ($creditMemos as $creditMemo) {
-//            $previousRefund = $previousRefund + $creditMemo->getGrandTotal();
-//        }
-//        $amount = $data['amount_refunded'] - $previousRefund;
-//        if ($amount > 0) {
-//            $order->setExternalType('partial');
-//            $creditmemo = $this->_creditmemoFactory->createByOrder($order, [-1]);
-//            if (count($creditMemos) > 0) {
-//                $creditmemo->setAdjustmentPositive($amount);
-//            } else {
-//                $creditmemo->setAdjustmentNegative($amount);
-//            }
-//            $creditmemo->setGrandTotal($amount);
-//            $creditmemo->setBaseGrandTotal($amount);
-//            //status "Refunded" for creditMemo
-//            $creditmemo->setState(2);
-//            $creditmemo->getResource()->save($creditmemo);
-//            $order->setTotalRefunded($data['amount_refunded']);
-//            $order->getResource()->save($order);
-//        }
-//    }
-
     /**
      * Collect data from notification content
      *
@@ -253,79 +198,8 @@ class Standard
         foreach ($merchantOrder['payments'] as $payment) {
             $response = $this->coreModel->getPayment($payment['id']);
             $payment = $response['response']['collection'];
-            $data = $this->_formatArrayPayment($data, $payment);
+            $data = $this->_statusHelper->formatArrayPayment($data, $payment, self::LOG_NAME);
         }
-
-        return $data;
-    }
-
-
-    /**
-     * Collect data from notification content to update order info
-     *
-     * @param $data
-     * @param $payment
-     *
-     * @return mixed
-     */
-    protected function _formatArrayPayment($data, $payment)
-    {
-        $this->coreHelper->log("Format Array", self::LOG_NAME);
-
-        $fields = [
-            "status",
-            "status_detail",
-            "order_id",
-            "id",
-            "payment_method_id",
-            "transaction_amount",
-            "total_paid_amount",
-            "coupon_amount",
-            "installments",
-            "shipping_cost",
-            "refunds",
-            "amount_refunded"
-        ];
-
-        foreach ($fields as $field) {
-            if (isset($payment[$field])) {
-                if (isset($data[$field])) {
-                    $data[$field] .= " | " . $payment[$field];
-                } else {
-                    $data[$field] = $payment[$field];
-                }
-            }
-        }
-
-        if (isset($payment["last_four_digits"])) {
-            if (isset($data["trunc_card"])) {
-                $data["trunc_card"] .= " | " . "xxxx xxxx xxxx " . $payment["last_four_digits"];
-            } else {
-                $data["trunc_card"] = "xxxx xxxx xxxx " . $payment["last_four_digits"];
-            }
-        }
-
-        if (isset($payment['cardholder']['name'])) {
-            if (isset($data["cardholder_name"])) {
-                $data["cardholder_name"] .= " | " . $payment["cardholder"]["name"];
-            } else {
-                $data["cardholder_name"] = $payment["cardholder"]["name"];
-            }
-        }
-
-        if (isset($payment['statement_descriptor'])) {
-            $data['statement_descriptor'] = $payment['statement_descriptor'];
-        }
-
-        if (isset($payment['merchant_order_id'])) {
-            $data['merchant_order_id'] = $payment['merchant_order_id'];
-        }
-
-        $data['external_reference'] = $payment['external_reference'];
-        $data['payer_first_name'] = $payment['payer']['first_name'];
-        $data['payer_last_name'] = $payment['payer']['last_name'];
-        $data['payer_email'] = $payment['payer']['email'];
-
         return $data;
     }
 
@@ -336,60 +210,4 @@ class Standard
 
         return $t2 - $t1;
     }
-
-    /**
-     * @param $payments
-     * @param $status
-     *
-     * @return int
-     */
-    protected function _getLastPaymentIndex($payments, $status)
-    {
-        $dates = [];
-        foreach ($payments as $key => $payment) {
-            if (in_array($payment['status'], $status)) {
-                $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
-            }
-        }
-        usort($dates, ['MercadoPago\Core\Controller\Notifications\Standard', "_dateCompare"]);
-        if ($dates) {
-            $lastModified = array_pop($dates);
-
-            return $lastModified['key'];
-        }
-
-        return 0;
-    }
-
-    /**
-     * Returns status that must be set to order, if a not final status exists
-     * then the last of this statuses is returned. Else the last of final statuses
-     * is returned
-     *
-     * @param $dataStatus
-     * @param $merchantOrder
-     *
-     * @return string
-     */
-    protected function _getStatusFinal($dataStatus, $merchantOrder)
-    {
-        if ($merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
-            return 'approved';
-        }
-        $payments = $merchantOrder['payments'];
-        $statuses = explode('|', $dataStatus);
-        foreach ($statuses as $status) {
-            $status = str_replace(' ', '', $status);
-            if (in_array($status, $this->_notFinalStatus)) {
-                $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $this->_notFinalStatus);
-
-                return $payments[$lastPaymentIndex]['status'];
-            }
-        }
-
-        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $this->_finalStatus);
-
-        return $payments[$lastPaymentIndex]['status'];
-    }
-
 }

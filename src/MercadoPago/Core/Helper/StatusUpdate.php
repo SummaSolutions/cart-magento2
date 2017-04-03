@@ -37,6 +37,8 @@ class StatusUpdate
      */
     protected $_creditmemoFactory;
 
+    protected $_dataHelper;
+
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
         \Magento\Framework\App\Helper\Context $context,
@@ -47,7 +49,8 @@ class StatusUpdate
         \Magento\Framework\App\Config\Initial $initialConfig,
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
+        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
+        \MercadoPago\Core\Helper\Data $dataHelper
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
@@ -55,6 +58,7 @@ class StatusUpdate
         $this->_orderFactory = $orderFactory;
         $this->_statusFactory = $statusFactory;
         $this->_creditmemoFactory = $creditmemoFactory;
+        $this->_dataHelper = $dataHelper;
     }
 
     /**
@@ -68,7 +72,8 @@ class StatusUpdate
     /**
      * @return mixed
      */
-    public function getOrderStatusRefunded() {
+    public function getOrderStatusRefunded()
+    {
         return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded');
     }
 
@@ -103,7 +108,7 @@ class StatusUpdate
             case 'approved': {
                 $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_approved', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                 if ($statusDetail == 'partially_refunded' && $isCanCreditMemo) {
-                  $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_partially_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                    $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_partially_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                 }
                 break;
             }
@@ -181,7 +186,10 @@ class StatusUpdate
      */
     public function getStatusFinal($dataStatus, $merchantOrder)
     {
-        if (isset($merchantOrder['paid_amount']) && $merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
+        //if (isset($merchantOrder['paid_amount']) && $merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
+        //  return 'approved';
+        //}
+        if ($merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
             return 'approved';
         }
         $payments = $merchantOrder['payments'];
@@ -199,6 +207,31 @@ class StatusUpdate
 
         return $payments[$lastPaymentIndex]['status'];
     }
+
+    //--------------------- BEGIN todo modularizar
+
+    //public function getDataPayments($merchantOrderData)
+    //{
+    //    $data = array();
+    //    foreach ($merchantOrderData['payments'] as $payment) {
+    //        $data = $this->_getFormattedPaymentData($payment['id'], $data);
+    //    }
+    //
+    //    return $data;
+    //}
+    //
+    //protected function _getFormattedPaymentData($paymentId, $data = [])
+    //{
+    //    $response = $this->_core->getPayment($paymentId);
+    //    if ($response['status'] == 400 || $response['status'] == 401) {
+    //        return [];
+    //    }
+    //    $payment = $response['response']['collection'];
+    //
+    //    return $this->formatArrayPayment($data, $payment, self::LOG_FILE);
+    //}
+
+    //--------------------- END to modularizar
 
     /**
      * @param $payments
@@ -237,9 +270,9 @@ class StatusUpdate
     /**
      * @param $payment \Magento\Sales\Model\Order\Payment
      */
-    public function generateCreditMemo($payment, $order = null )
+    public function generateCreditMemo($payment, $order = null)
     {
-        if (empty($order)){
+        if (empty($order)) {
             $order = $this->_orderFactory->create()->loadByIncrementId($payment["order_id"]);
         }
 
@@ -254,11 +287,11 @@ class StatusUpdate
     }
 
     /**
-     * @var $order \Magento\Sales\Model\Order
+     * @var $order      \Magento\Sales\Model\Order
      * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
-     * @var $payment \Magento\Sales\Model\Order\Payment
+     * @var $payment    \Magento\Sales\Model\Order\Payment
      */
-    protected function _createCreditmemo ($order, $data)
+    protected function _createCreditmemo($order, $data)
     {
         $order->setExternalRequest(true);
         $creditMemos = $order->getCreditmemosCollection()->getItems();
@@ -284,6 +317,82 @@ class StatusUpdate
             $order->setTotalRefunded($data['amount_refunded']);
             $order->getResource()->save($order);
         }
+    }
+
+    /**
+     * Collect data from notification content to update order info
+     *
+     * @param $data
+     * @param $payment
+     *
+     * @return mixed
+     */
+    public function formatArrayPayment($data, $payment, $logName)
+    {
+        $this->_dataHelper->log("Format Array", $logName);
+
+        $fields = [
+            "status",
+            "status_detail",
+            "order_id",
+            "id",
+            "payment_method_id",
+            "transaction_amount",
+            "total_paid_amount",
+            "coupon_amount",
+            "installments",
+            "shipping_cost",
+            "refunds",
+            "amount_refunded"
+        ];
+
+        foreach ($fields as $field) {
+            if (isset($payment[$field])) {
+                if (isset($data[$field])) {
+                    $data[$field] .= " | " . $payment[$field];
+                } else {
+                    $data[$field] = $payment[$field];
+                }
+            }
+        }
+
+        $data = $this->_updateAtributesData($data, $payment);
+
+        $data['external_reference'] = $payment['external_reference'];
+        $data['payer_first_name'] = $payment['payer']['first_name'];
+        $data['payer_last_name'] = $payment['payer']['last_name'];
+        $data['payer_email'] = $payment['payer']['email'];
+
+        return $data;
+    }
+
+    protected function _updateAtributesData($data, $payment)
+    {
+        if (isset($payment["last_four_digits"])) {
+            if (isset($data["trunc_card"])) {
+                $data["trunc_card"] .= " | " . "xxxx xxxx xxxx " . $payment["last_four_digits"];
+            } else {
+                $data["trunc_card"] = "xxxx xxxx xxxx " . $payment["last_four_digits"];
+            }
+        }
+
+        if (isset($payment['cardholder']['name'])) {
+            if (isset($data["cardholder_name"])) {
+                $data["cardholder_name"] .= " | " . $payment["cardholder"]["name"];
+            } else {
+                $data["cardholder_name"] = $payment["cardholder"]["name"];
+            }
+        }
+
+        if (isset($payment['statement_descriptor'])) {
+            $data['statement_descriptor'] = $payment['statement_descriptor'];
+        }
+
+        if (isset($payment['merchant_order_id'])) {
+            $data['merchant_order_id'] = $payment['merchant_order_id'];
+        }
+
+        return $data;
     }
 
 }
