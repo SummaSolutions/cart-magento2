@@ -272,7 +272,7 @@ class Payment
 
         $infoInstance = $this->getInfoInstance();
 
-        if (!is_null($infoInstance->getAdditionalInformation('second_card_token'))) {
+        if (!empty($infoInstance->getAdditionalInformation('second_card_token'))) {
             $usingSecondCardInfo['first_card']['amount'] = $infoInstance->getAdditionalInformation('first_card_amount');
             $usingSecondCardInfo['first_card']['installments'] = $infoInstance->getAdditionalInformation('installments');
             $usingSecondCardInfo['first_card']['payment_method_id'] = $infoInstance->getAdditionalInformation('payment_method');
