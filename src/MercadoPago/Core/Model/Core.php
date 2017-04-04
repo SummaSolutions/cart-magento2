@@ -90,6 +90,11 @@ class Core
     protected $_coreHelper;
 
     /**
+     * @var \MercadoPago\Core\Helper\StatusUpdate
+     */
+    protected $_statusHelper;
+
+    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $_scopeConfig;
@@ -155,6 +160,7 @@ class Core
      *
      * @param \Magento\Store\Model\StoreManagerInterface            $storeManager
      * @param \MercadoPago\Core\Helper\Data                         $coreHelper
+     * @param \MercadoPago\Core\Helper\StatusUpdate                 $statusHelper
      * @param \Magento\Sales\Model\OrderFactory                     $orderFactory
      * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusMessage
      * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusDetailMessage
@@ -176,6 +182,7 @@ class Core
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,
+        \MercadoPago\Core\Helper\StatusUpdate $statusHelper,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \MercadoPago\Core\Helper\Message\MessageInterface $statusMessage,
         \MercadoPago\Core\Helper\Message\MessageInterface $statusDetailMessage,
@@ -198,6 +205,7 @@ class Core
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
+        $this->_statusHelper = $statusHelper;
         $this->_orderFactory = $orderFactory;
         $this->_statusMessage = $statusMessage;
         $this->_statusDetailMessage = $statusDetailMessage;
@@ -728,15 +736,20 @@ class Core
     public function setStatusOrder($payment)
     {
         $helper = $this->_coreHelper;
+        /**
+         * $statusHelper \MercadoPago\Core\Helper\StatusUpdate
+         */
+        $statusHelper = $this->_statusHelper;
         $order = $this->_getOrder($payment["external_reference"]);
 
+        $statusDetail = $payment['status_detail'];
         $status = $payment['status'];
 
         if (isset($payment['status_final'])) {
             $status = $payment['status_final'];
         }
-        $message = $helper->getMessage($status, $payment);
-        if ($this->_coreHelper->isStatusUpdated()) {
+        $message = $statusHelper->getMessage($status, $payment);
+        if ($this->_statusHelper->isStatusUpdated()) {
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         }
         try {
@@ -757,7 +770,7 @@ class Core
             }
 
             //if state is not complete updates according to setting
-            $this->_updateStatus($order, $helper, $status, $message);
+            $this->_updateStatus($order, $statusHelper, $status, $message, $statusDetail);
 
             $statusSave = $order->save();
             $helper->log("Update order", 'mercadopago.log', $statusSave->getData());
@@ -772,12 +785,19 @@ class Core
     }
 
 
-    protected function _updateStatus($order, $helper, $status, $message)
+    /**
+     * @param $order \Magento\Sales\Model\Order
+     * @param $statusHelper \MercadoPago\Core\Helper\StatusUpdate
+     * @param $status
+     * @param $message
+     * @param $statusDetail
+     */
+    protected function _updateStatus($order, $statusHelper, $status, $message, $statusDetail)
     {
         if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
-            $statusOrder = $helper->getStatusOrder($status);
+            $statusOrder = $statusHelper->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
 
-            $order->setState($helper->_getAssignedState($statusOrder));
+            $order->setState($statusHelper->_getAssignedState($statusOrder));
             $order->addStatusToHistory($statusOrder, $message, true);
             $this->_orderSender->send($order, true, $message);
         }
@@ -792,14 +812,14 @@ class Core
     public function updateOrder($data, $order = null)
     {
         $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
-        if (true or !$this->_coreHelper->isStatusUpdated()) {
+        if (true or !$this->_statusHelper->isStatusUpdated()) {
             try {
                 if (!$order) {
                     $order = $this->_getOrder($data["external_reference"]);
                 }
 
                 //update payment info
-                $payment_order = $order->getPayment();
+                $paymentOrder = $order->getPayment();
 
                 $additionalFields = array(
                     'status',
@@ -809,21 +829,26 @@ class Core
                     'cardholderName',
                     'installments',
                     'statement_descriptor',
-                    'trunc_card'
+                    'trunc_card',
+                    'id'
 
                 );
 
                 foreach ($additionalFields as $field) {
                     if (isset($data[$field])) {
-                        $payment_order->setAdditionalInformation($field, $data[$field]);
+                        $paymentOrder->setAdditionalInformation($field, $data[$field]);
                     }
                 }
 
                 if (isset($data['payment_method_id'])) {
-                    $payment_order->setAdditionalInformation('payment_method', $data['payment_method_id']);
+                    $paymentOrder->setAdditionalInformation('payment_method', $data['payment_method_id']);
                 }
 
-                $payment_status = $payment_order->save();
+                if (isset($data['merchant_order_id'])) {
+                    $paymentOrder->setAdditionalInformation('merchant_order_id', $data['merchant_order_id']);
+                }
+
+                $payment_status = $paymentOrder->save();
                 $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
 
                 $status_save = $order->save();

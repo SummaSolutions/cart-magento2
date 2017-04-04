@@ -96,6 +96,7 @@ class Data
      *type
      */
     const TYPE = 'magento';
+    //end const platform
 
     /**
      * payment calculator
@@ -124,11 +125,6 @@ class Data
      * @var \Magento\Framework\Setup\ModuleContextInterface
      */
     protected $_moduleContext;
-
-    /**
-     * @var bool flag indicates when status was updated by notifications.
-     */
-    protected $_statusUpdatedFlag = false;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory
@@ -176,29 +172,6 @@ class Data
         $this->_statusFactory = $statusFactory;
         $this->_orderFactory = $orderFactory;
         $this->_switcher = $switcher;
-    }
-
-    /**
-     * @return bool return updated flag
-     */
-    public function isStatusUpdated()
-    {
-        return $this->_statusUpdatedFlag;
-    }
-
-    /**
-     * Set flag status updated
-     *
-     * @param $notificationData
-     */
-    public function setStatusUpdated($notificationData)
-    {
-        $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
-        $status = $notificationData['status'];
-        $currentStatus = $order->getPayment()->getAdditionalInformation('status');
-        if (($status == $currentStatus)) {
-            $this->_statusUpdatedFlag = true;
-        }
     }
 
     /**
@@ -328,86 +301,6 @@ class Data
     }
 
     /**
-     * Return order status mapping based on current configuration
-     *
-     * @param $status
-     *
-     * @return mixed
-     */
-    public function getStatusOrder($status)
-    {
-        switch ($status) {
-            case 'approved': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_approved', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-                //if ($statusDetail == 'partially_refunded' && $this->_order->canCreditMemo()) {
-                //  $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_partially_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                //}
-                break;
-            }
-            case 'refunded': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'in_mediation': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_in_mediation', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'cancelled': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_cancelled', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'rejected': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_rejected', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'chargeback': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_chargeback', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            default: {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_in_process', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            }
-        }
-
-        return $status;
-    }
-
-    /**
-     * Get the assigned state of an order status
-     *
-     * @param string $status
-     */
-    public function _getAssignedState($status)
-    {
-        $collection = $this->_statusFactory
-            ->joinStates()
-            ->addFieldToFilter('main_table.status', $status);
-
-        $collectionItems = $collection->getItems();
-
-        return array_pop($collectionItems)->getState();
-    }
-
-    /**
-     * Return raw message for payment detail
-     *
-     * @param $status
-     * @param $payment
-     *
-     * @return \Magento\Framework\Phrase|string
-     */
-    public function getMessage($status, $payment)
-    {
-        $rawMessage = __($this->_messageInterface->getMessage($status));
-        $rawMessage .= __('<br/> Payment id: %1', $payment['id']);
-        $rawMessage .= __('<br/> Status: %1', $payment['status']);
-        $rawMessage .= __('<br/> Status Detail: %1', $payment['status_detail']);
-
-        return $rawMessage;
-    }
-
-    /**
      * Calculate and set order MercadoPago specific subtotals based on data values
      *
      * @param $data
@@ -497,6 +390,8 @@ class Data
         return $finalValue;
     }
 
+
+    // @todo
     /**
      * Return success url
      *
@@ -509,7 +404,6 @@ class Data
         } else {
             $url = 'checkout/onepage/success';
         }
-
         return $url;
     }
 
