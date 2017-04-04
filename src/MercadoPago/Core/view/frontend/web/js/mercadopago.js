@@ -335,7 +335,7 @@ var MercadoPagoCustom = (function () {
         function initSecondCard2() {
             //defineInputsSecondCard();
 
-            var halfAmount = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val()/2;
+            var halfAmount = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.amount).val()/2;
             TinyJ(self.selectors.firstCardAmount).val(halfAmount);
             TinyJ(self.selectors.secondCardAmount).val(halfAmount);
             TinyJ(self.selectors.amountFirstCard).val(halfAmount);
