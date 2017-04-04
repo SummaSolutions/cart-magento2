@@ -73,7 +73,7 @@
                     <div class="control">
                         <input type="text" id="second_card_cardNumber" data-checkout="cardNumber"
                                data-element-id="#second_card_cardNumber__mp" class="input-text"
-                               data-bind="attr: {'data-validate': JSON.stringify({'required-number':true})}"/>
+                               data-bind="attr: {'data-validate': JSON.stringify({'required-number':true, 'validate-card-number':'#second_card_cardNumber'})}"/>
                     </div>
                     <p class="message-error second_card_error-payment-method-not-found second_card_error-E301 second_card_error-205 validation-advice"><!-- ko i18n: 'Card number is invalid.'--><!-- /ko --></p>
                     <p class="message-error second_card_error-payment-method-min-amount validation-advice"><!-- ko i18n: 'Cannot pay this amount with this payment_method_id.'--><!-- /ko --></p>

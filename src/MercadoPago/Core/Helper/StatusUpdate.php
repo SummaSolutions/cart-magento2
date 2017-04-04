@@ -37,7 +37,25 @@ class StatusUpdate
      */
     protected $_creditmemoFactory;
 
+    /**
+     * @var \Magento\Framework\DB\TransactionFactory
+     */
+    protected $_transactionFactory;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
+     */
+    protected $_invoiceSender;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $_orderSender;
+
+
     protected $_dataHelper;
+    protected $_coreHelper;
+    protected $_statusHelper;
 
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
@@ -50,7 +68,12 @@ class StatusUpdate
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
-        \MercadoPago\Core\Helper\Data $dataHelper
+        \MercadoPago\Core\Helper\Data $dataHelper,
+        \MercadoPago\Core\Model\Core $coreHelper,
+        \MercadoPago\Core\Helper\StatusUpdate $statusHelper,
+        \Magento\Framework\DB\TransactionFactory $transactionFactory,
+        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
@@ -59,6 +82,11 @@ class StatusUpdate
         $this->_statusFactory = $statusFactory;
         $this->_creditmemoFactory = $creditmemoFactory;
         $this->_dataHelper = $dataHelper;
+        $this->_statusHelper = $statusHelper;
+        $this->_coreHelper = $coreHelper;
+        $this->_transactionFactory = $transactionFactory;
+        $this->_invoiceSender = $invoiceSender;
+        $this->_orderSender = $orderSender;
     }
 
     /**
@@ -393,6 +421,156 @@ class StatusUpdate
         }
 
         return $data;
+    }
+
+    /**
+     * Updates order status ond creates invoice
+     *
+     * @param      $payment
+     * @param null $stateObject
+     *
+     * @return array
+     */
+    public function setStatusOrder($payment)
+    {
+        $helper = $this->_coreHelper;
+        /**
+         * $statusHelper \MercadoPago\Core\Helper\StatusUpdate
+         */
+        $statusHelper = $this->_statusHelper;
+        $order = $this->_getOrder($payment["external_reference"]);
+
+        $statusDetail = $payment['status_detail'];
+        $status = $payment['status'];
+
+        if (isset($payment['status_final'])) {
+            $status = $payment['status_final'];
+        }
+        $message = $statusHelper->getMessage($status, $payment);
+        if ($this->_statusHelper->isStatusUpdated()) {
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
+        }
+        try {
+            if ($status == 'approved') {
+                $this->_coreHelper->setOrderSubtotals($payment, $order);
+                $this->_createInvoice($order, $message);
+
+                //Associate card to customer
+                $additionalInfo = $order->getPayment()->getAdditionalInformation();
+                if (isset($additionalInfo['token'])) {
+                    $order->getPayment()->getMethodInstance()->customerAndCards($additionalInfo['token'], $payment);
+                }
+
+
+            } elseif ($status == 'refunded' || $status == 'cancelled') {
+                $order->setExternalRequest(true);
+                $order->cancel();
+            }
+
+            //if state is not complete updates according to setting
+            $this->_updateStatus($order, $statusHelper, $status, $message, $statusDetail);
+
+            $statusSave = $order->save();
+            $helper->log("Update order", 'mercadopago.log', $statusSave->getData());
+            $helper->log($message, 'mercadopago.log');
+
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
+        } catch (\Exception $e) {
+            $helper->log("erro in set order status: " . $e, 'mercadopago.log');
+
+            return ['text' => $e, 'code' => \MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST];
+        }
+    }
+
+    protected function _createInvoice($order, $message)
+    {
+        if (!$order->hasInvoices()) {
+            $invoice = $order->prepareInvoice();
+            $invoice->register();
+            $invoice->pay();
+            $this->_transactionFactory->create()
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder())
+                ->save();
+
+            $this->_invoiceSender->send($invoice, true, $message);
+        }
+    }
+
+    /**
+     * @param $order        \Magento\Sales\Model\Order
+     * @param $statusHelper \MercadoPago\Core\Helper\StatusUpdate
+     * @param $status
+     * @param $message
+     * @param $statusDetail
+     */
+    protected function _updateStatus($order, $statusHelper, $status, $message, $statusDetail)
+    {
+        if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
+            $statusOrder = $this->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
+
+            $order->setState($this->_getAssignedState($statusOrder));
+            $order->addStatusToHistory($statusOrder, $message, true);
+            $this->_orderSender->send($order, true, $message);
+        }
+    }
+    /**
+     * Set order and payment info
+     *
+     * @param $data
+     */
+    public function updateOrder($data, $order = null)
+    {
+        $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
+        if (!$this->_coreHelper->isStatusUpdated()) {
+            try {
+                if (!$order) {
+                    $order = $this->_getOrder($data["external_reference"]);
+                }
+
+                //update payment info
+                $paymentOrder = $order->getPayment();
+
+                $additionalFields = array(
+                    'status',
+                    'status_detail',
+                    'id',
+                    'transaction_amount',
+                    'cardholderName',
+                    'installments',
+                    'statement_descriptor',
+                    'trunc_card',
+                    'id'
+
+                );
+
+                foreach ($additionalFields as $field) {
+                    if (isset($data[$field])) {
+                        $paymentOrder->setAdditionalInformation($field, $data[$field]);
+                    }
+                }
+
+                if (isset($data['payment_method_id'])) {
+                    $paymentOrder->setAdditionalInformation('payment_method', $data['payment_method_id']);
+                }
+
+                if (isset($data['merchant_order_id'])) {
+                    $paymentOrder->setAdditionalInformation('merchant_order_id', $data['merchant_order_id']);
+                }
+
+                $payment_status = $paymentOrder->save();
+                $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
+
+                $status_save = $order->save();
+                $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());
+            } catch (\Exception $e) {
+                $this->_coreHelper->log("erro in update order status: " . $e, 'mercadopago.log');
+                $this->getResponse()->setBody($e);
+
+                //if notification proccess returns error, mercadopago will resend the notification.
+                $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST);
+            }
+        }
     }
 
 }

@@ -54,7 +54,8 @@ var MercadoPagoCustom = (function () {
             removeCoupon: 'Remove coupon!',
             hideCouponMessages: 'Hide all coupon messages...',
             ocpActivatedFormat: 'OCP? {0}',
-            cardHandler: 'card Handler'
+            cardHandler: 'card Handler',
+            hideMageErrors: 'Hiding all Mage errors...'
         },
         constants: {
             option: 'option',
@@ -140,6 +141,8 @@ var MercadoPagoCustom = (function () {
             discountOkTotalAmountDiscount: '.mercadopago-message-coupon .discount-ok .total-amount-discount',
             discountOkTerms: '.mercadopago-message-coupon .discount-ok .mercadopago-coupon-terms',
             inputCouponDiscount: '#input-coupon-discount',
+            mageErrorMessages: '#mercadopago_checkout_custom .mage-error',
+
 
             checkoutCustomSecondCard: '#mercadopago_checkout_custom_second_card',
             showSecondCard: '#show_second_card',
@@ -178,7 +181,8 @@ var MercadoPagoCustom = (function () {
             //firstCardTotalBuy: ".total_buy",
             //secondCardTotalBuy: ".second_card_total_buy",
             secondCardPayment: "#second_card_payment",
-            paymentMethodSelectSecondCard: '#second_card_paymentMethod'
+            paymentMethodSelectSecondCard: '#second_card_paymentMethod',
+            secondCardMageErrorMessages: '#mercadopago_checkout_custom_second_card .mage-error'
 
         },
         url: {
@@ -708,6 +712,8 @@ var MercadoPagoCustom = (function () {
             Mercadopago.clearSession();
 
             hideMessageError();
+            hideMageError();
+
 
             checkCreateCardToken();
 
@@ -743,6 +749,7 @@ var MercadoPagoCustom = (function () {
             clearOptionsSecondCard();
             Mercadopago.clearSession();
             hideMessageError();
+            hideMageErrorsSecondCard();
 
             checkCreateCardTokenSecondCard();
 
@@ -1042,7 +1049,10 @@ var MercadoPagoCustom = (function () {
                 var oneClickPay = TinyJ(self.selectors.oneClickPayment).val();
                 var selector = oneClickPay == true ? self.selectors.cardId : self.selectors.cardNumberInput;
                 if (response.length == 1) {
-                    TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, response[0].secure_thumbnail);
+                    if(TinyJ(selector).getElem().value !== '') {
+                        TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, response[0].secure_thumbnail);
+                    }
+
                 } else if (oneClickPay != 0) {
                     TinyJ(self.selectors.paymentMethodId).val(TinyJ(selector).getSelectedOption().attribute('payment_method_id'));
                     TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, TinyJ(selector).getSelectedOption().attribute('secure_thumb'));
@@ -1123,7 +1133,9 @@ var MercadoPagoCustom = (function () {
                 var oneClickPay = TinyJ(self.selectors.secondCardOneClickPayment).val();
                 var selector = oneClickPay == true ? self.selectors.secondCardCardId : self.selectors.cardNumberInputSecondCard;
                 if (response.length == 1) {
-                    TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, response[0].secure_thumbnail);
+                    if(TinyJ(selector).getElem().value !== '') {
+                        TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, response[0].secure_thumbnail);
+                    }
                 } else if (oneClickPay != 0) {
                     TinyJ(self.selectors.paymentMethodIdSecondCard).val(TinyJ(selector).getSelectedOption().attribute('second_card_payment_method_id'));
                     TinyJ(selector).getElem().style.background = String.format(self.constants.backgroundUrlFormat, TinyJ(selector).getSelectedOption().attribute('secure_thumb'));
