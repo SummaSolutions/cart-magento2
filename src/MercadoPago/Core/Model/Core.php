@@ -812,7 +812,7 @@ class Core
     public function updateOrder($data, $order = null)
     {
         $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
-        if (true or !$this->_statusHelper->isStatusUpdated()) {
+        if (!$this->_coreHelper->isStatusUpdated()) {
             try {
                 if (!$order) {
                     $order = $this->_getOrder($data["external_reference"]);
