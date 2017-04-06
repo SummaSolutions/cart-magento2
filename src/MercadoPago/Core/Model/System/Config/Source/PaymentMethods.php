@@ -10,25 +10,6 @@ class PaymentMethods
     implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * path to access token config
-     *
-     * @var string
-     */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
-    /**
-     * path to client id config
-     *
-     * @var string
-     */
-    const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
-    /**
-     * path to client secret config
-     *
-     * @var string
-     */
-    const XML_PATH_CLIENT_SECRET = 'payment/mercadopago_standard/client_secret';
-
-    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -68,9 +49,21 @@ class PaymentMethods
 
         //default empty value
         $methods[] = ["value" => "", "label" => ""];
-        $accessToken = $this->scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_switcher->getWebsiteId()
+        );
+        $clientId = $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_switcher->getWebsiteId()
+        );
+        $clientSecret = $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_switcher->getWebsiteId()
+        );
         $meHelper = $this->coreHelper;
 
         if (empty($accessToken) && !$meHelper->isValidClientCredentials($clientId, $clientSecret)) {
@@ -79,10 +72,14 @@ class PaymentMethods
 
         //if accessToken is empty uses clientId and clientSecret to obtain it
         if (empty($accessToken)) {
-            $accessToken = $meHelper->getAccessToken();
+            $accessToken = $meHelper->getAccessToken($this->_switcher->getWebsiteId());
         }
 
-        $country = $this->scopeConfig->getValue('payment/mercadopago/country', 'website', $this->_switcher->getWebsiteId());
+        $country = $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_COUNTRY,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_switcher->getWebsiteId()
+        );
 
         $meHelper->log("Get payment methods by country... ", 'mercadopago');
         $meHelper->log("API payment methods: " . "/v1/payment_methods?access_token=" . $accessToken, 'mercadopago');

@@ -271,6 +271,23 @@ define(
                 return this.validateHandler();
             },
 
+            hasErrors: function () {
+                var allMessageErrors = jQuery('.message-error');
+                if (allMessageErrors.length > 1) {
+                    for (var x = 0; x < allMessageErrors.length; x++) {
+                        if ($(allMessageErrors[x]).css('display') !== 'none') {
+                            return true
+                        }
+                    }
+                } else {
+                    if (allMessageErrors.css('display') !== 'none') {
+                        return true
+                    }
+                }
+
+                return false;
+            },
+
             /**
              * Place order.
              */
@@ -281,7 +298,7 @@ define(
                     event.preventDefault();
                 }
 
-                if (this.validate() && additionalValidators.validate()) {
+                if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
                     this.isPlaceOrderActionAllowed(false);
 
                     this.getPlaceOrderDeferredObject()
