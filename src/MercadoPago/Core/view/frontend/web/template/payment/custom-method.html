@@ -11,6 +11,10 @@
             <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}"
                  class="payment-icon"/>
         </label>
+        <div class="class-custom-banner-checkout">
+            <img data-bind="attr: {alt: 'MercadoPago Banner', src: getBannerUrl()}"
+                 class="payment-banner-checkout"/>
+        </div>
     </div>
 
     <div class="payment-method-content">
@@ -275,9 +279,9 @@
 
         </form>
 
-        <div id="custom_banner_checkout">
-            <img class="banner_checkout_mp" data-bind="attr: {src: getBannerUrl()}"/>
-        </div>
+        <!--<div id="custom_banner_checkout">-->
+            <!--<img class="banner_checkout_mp" data-bind="attr: {src: getBannerUrl()}"/>-->
+        <!--</div>-->
 
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->

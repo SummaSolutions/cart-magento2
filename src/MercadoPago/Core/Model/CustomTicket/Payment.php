@@ -107,7 +107,7 @@ class Payment
         foreach ($payment_methods['response'] as $pm) {
 
             //filtra por tickets
-            if ($pm['payment_type_id'] == "ticket") {
+            if ($pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm") {
                 $tickets[] = $pm;
             }
         }
