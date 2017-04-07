@@ -55,10 +55,14 @@ define(
              * Places order in pending payment status.
              */
             placePendingPaymentOrder: function () {
-                if (this.placeOrder()) {
-                    window.location = this.getActionUrl();
-                }
+                this.placeOrder();
             },
+            /**
+             * Waits for order placement and redirects.
+             */
+            afterPlaceOrder: function () {
+                window.location = this.getActionUrl();
+            }
         });
     }
 );

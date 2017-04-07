@@ -306,11 +306,13 @@ class Payment
         ];
 
         $url = $this->_helperData->getSuccessUrl();
-        $arr['back_urls'] = [
-            'success' => $this->_urlBuilder->getUrl($url),
-            'pending' => $this->_urlBuilder->getUrl($url),
-            'failure' => $this->_urlBuilder->getUrl('checkout/onepage/failure'),
-        ];
+        $arr['back_urls']['success'] = $this->_urlBuilder->getUrl($url);
+
+        $typeCheckout = $this->_scopeConfig->getValue('payment/mercadopago_standard/type_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if ($typeCheckout == 'redirect') {
+            $arr['back_urls']['pending'] = $this->_urlBuilder->getUrl($url);
+            $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('checkout/onepage/failure');
+        }
 
         $arr['notification_url'] = $this->_urlBuilder->getUrl("mercadopago/notifications/standard");
 

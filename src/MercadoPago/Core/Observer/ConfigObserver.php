@@ -68,7 +68,7 @@ class ConfigObserver
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $scopeConfig;
+    protected $_scopeConfig;
 
     /**
      * @var \MercadoPago\Core\Helper\
@@ -83,6 +83,9 @@ class ConfigObserver
     protected $configResource;
     protected $_switcher;
 
+    protected $_scopeCode;
+
+
     /**
      * ConfigObserver constructor.
      *
@@ -91,16 +94,17 @@ class ConfigObserver
      * @param \Magento\Config\Model\ResourceModel\Config         $configResource
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Helper\Data $coreHelper,
-        \Magento\Config\Model\ResourceModel\Config $configResource,
-        \Magento\Backend\Block\Store\Switcher $switcher
+        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig,
+        \MercadoPago\Core\Helper\Data                       $coreHelper,
+        \Magento\Config\Model\ResourceModel\Config          $configResource,
+        \Magento\Backend\Block\Store\Switcher               $switcher
     )
     {
-        $this->scopeConfig = $scopeConfig;
+        $this->_scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->coreHelper = $coreHelper;
         $this->_switcher = $switcher;
+        $this->_scopeCode = $this->_switcher->getWebsiteId();
     }
 
     /**
@@ -111,6 +115,7 @@ class ConfigObserver
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+
         $this->validateAccessToken();
 
         $this->validateClientCredentials();
@@ -132,14 +137,18 @@ class ConfigObserver
      */
     public function availableCheckout()
     {
-        $country = $this->scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $country = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_COUNTRY,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
 
         if (!in_array($country, $this->available_transparent_credit_cart)) {
-            $this->_saveWebsiteConfig('payment/mercadopago_custom/active', 0);
+            $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\Data::XML_PATH_MERCADOPAGO_CUSTOM_ACTIVE, 0);
         }
 
         if (!in_array($country, $this->available_transparent_ticket)) {
-            $this->_saveWebsiteConfig('payment/mercadopago_customticket/active', 0);
+            $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\Data::XML_PATH_MERCADOPAGO_TICKET_ACTIVE, 0);
         }
     }
 
@@ -150,13 +159,22 @@ class ConfigObserver
     public function checkBanner($typeCheckout)
     {
         //get country
-        $country = $this->scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $country = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_COUNTRY,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
+
         if (!isset($this->banners[$typeCheckout][$country])) {
             return;
         }
         $defaultBanner = $this->banners[$typeCheckout][$country];
 
-        $currentBanner = $this->scopeConfig->getValue('payment/' . $typeCheckout . '/banner_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $currentBanner = $this->_scopeConfig->getValue(
+            'payment/' . $typeCheckout . '/banner_checkout',
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
 
         $this->coreHelper->log("Type Checkout Path: " . $typeCheckout, self::LOG_NAME);
         $this->coreHelper->log("Current Banner: " . $currentBanner, self::LOG_NAME);
@@ -180,12 +198,23 @@ class ConfigObserver
      */
     public function setSponsor()
     {
-        $this->coreHelper->log("Sponsor_id: " . $this->scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE), self::LOG_NAME);
+        $sponsorIdConfig = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_SPONSOR_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
+
+        $this->coreHelper->log("Sponsor_id: " . $sponsorIdConfig, self::LOG_NAME);
 
         $sponsorId = "";
         $this->coreHelper->log("Valid user test", self::LOG_NAME);
 
-        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
+
         $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
 
         if (!$accessToken) {
@@ -219,7 +248,7 @@ class ConfigObserver
             $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsorId);
         }
 
-        $this->_saveWebsiteConfig('payment/mercadopago/sponsor_id', $sponsorId);
+        $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\Data::XML_PATH_SPONSOR_ID, $sponsorId);
         $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsorId);
     }
 
@@ -229,7 +258,12 @@ class ConfigObserver
      */
     protected function validateAccessToken()
     {
-        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        $accessToken = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
         if (!empty($accessToken)) {
             if (!$this->coreHelper->isValidAccessToken($accessToken)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
@@ -243,8 +277,16 @@ class ConfigObserver
      */
     protected function validateClientCredentials()
     {
-        $clientId = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $clientSecret = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $clientId = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
+        $clientSecret = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
         if (!empty($clientId) && !empty($clientSecret)) {
             if (!$this->coreHelper->isValidClientCredentials($clientId, $clientSecret)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Classic Checkout: Invalid client id or client secret'));
@@ -264,11 +306,23 @@ class ConfigObserver
 
     protected function validateRefundData ()
     {
-        $refundAvailable = $this->coreHelper->isRefundAvailable();
+        $refundAvailable = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_REFUND_AVAILABLE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
 
         if ($refundAvailable) {
-            $maxDays = $this->coreHelper->getMaximumDaysRefund();
-            $maxRefunds = $this->coreHelper->getMaximumPartialRefunds();
+            $maxDays = $this->_scopeConfig->getValue(
+                \MercadoPago\Core\Helper\Data::XML_PATH_MAXIMUM_DAYS_REFUND,
+                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                $this->_scopeCode
+            );
+            $maxRefunds = $this->_scopeConfig->getValue(
+                \MercadoPago\Core\Helper\Data::XML_PATH_MAXIMUM_PARTIAL_REFUNDS,
+                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                $this->_scopeCode
+            );
             if (!($maxDays !== 0) && !($maxRefunds !== 0)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - If refunds are available, you must set \'Maximum amount of partial refunds on the same order\' and \'Maximum amount of days until refund is not accepted\''));
             }
