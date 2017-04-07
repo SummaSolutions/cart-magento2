@@ -54,11 +54,15 @@ define(
             /**
              * Places order in pending payment status.
              */
-            placePendingPaymentOrder: function () {
-                if (this.placeOrder()) {
-                    window.location = this.getActionUrl();
-                }
+            afterPlaceOrder: function () {
+                window.location = this.getActionUrl();
             },
+            /**
+             * Places order in pending payment status.
+             */
+            placePendingPaymentOrder: function () {
+                this.placeOrder();
+            }
         });
     }
 );

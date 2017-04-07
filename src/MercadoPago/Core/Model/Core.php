@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model;
 
 /**
@@ -256,7 +257,9 @@ class Core
             ["field" => "payment_id", "title" => "Payment id (Mercado Pago): %1"],
             ["field" => "status", "title" => "Payment Status: %1"],
             ["field" => "status_detail", "title" => "Payment Detail: %1"],
-            ["field" => "activation_uri", "title" => "Generate Ticket"]
+            ["field" => "activation_uri", "title" => "Generate Ticket"],
+            ["field" => "payment_id_detail", "title" => "Mercado Pago Payment Id: %1"],
+            ["field" => "id", "title" => "Collection Id: %1"],
         ];
 
         foreach ($fields as $field) {
@@ -439,7 +442,7 @@ class Core
      *
      * @return array
      */
-    public function makeDefaultPreferencePaymentV1($payment_info = array(), $quote = null, $order = null)
+    public function makeDefaultPreferencePaymentV1($paymentInfo = [], $quote = null, $order = null)
     {
         if (!$quote) {
             $quote = $this->_getQuote();
@@ -458,15 +461,21 @@ class Core
         $preference = array();
 
         $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
-        $preference['notification_url'] =  ('http://8d2a8b9c.ngrok.io/mercadopago/notifications/custom');
+        $preference['notification_url'] = 'http://f54d20b4.ngrok.io/mercadopago/notifications/custom';
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
-        $preference['transaction_amount'] = (float)$this->getAmount($quote);
+        //$preference['transaction_amount'] = (float)$this->getAmount($quote);
+        if (isset($paymentInfo['transaction_amount'])) {
+            $preference['transaction_amount'] = (float)$paymentInfo['transaction_amount'];
+        } else {
+            $preference['transaction_amount'] = (float)$this->getAmount();
+        }
+
         $preference['external_reference'] = $order->getIncrementId();
         $preference['payer']['email'] = $customerInfo['email'];
 
-        if (!empty($payment_info['identification_type'])) {
-            $preference['payer']['identification']['type'] = $payment_info['identification_type'];
-            $preference['payer']['identification']['number'] = $payment_info['identification_number'];
+        if (!empty($paymentInfo['identification_type'])) {
+            $preference['payer']['identification']['type'] = $paymentInfo['identification_type'];
+            $preference['payer']['identification']['number'] = $paymentInfo['identification_number'];
         }
         $preference['additional_info']['items'] = $this->getItemsInfo($order);
 
@@ -500,25 +509,25 @@ class Core
             );
         }
 
-        if (!empty($payment_info['coupon_code'])) {
-            $coupon_code = $payment_info['coupon_code'];
-            $this->_coreHelper->log("Validating coupon_code: " . $coupon_code, 'mercadopago-custom.log');
+        if (!empty($paymentInfo['coupon_code'])) {
+            $couponCode = $paymentInfo['coupon_code'];
+            $this->_coreHelper->log("Validating coupon_code: " . $couponCode, 'mercadopago-custom.log');
 
-            $coupon = $this->validCoupon($coupon_code);
+            $coupon = $this->validCoupon($couponCode);
             $this->_coreHelper->log("Response API Coupon: ", 'mercadopago-custom.log', $coupon);
 
-            $couponInfo = $this->getCouponInfo($coupon, $coupon_code);
+            $couponInfo = $this->getCouponInfo($coupon, $couponCode);
             $preference['coupon_amount'] = $couponInfo['coupon_amount'];
             $preference['coupon_code'] = $couponInfo['coupon_code'];
             $preference['campaign_id'] = $couponInfo['campaign_id'];
 
         }
 
-        $sponsor_id = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsor_id);
-        if (!empty($sponsor_id)) {
-            $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsor_id);
-            $preference['sponsor_id'] = (int)$sponsor_id;
+        $sponsorId = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
+        if (!empty($sponsorId)) {
+            $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsorId);
+            $preference['sponsor_id'] = (int)$sponsorId;
         }
 
         return $preference;
@@ -702,7 +711,6 @@ class Core
 
         return $details_discount;
     }
-
 
 
 }

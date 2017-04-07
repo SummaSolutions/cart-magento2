@@ -313,14 +313,7 @@ class Data
         } else {
             $balance = $data['transaction_details']['total_paid_amount'];
         }
-
-        if (isset($data['shipping_cost'])) {
-            $shippingCost = $this->_getMultiCardValue($data, 'shipping_cost');
-            $order->setBaseShippingAmount($shippingCost);
-            $order->setShippingAmount($shippingCost);
-        } else {
-            $shippingCost = 0;
-        }
+        $shippingCost = $this->_getMultiCardValue($data, 'shipping_cost');
 
         $order->setGrandTotal($balance);
         $order->setBaseGrandTotal($balance);

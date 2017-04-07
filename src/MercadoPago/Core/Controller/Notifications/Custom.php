@@ -83,7 +83,9 @@ class Custom
                 }
 
                 $this->coreHelper->log("Update Order", self::LOG_NAME);
-                $this->coreModel->updateOrder($payment, $this->_order);
+                $this->_statusHelper->setStatusUpdated($payment, $this->_order);
+
+                $this->_statusHelper->updateOrder($payment, $this->_order);
                 $setStatusResponse = $this->_statusHelper->setStatusOrder($payment);
                 $this->getResponse()->setBody($setStatusResponse['text']);
                 $this->getResponse()->setHttpResponseCode($setStatusResponse['code']);

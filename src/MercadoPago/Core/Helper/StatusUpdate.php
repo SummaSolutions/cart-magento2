@@ -107,17 +107,37 @@ class StatusUpdate
      *
      * @param $notificationData
      */
-    public function setStatusUpdated($notificationData)
+    public function setStatusUpdated($notificationData, $order)
     {
-        /**
-         * $order \Magento\Sales\Model\Order
-         */
-        $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
+//        $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
+//        $status = $notificationData['status'];
+//        $currentStatus = $order->getPayment()->getAdditionalInformation('status');
+//        if (($status == $currentStatus)) {
+//            $this->_statusUpdatedFlag = true;
+//        }
         $status = $notificationData['status'];
+        $statusDetail = $notificationData['status_detail'];
         $currentStatus = $order->getPayment()->getAdditionalInformation('status');
-        if (($status == $currentStatus)) {
+        $currentStatusDetail = $order->getPayment()->getAdditionalInformation('status_detail');
+//        if ($isPayment) {
+//            $currentStatus = $this->_getMulticardLastValue($currentStatus);
+//            $currentStatusDetail = $this->_getMulticardLastValue($currentStatusDetail);
+//        }
+        if (!is_null($order->getPayment()) && $order->getPayment()->getAdditionalInformation('second_card_token')) {
+            $this->_statusUpdatedFlag = false;
+
+            return;
+        }
+        if ($status == $currentStatus && $statusDetail == $currentStatusDetail) {
             $this->_statusUpdatedFlag = true;
         }
+    }
+
+    protected function _getMulticardLastValue($value)
+    {
+        $statuses = explode('|', $value);
+
+        return str_replace(' ', '', array_pop($statuses));
     }
 
     /**
@@ -430,8 +450,8 @@ class StatusUpdate
      */
     public function setStatusOrder($payment)
     {
-        $helper = $this->_coreHelper;
-        $order = $this->_getOrder($payment["external_reference"]);
+        //$helper =
+        $order = $this->_coreHelper->_getOrder($payment["external_reference"]);
 
         $statusDetail = $payment['status_detail'];
         $status = $payment['status'];
@@ -444,8 +464,11 @@ class StatusUpdate
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         }
         try {
+            $infoPayments = $order->getPayment()->getAdditionalInformation();
             if ($status == 'approved') {
-                $this->_coreHelper->setOrderSubtotals($payment, $order);
+                $this->_handleTwoCards($payment, $infoPayments);
+
+                $this->_dataHelper->setOrderSubtotals($payment, $order);
                 $this->_createInvoice($order, $message);
 
                 //Associate card to customer
@@ -464,14 +487,23 @@ class StatusUpdate
             $this->_updateStatus($order, $status, $message, $statusDetail);
 
             $statusSave = $order->save();
-            $helper->log("Update order", 'mercadopago.log', $statusSave->getData());
-            $helper->log($message, 'mercadopago.log');
+            $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
+            $this->_dataHelper->log($message, 'mercadopago.log');
 
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         } catch (\Exception $e) {
-            $helper->log("erro in set order status: " . $e, 'mercadopago.log');
+            $this->_dataHelper->log("erro in set order status: " . $e, 'mercadopago.log');
 
             return ['text' => $e, 'code' => \MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST];
+        }
+    }
+
+    protected function _handleTwoCards(&$payment, $infoPayments)
+    {
+        if (isset($infoPayments['second_card_token'])) {
+            $payment['total_paid_amount'] = $infoPayments['total_paid_amount'];
+            $payment['transaction_amount'] = $infoPayments['transaction_amount'];
+            $payment['status'] = $infoPayments['status'];
         }
     }
 
@@ -514,11 +546,11 @@ class StatusUpdate
      */
     public function updateOrder($data, $order = null)
     {
-        $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
-        if (!$this->_coreHelper->isStatusUpdated()) {
+        $this->_dataHelper->log("Update Order", 'mercadopago-notification.log');
+        if (!$this->isStatusUpdated()) {
             try {
                 if (!$order) {
-                    $order = $this->_getOrder($data["external_reference"]);
+                    $order = $this->_coreHelper->_getOrder($data["external_reference"]);
                 }
 
                 //update payment info
@@ -538,7 +570,7 @@ class StatusUpdate
                 );
 
                 foreach ($additionalFields as $field) {
-                    if (isset($data[$field])) {
+                    if (isset($data[$field]) && !isset($data['second_' . $field])) {
                         $paymentOrder->setAdditionalInformation($field, $data[$field]);
                     }
                 }
@@ -551,13 +583,13 @@ class StatusUpdate
                     $paymentOrder->setAdditionalInformation('merchant_order_id', $data['merchant_order_id']);
                 }
 
-                $payment_status = $paymentOrder->save();
-                $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
+                $paymentStatus = $paymentOrder->save();
+                $this->_dataHelper->log("Update Payment", 'mercadopago.log', $paymentStatus->getData());
 
-                $status_save = $order->save();
-                $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());
+                $statusSave = $order->save();
+                $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
             } catch (\Exception $e) {
-                $this->_coreHelper->log("erro in update order status: " . $e, 'mercadopago.log');
+                $this->_dataHelper->log("erro in update order status: " . $e, 'mercadopago.log');
                 $this->getResponse()->setBody($e);
 
                 //if notification proccess returns error, mercadopago will resend the notification.
