@@ -35,17 +35,22 @@ class RefundObserverBeforeSave
      */
     protected $_dataHelper;
 
+    protected $_scopeCode;
+
     /**
      * RefundObserverBeforeSave constructor.
      *
-     * @param \Magento\Backend\Model\Session        $session
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \MercadoPago\Core\Helper\Data         $dataHelper
+     * @param \Magento\Backend\Model\Session                     $session
+     * @param \Magento\Framework\App\Action\Context              $context
+     * @param \MercadoPago\Core\Helper\Data                      $dataHelper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
-    public function __construct(\Magento\Backend\Model\Session $session,
-                                \Magento\Framework\App\Action\Context $context,
-                                \MercadoPago\Core\Helper\Data $dataHelper,
-                                \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
+    public function __construct(
+        \Magento\Backend\Model\Session                      $session,
+        \Magento\Framework\App\Action\Context               $context,
+        \MercadoPago\Core\Helper\Data                       $dataHelper,
+        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
+    )
     {
         $this->_session = $session;
         $this->_messageManager = $context->getMessageManager();
@@ -58,6 +63,7 @@ class RefundObserverBeforeSave
     {
         $creditMemo = $observer->getData('creditmemo');
         $order = $creditMemo->getOrder();
+        $this->_scopeCode = $order->getStoreId();
         $this->creditMemoRefundBeforeSave($order, $creditMemo);
     }
 
@@ -98,11 +104,13 @@ class RefundObserverBeforeSave
 
         $isValidBasicData = $this->checkRefundBasicData($paymentMethod, $paymentDate);
         if ($isValidBasicData) {
-            $isValidaData = $this->checkRefundData($isCreditCardPayment,
-                $orderStatus,
-                $orderPaymentStatus,
-                $paymentDate,
-                $order);
+            $isValidaData = $this->checkRefundData(
+                                $isCreditCardPayment,
+                                $orderStatus,
+                                $orderPaymentStatus,
+                                $paymentDate,
+                                $order
+                            );
 
             if ($isValidBasicData && $isValidaData) {
                 $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund);
@@ -120,7 +128,11 @@ class RefundObserverBeforeSave
      */
     protected function checkRefundBasicData($paymentMethod, $paymentDate)
     {
-        $refundAvailable = $this->_dataHelper->isRefundAvailable();
+        $refundAvailable = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_REFUND_AVAILABLE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $this->_scopeCode
+        );
 
         if (!$refundAvailable) {
             $this->_messageManager->addNoticeMessage(__('Mercado Pago refunds are disabled. The refund will be made through Magento'));
@@ -160,8 +172,17 @@ class RefundObserverBeforeSave
                                        $order)
     {
 
-        $maxDays = $this->_dataHelper->getMaximumDaysRefund();
-        $maxRefunds = $this->_dataHelper->getMaximumPartialRefunds();
+        $maxDays = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_MAXIMUM_DAYS_REFUND,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $this->_scopeCode
+        );
+
+        $maxRefunds = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_MAXIMUM_PARTIAL_REFUNDS,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $this->_scopeCode
+        );
 
         $isValidaData = true;
 
@@ -214,8 +235,19 @@ class RefundObserverBeforeSave
 
         if ($paymentMethod == 'mercadopago_standard') {
             $paymentID = $order->getPayment()->getData('additional_information')['id'];
-            $clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+            $clientId = $this->_scopeConfig->getValue(
+                \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $this->_scopeCode
+            );
+
+            $clientSecret = $this->_scopeConfig->getValue(
+                \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $this->_scopeCode
+            );
+
             $mp = $this->_dataHelper->getApiInstance($clientId, $clientSecret);
             if ($isTotalRefund) {
                 $response = $mp->refund_payment($paymentID);
