@@ -49,7 +49,7 @@ class CalculatorForm
      */
     public function getPaymentMethods()
     {
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN);
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         return $this->_helperData->getMercadoPagoPaymentMethods($accessToken);
     }
 
