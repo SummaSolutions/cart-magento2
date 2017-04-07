@@ -27,7 +27,7 @@ Offers a fully customized checkout to your brand experience with our simple-to-u
 
 *Available for Argentina, Brazil, Chile, Colombia, Mexico, Peru and Venezuela**
 
-**Clasic Checkout**
+**Classic Checkout**
 
 Great for merchants who want to get going quickly and easily.
 
@@ -49,7 +49,7 @@ It includes the possibility to print the shipping label directly from the Magent
 **Returns and Cancellations between MercadoPago and Magento**
 
 This feature synchronizes orders between MercadoPago and Magento. 
-Returns and cancellations made from Magento are synchronised in MercadoPago and vice versa.
+Returns and cancellations made from Magento are synchronized in MercadoPago and vice versa.
 Returns can be enabled/disabled within Magento admin panel.
 You can also define the maximum amount of partial refunds on the same order and the maximum amount of days until refund is not accepted by using Magento admin panel.
 
@@ -61,7 +61,7 @@ Within Magento admin panel, you can select between success page from MercadoPago
 **Debug Mode in custom checkout**
 
 This feature enabled allows testing the plugin without a SSL certificate. 
-The custon chechuot does not appear as a payment method if you operate over HTTP and with the configuration disabled.
+The custom checkout does not appear as a payment method if you operate over HTTP and with the configuration disabled.
 It is not recommended enable this option in production environment.
 
 **Installments calculator**
@@ -69,7 +69,7 @@ It is not recommended enable this option in production environment.
 This feature allows to add an installment calculator within Magento pages.
 It can be enabled/disabled from the Magento admin panel.
 The calculator can be visualized within product, cart, or both pages.
-The customer can use the intallment calculator to see the financing options available and the final amount to be paid.
+The customer can use the installment calculator to see the financing options available and the final amount to be paid.
 
 <a name="composer_installation"></a>
 ## Installation using composer:
@@ -133,7 +133,7 @@ The customer can use the intallment calculator to see the financing options avai
     * **Debug Mode**: If enabled, displays the raw response from the API instead of a friendly message.
   - **Payments Calculator**
     * **Enable MercadoPago Installments Calculator**: If enabled, show the Installments Calculator on the selected pages.
-    * **Show Calculator on selected pages**: Select the pages to show the Instalments Calculator.
+    * **Show Calculator on selected pages**: Select the pages to show the Installments Calculator.
 
 <a name="checkout_custom"></a>
 ###Custom Checkout Payment Solution: ###
@@ -174,11 +174,12 @@ If you want to enable ticket solution, check the configurations under **Checkout
 * **Marketing - Coupon MercadoPago**: Enables/disables the coupon form.
 
 <a name="checkout_standard"></a>
-###Clasic Checkout Payment Solution: ###
+###Classic Checkout Payment Solution: ###
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **MercadoPago - Classic Checkout**.
 
-2. Enable the solution and set your **Client Id** and **Client Secret**. <br />
+2. Enable the solution and set your **Client Id** and **Client Secret**.
+
 Get them in the following address:
 	* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
     * Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
