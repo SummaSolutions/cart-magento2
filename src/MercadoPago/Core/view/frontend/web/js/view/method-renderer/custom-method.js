@@ -91,6 +91,10 @@ define(
             initSecondCard: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     MercadoPagoCustom.getInstance().initSecondCard();
+
+                    if (this.isOCPReady()) {
+                        MercadoPagoCustom.getInstance().initSecondCardOCP();
+                    }
                 }
             },
 
