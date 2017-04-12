@@ -179,8 +179,6 @@ var MercadoPagoCustom = (function () {
             isSecondCardUsed: ".is_second_card_used",
             amountFirstCard: ".first_card_amount",
             amountSecondCard: ".second_card_amount",
-            //firstCardTotalBuy: ".total_buy",
-            //secondCardTotalBuy: ".second_card_total_buy",
             secondCardPayment: "#second_card_payment",
             paymentMethodSelectSecondCard: '#second_card_paymentMethod',
             secondCardMageErrorMessages: '#mercadopago_checkout_custom_second_card .mage-error',
@@ -339,25 +337,21 @@ var MercadoPagoCustom = (function () {
             hideSecondCard.click(actionHideSecondCard);
         }
 
-        function initSecondCard2() {
-            //defineInputsSecondCard();
+        function showSecondCardFields() {
 
             var halfAmount = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.amount).val()/2;
             TinyJ(self.selectors.firstCardAmount).val(halfAmount);
             TinyJ(self.selectors.secondCardAmount).val(halfAmount);
             TinyJ(self.selectors.amountFirstCard).val(halfAmount);
             TinyJ(self.selectors.amountSecondCard).val(halfAmount);
-            //TinyJ(self.selectors.docType).on('DOMNodeInserted', addOptionsToSecondCardDocType);
             addOptionsToSecondCardDocType();
             TinyJ(self.selectors.firstCardAmount).focusout(changeAmountHandler);
 
             TinyJ(self.selectors.secondCardInstallments).change(setTotalAmount);
 
-
             TinyJ(self.selectors.cardNumberInputSecondCard).keyup(guessingPaymentMethodSecondCard);
             TinyJ(self.selectors.amountFirstCard).focusout(guessingPaymentMethodSecondCard);
 
-            //actionHideSecondCard();
             releaseEventCreateCardToken();
         }
 
@@ -460,12 +454,6 @@ var MercadoPagoCustom = (function () {
         }
 
         function setTotalAmount() {
-            // try {
-            //     var cost = TinyJ(this).getSelectedOption().attribute(self.constants.cost);
-            // } catch (e) {
-            //     var cost = 0;
-            // }
-            // TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(cost);
             var value = 0;
             if (isSecondCardUsed) {
                 value = TinyJ(self.selectors.secondCardInstallments).getSelectedOption().attribute(self.constants.cost);
@@ -780,19 +768,16 @@ var MercadoPagoCustom = (function () {
             TinyJ(self.selectors.showSecondCard).hide();
 
             if (!isSecondCardUsed) {
-                initSecondCard2();
+                showSecondCardFields();
             }
             TinyJ(self.selectors.isSecondCardUsed).val(true);
             isSecondCardUsed = true;
-            //TinyJ(self.selectors.firstCardTotalBuy).hide();
-            //TinyJ(self.selectors.secondCardTotalBuy).show();
             cardsHandler();
             cardsHandlerSecondCard();
             if (typeof event == 'undefined'){
                 var event = {};
             }
             guessingPaymentMethod(event.type = self.constants.keyup);
-            //actionUseOneClickPayOrNoSecondCard();
             defineInputsSecondCard();
         }
 
@@ -802,8 +787,6 @@ var MercadoPagoCustom = (function () {
             TinyJ(self.selectors.showSecondCard).show();
             isSecondCardUsed = false;
             TinyJ(self.selectors.isSecondCardUsed).val(false);
-            //TinyJ(self.selectors.secondCardTotalBuy).hide();
-            //TinyJ(self.selectors.firstCardTotalBuy).show();
             cardsHandler();
 
         }
@@ -1440,7 +1423,7 @@ var MercadoPagoCustom = (function () {
                     payerCosts = response[0].payer_costs;
 
                 selectorInstallments.appendChild(option);
-                var hasCftInfo = payerCosts[0]['labels'].length > 0;
+                var hasCftInfo = payerCosts[0]['labels'].length > 1 ;
                 if (!hasCftInfo) {
                     TinyJ('.tea-info-first-card').hide();
                     TinyJ('.cft-info-first-card').hide();
@@ -1482,7 +1465,7 @@ var MercadoPagoCustom = (function () {
                     payerCosts = response[0].payer_costs;
 
                 selectorInstallments.appendChild(option);
-                var hasCftInfo = payerCosts[0]['labels'].length > 0;
+                var hasCftInfo = payerCosts[0]['labels'].length > 1;
                 if (!hasCftInfo) {
                     TinyJ('.tea-info-second-card').hide();
                     TinyJ('.cft-info-second-card').hide();

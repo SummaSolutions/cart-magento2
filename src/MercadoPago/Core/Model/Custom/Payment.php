@@ -300,12 +300,9 @@ class Payment
                         'status_detail'                => $paymentFirstCard['status_detail'] . ' | ' . $paymentSecondCard['status_detail'],
                         'installments'                 => $paymentFirstCard['installments'] . ' | ' . $paymentSecondCard['installments'],
                         'payment_method'               => $paymentFirstCard['payment_method_id'] . ' | ' . $paymentSecondCard['payment_method_id'],
-                        'first_payment_id'             => $paymentFirstCard['id'],
-                        'first_payment_status'         => $paymentFirstCard['status'],
-                        'first_payment_status_detail'  => $paymentFirstCard['status_detail'],
-                        'second_payment_id'            => $paymentSecondCard['id'],
-                        'second_payment_status'        => $paymentSecondCard['status'],
-                        'second_payment_status_detail' => $paymentSecondCard['status_detail'],
+                        'first_payment_id'             => $paymentFirstCard['id'] . ' | ' . $paymentSecondCard['id'],
+                        'first_payment_status'         => $paymentFirstCard['status'] . ' | ' . $paymentSecondCard['status'],
+                        'first_payment_status_detail'  => $paymentFirstCard['status_detail'] . ' | ' . $paymentSecondCard['status_detail'],
                         'total_paid_amount'            => $paymentFirstCard['transaction_details']['total_paid_amount'] . '|' . $paymentSecondCard['transaction_details']['total_paid_amount'],
                         'transaction_amount'           => $paymentFirstCard['transaction_amount'] . '|' . $paymentSecondCard['transaction_amount'],
                     ];
@@ -314,10 +311,6 @@ class Payment
                         $infoInstance->setAdditionalInformation($infoKey, $infoValue);
                     };
 
-//                    $stateObject->setState(Mage::helper('mercadopago/statusUpdate')->_getAssignedState('pending_payment'));
-//                    $stateObject->setStatus('pending_payment');
-//                    $stateObject->setIsNotified(false);
-//                    $this->saveOrder();
                     return true;
                 } else {
                     //second card payment failed, refund for first card
@@ -344,11 +337,6 @@ class Payment
                 $infoInstance->setAdditionalInformation('status', $payment['status']);
                 $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
                 $infoInstance->setAdditionalInformation('status_detail', $payment['status_detail']);
-//                $stateObject->setState(Mage::helper('mercadopago/statusUpdate')->_getAssignedState('pending_payment'));
-//                $stateObject->setStatus('pending_payment');
-//                $stateObject->setIsNotified(false);
-
-                //$this->saveOrder();
 
                 return true;
             }

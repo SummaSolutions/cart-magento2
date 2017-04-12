@@ -276,7 +276,7 @@ define(
             },
 
             hasErrors: function () {
-                var allMessageErrors = jQuery('.message-error');
+                var allMessageErrors = jQuery('p.message-error');
                 if (allMessageErrors.length > 1) {
                     for (var x = 0; x < allMessageErrors.length; x++) {
                         if ($(allMessageErrors[x]).css('display') !== 'none') {

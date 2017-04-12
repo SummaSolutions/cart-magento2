@@ -109,20 +109,11 @@ class StatusUpdate
      */
     public function setStatusUpdated($notificationData, $order)
     {
-//        $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
-//        $status = $notificationData['status'];
-//        $currentStatus = $order->getPayment()->getAdditionalInformation('status');
-//        if (($status == $currentStatus)) {
-//            $this->_statusUpdatedFlag = true;
-//        }
         $status = $notificationData['status'];
         $statusDetail = $notificationData['status_detail'];
         $currentStatus = $order->getPayment()->getAdditionalInformation('status');
         $currentStatusDetail = $order->getPayment()->getAdditionalInformation('status_detail');
-//        if ($isPayment) {
-//            $currentStatus = $this->_getMulticardLastValue($currentStatus);
-//            $currentStatusDetail = $this->_getMulticardLastValue($currentStatusDetail);
-//        }
+
         if (!is_null($order->getPayment()) && $order->getPayment()->getAdditionalInformation('second_card_token')) {
             $this->_statusUpdatedFlag = false;
 
@@ -450,7 +441,6 @@ class StatusUpdate
      */
     public function setStatusOrder($payment)
     {
-        //$helper =
         $order = $this->_coreHelper->_getOrder($payment["external_reference"]);
 
         $statusDetail = $payment['status_detail'];
@@ -465,7 +455,7 @@ class StatusUpdate
         }
         try {
             $infoPayments = $order->getPayment()->getAdditionalInformation();
-            if ($status == 'approved') {
+            if ($this->_getMulticardLastValue($status) == 'approved') {
                 $this->_handleTwoCards($payment, $infoPayments);
 
                 $this->_dataHelper->setOrderSubtotals($payment, $order);
@@ -555,8 +545,9 @@ class StatusUpdate
 
                 //update payment info
                 $paymentOrder = $order->getPayment();
+                $paymentAdditionalInfo = $paymentOrder->getAdditionalInformation();
 
-                $additionalFields = array(
+                $additionalFields = [
                     'status',
                     'status_detail',
                     'id',
@@ -564,13 +555,11 @@ class StatusUpdate
                     'cardholderName',
                     'installments',
                     'statement_descriptor',
-                    'trunc_card',
-                    'id'
-
-                );
+                    'trunc_card'
+                ];
 
                 foreach ($additionalFields as $field) {
-                    if (isset($data[$field]) && !isset($data['second_' . $field])) {
+                    if (isset($data[$field]) && !isset($paymentAdditionalInfo['second_card_token'])) {
                         $paymentOrder->setAdditionalInformation($field, $data[$field]);
                     }
                 }

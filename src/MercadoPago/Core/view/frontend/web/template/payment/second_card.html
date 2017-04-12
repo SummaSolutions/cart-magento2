@@ -180,22 +180,24 @@
                     <p class="message-error second_card_error-E302 second_card_error-224 validation-advice"><!-- ko i18n: 'CVV is invalid.'--><!-- /ko --></p>
                 </div>
 
-                <div id="second_card_doc_type__mp" class="field required">
-                    <label for="second_card_docNumber" class="label"><!-- ko i18n: 'Document'--><!-- /ko --></label>
-                    <select id="second_card_docType" data-checkout="docType" data-element-id="#second_card_doc_type__mp"
-                            data-bind="attr: {name: getTokenCodeArray('second_card_doc_type')}"></select>
-                    <p class="message-error second_card_error-322 error-212 validation-advice"><!-- ko i18n: 'Document Type is invalid.'--><!-- /ko --></p>
-                </div>
-
-                <div id="second_card_doc_number__mp" class="field number required">
-                    <div class="control">
-                        <input type="text" id="second_card_docNumber" class="mp-validate-docnumber" data-checkout="docNumber"
-                               data-element-id="#second_card_doc_number__mp"
-                               data-bind="attr: {name: getTokenCodeArray('second_card_docNumber'),
-                                         'data-validate': JSON.stringify({'required-number':true,
-                                         'mp-validate-docnumber':'#docNumber'})}" />
+                <div class="document-box field required">
+                    <div id="second_card_doc_type__mp" class="required">
+                        <select id="second_card_docType" data-checkout="docType" data-element-id="#second_card_doc_type__mp"
+                                data-bind="attr: {name: getTokenCodeArray('second_card_doc_type')}"></select>
+                        <p class="message-error second_card_error-322 error-212 validation-advice"><!-- ko i18n: 'Document Type is invalid.'--><!-- /ko --></p>
                     </div>
-                    <p class="message-error second_card_error-324 second_card_error-213 second_card_error-214 validation-advice"><!-- ko i18n: 'Document Number is invalid'--><!-- /ko --></p>
+
+                    <div id="second_card_doc_number__mp" class="number required">
+                        <label for="second_card_docNumber" class="label"><!-- ko i18n: 'Document Number'--><!-- /ko --></label>
+                        <div class="control">
+                            <input type="text" id="second_card_docNumber" class="mp-validate-docnumber" data-checkout="docNumber"
+                                   data-element-id="#second_card_doc_number__mp"
+                                   data-bind="attr: {name: getTokenCodeArray('second_card_docNumber'),
+                                             'data-validate': JSON.stringify({'required-number':true,
+                                             'mp-validate-docnumber':'#docNumber'})}" />
+                        </div>
+                        <p class="message-error second_card_error-324 second_card_error-213 second_card_error-214 validation-advice"><!-- ko i18n: 'Document Number is invalid'--><!-- /ko --></p>
+                    </div>
                 </div>
             </div>
 

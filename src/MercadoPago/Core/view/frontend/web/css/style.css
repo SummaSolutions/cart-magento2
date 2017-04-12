@@ -108,29 +108,61 @@
     }
 }
 
+.cvv .field-tooltip {
+    left: 65px;
+}
+
 #doc_type__mp,
 #second_card_doc_type__mp {
     display: inline-block;
     margin-right: 1px;
+    margin-top: 28px;
     width: 90px;
 }
 
 #doc_number__mp,
 #second_card_doc_number__mp {
     display: inline-block;
-    margin: 28px 0 20px;
     vertical-align: top;
     width: 120px;
 }
 
-.cvv .field-tooltip {
-    left: 65px;
+#doc_number__mp .control,
+#second_card_doc_number__mp .control {
+    margin-top: 28px;
+}
+
+.document-box {
+    margin: 0 0 20px !important;
+    position: relative;
+}
+
+.document-box label {
+    display: inline-block;
+    font-weight: 600;
+    left: 0;
+    margin: 0 0 8px;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.document-box.required label:after {
+    content: '*';
+    color: #e02b27;
+    font-size: 1.2rem;
+    margin: 0 0 0 5px;
+}
+
+#docNumber.mage-error,
+#second_card_docNumber.mage-error {
+    margin-bottom: 24px;
 }
 
 #docNumber-error,
 #second_card_docNumber-error {
-    left: -95px;
-    position: relative;
+    bottom: 0;
+    position: absolute;
+    left: 0;
     white-space: nowrap;
 }
 
@@ -153,6 +185,18 @@
 
 .message-error {
     display: none;
+}
+
+.message-error span {
+    color: #e02b27;
+    font-size: 1.2rem;
+    margin-top: 7px;
+}
+
+input.has-error,
+select.has-error,
+textarea.has-error {
+    border-color: #ed8380;
 }
 
 #mercadopago_checkout_custom_ticket .form-mercadopago {
