@@ -504,4 +504,16 @@ class Payment
 
     }
 
+    /**
+     * Return success page url
+     *
+     * @return string
+     */
+    public function getOrderPlaceRedirectUrl()
+    {
+        $url = $this->_helperData->getSuccessUrl();
+
+        return $this->_urlBuilder->getUrl($url, ['_secure' => true]);
+    }
+
 }

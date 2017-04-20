@@ -453,6 +453,14 @@ class StatusUpdate
         if ($this->isStatusUpdated()) {
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         }
+
+        //if state is not complete updates according to setting
+        $this->_updateStatus($order, $status, $message, $statusDetail);
+
+        $statusSave = $order->save();
+        $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
+        $this->_dataHelper->log($message, 'mercadopago.log');
+
         try {
             $infoPayments = $order->getPayment()->getAdditionalInformation();
             if ($this->_getMulticardLastValue($status) == 'approved') {
@@ -472,13 +480,6 @@ class StatusUpdate
                 $order->setExternalRequest(true);
                 $order->cancel();
             }
-
-            //if state is not complete updates according to setting
-            $this->_updateStatus($order, $status, $message, $statusDetail);
-
-            $statusSave = $order->save();
-            $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
-            $this->_dataHelper->log($message, 'mercadopago.log');
 
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
         } catch (\Exception $e) {

@@ -261,6 +261,7 @@ class Payment
      * @param object $stateObject
      *
      * @return bool
+     * @throws \Exception
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -382,7 +383,7 @@ class Payment
      * @param \Magento\Framework\DataObject|mixed $data
      *
      * @return $this
-     * @throws LocalizedException
+     * @throws \MercadoPago\Core\Model\Api\V1\Exception
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
