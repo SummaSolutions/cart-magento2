@@ -30,18 +30,21 @@ class StandardConfigProvider
      */
     protected $_assetRepo;
 
+    protected $_scopeConfig;
+
     /**
      * @param PaymentHelper $paymentHelper
      */
     public function __construct(
         PaymentHelper $paymentHelper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\View\Asset\Repository $assetRepo
+        \Magento\Framework\View\Asset\Repository $assetRepo,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+
     )
     {
         $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
-        $this->_storeManager = $storeManager;
         $this->_assetRepo = $assetRepo;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -59,7 +62,9 @@ class StandardConfigProvider
                         'actionUrl'     => $this->methodInstance->getActionUrl(),
                         'bannerUrl'     => $this->methodInstance->getConfigData('banner_checkout'),
                         'type_checkout' => $this->methodInstance->getConfigData('type_checkout'),
-                        'logoUrl' => $this->getImageUrl('mp_logo.png')
+                        'logoUrl' => $this->getImageUrl('mp_logo.png'),
+                        'analytics_key'   => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+
                     ],
                 ],
             ];

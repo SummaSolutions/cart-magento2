@@ -95,10 +95,28 @@ class CustomTicketConfigProvider
                     'discount_coupon' => $this->_scopeConfig->getValue('payment/mercadopago_customticket/coupon_mercadopago', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'loading_gif'     => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'logEnabled'      => $this->_scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'logoUrl'         => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png")
-
+                    'logoUrl'         => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
+                    'analytics_key'   => $this->_getClientId($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE))
                 ],
             ],
         ] : [];
+    }
+
+
+    /**
+     * Summary: Get client id from access token.
+     * Description: Get client id from access token.
+     * @param String $at
+     *
+     * @return String client id.
+     */
+    public static function _getClientId($at)
+    {
+        $t = explode('-', $at);
+        if (count($t) > 0) {
+            return $t[1];
+        }
+
+        return '';
     }
 }
