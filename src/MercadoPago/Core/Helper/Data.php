@@ -393,7 +393,7 @@ class Data
     public function getSuccessUrl()
     {
         if ($this->scopeConfig->getValue(self::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
-            $url = 'mercadopago/success/page';
+            $url = 'mercadopago/checkout/page';
         } else {
             $url = 'checkout/onepage/success';
         }

@@ -37,10 +37,15 @@ class Failure
      */
     public function execute()
     {
-        $typeCheckout = $this->_scopeConfig->getValue('payment/mercadopago_standard/type_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
+            $this->_view->loadLayout(['default', 'checkout_onepage_failure']);
 
-        $this->_view->loadLayout(['default', 'mercadopago_standard_failure_' . $typeCheckout]);
+        } else{
+            $typeCheckout = $this->_scopeConfig->getValue('payment/mercadopago_standard/type_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
+            $this->_view->loadLayout(['default', 'mercadopago_standard_failure_' . $typeCheckout]);
+
+        }
         $this->_view->renderLayout();
     }
 
