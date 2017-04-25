@@ -6,6 +6,8 @@ $list = $this->getPaymentMethods();
 $pk = $this->getPublicKey();
 $amount = $this->getAmount();
 
+$isSecure = $this->isCurrentlySecure();
+
 ?>
 <div id="mercadopago-popup" class="mercadopago-popup" style="display: none;">
     <div class="mercadopago-popup-overlay" onclick="MercadoPagoCustomCalculator.hidePopup()"></div>
@@ -29,7 +31,11 @@ $amount = $this->getAmount();
                                     <li id="<?php echo $i['id']; ?>-li">
                                         <label for="<?php echo $i['id']; ?>">
                                             <input id="<?php echo $i['id']; ?>" type="radio" name="paymentMethods" value="<?php echo $i['id']; ?>" />
-                                            <img src="<?php echo $i['thumbnail']; ?>" alt="<?php echo $i['id']; ?>"/>
+                                            <?php if ($isSecure): ?>
+                                                <img src="<?php echo $i['secure_thumbnail']; ?>" alt="<?php echo $i['id']; ?>"/>
+                                            <?php else : ?>
+                                                <img src="<?php echo $i['thumbnail']; ?>" alt="<?php echo $i['id']; ?>"/>
+                                            <?php endif; ?>
                                         </label>
                                     </li>
                                 <?php endif; ?>
