@@ -314,7 +314,7 @@ class Payment
             if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
                 $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('checkout/onepage/failure');
             }else{
-                $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('mercadopago/standar/failure');
+                $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('mercadopago/standard/failure');
             }
         }
 
