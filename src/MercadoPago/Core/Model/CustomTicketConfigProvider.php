@@ -55,6 +55,8 @@ class CustomTicketConfigProvider
      * @var \Magento\Framework\UrlInterface
      */
     protected $_urlBuilder;
+    protected $_coreHelper;
+    protected $_productMetaData;
 
     /**
      * @param PaymentHelper $paymentHelper
@@ -65,7 +67,9 @@ class CustomTicketConfigProvider
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\View\Asset\Repository $assetRepo
+        \Magento\Framework\View\Asset\Repository $assetRepo,
+        \MercadoPago\Core\Helper\Data $coreHelper,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
     )
     {
         $this->_request = $context->getRequest();
@@ -75,6 +79,8 @@ class CustomTicketConfigProvider
         $this->_urlBuilder = $context->getUrl();
         $this->_storeManager = $storeManager;
         $this->_assetRepo = $assetRepo;
+        $this->_coreHelper = $coreHelper;
+        $this->_productMetaData = $productMetadata;
     }
 
     /**
@@ -96,27 +102,14 @@ class CustomTicketConfigProvider
                     'loading_gif'     => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'logEnabled'      => $this->_scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'logoUrl'         => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
-                    'analytics_key'   => $this->_getClientId($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE))
+                    'analytics_key'   => $this->_coreHelper->getClientIdFromAccessToken($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
+                    'platform_version' => $this->_productMetaData->getVersion(),
+                    'module_version'   => $this->_coreHelper->getModuleVersion()
                 ],
             ],
         ] : [];
     }
 
 
-    /**
-     * Summary: Get client id from access token.
-     * Description: Get client id from access token.
-     * @param String $at
-     *
-     * @return String client id.
-     */
-    public static function _getClientId($at)
-    {
-        $t = explode('-', $at);
-        if (count($t) > 0) {
-            return $t[1];
-        }
 
-        return '';
-    }
 }
