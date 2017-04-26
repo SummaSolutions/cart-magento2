@@ -464,6 +464,27 @@ var MercadoPagoCustom = (function () {
             TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(value);
             TinyJ('.tea-info-first-card').html(TinyJ(self.selectors.installments).getSelectedOption().attribute('tea'));
             TinyJ('.cft-info-first-card').html(TinyJ(self.selectors.installments).getSelectedOption().attribute('cft'));
+
+            var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
+            var url = baseUrl+self.url.subtotals+'?cost='+value;
+            tiny.ajax( url , {
+                method: http.method.GET,
+                timeout: 5000,
+                success: function (response, status, xhr) {
+                    //TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(value);
+                    var deferred = self.jqObject.Deferred();
+                    self.totalAction([], deferred);
+                    self.jqObject.when(deferred).done(function() {
+                        self.paymentService.setPaymentMethods(
+                            self.paymentMethodList()
+                        );
+                    });
+                    self.fullScreenLoader.stopLoader();
+                },
+                error: function (status, response) {
+                    self.fullScreenLoader.stopLoader();
+                }
+            });
         }
 
         function defineInputs() {
@@ -1423,7 +1444,7 @@ var MercadoPagoCustom = (function () {
                     payerCosts = response[0].payer_costs;
 
                 selectorInstallments.appendChild(option);
-                var hasCftInfo = payerCosts[0]['labels'].length > 1 ;
+                var hasCftInfo = payerCosts[0]['labels'].length > 0 && payerCosts[0]['labels'][0].indexOf('CFT') > -1;
                 if (!hasCftInfo) {
                     TinyJ('.tea-info-first-card').hide();
                     TinyJ('.cft-info-first-card').hide();
@@ -1465,7 +1486,7 @@ var MercadoPagoCustom = (function () {
                     payerCosts = response[0].payer_costs;
 
                 selectorInstallments.appendChild(option);
-                var hasCftInfo = payerCosts[0]['labels'].length > 1;
+                var hasCftInfo = payerCosts[0]['labels'].length > 0 && payerCosts[0]['labels'][0].indexOf('CFT') > -1;
                 if (!hasCftInfo) {
                     TinyJ('.tea-info-second-card').hide();
                     TinyJ('.cft-info-second-card').hide();

@@ -208,7 +208,7 @@ class Standard
         return $data;
     }
 
-    protected function _dateCompare($a, $b)
+    public static function _dateCompare($a, $b)
     {
         $t1 = strtotime($a['value']);
         $t2 = strtotime($b['value']);

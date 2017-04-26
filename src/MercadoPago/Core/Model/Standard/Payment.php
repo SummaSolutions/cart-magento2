@@ -286,11 +286,17 @@ class Payment
             $arr['shipments'] = $this->_getParamShipment($paramsShipment, $order, $shippingAddress);
         }
 
-        $billing_address = $order->getBillingAddress()->getData();
+        $billingAddress = $order->getBillingAddress()->getData();
         $arr['payer']['date_created'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
-        $arr['payer']['email'] = htmlentities($customer->getEmail());
-        $arr['payer']['first_name'] = htmlentities($customer->getFirstname());
-        $arr['payer']['last_name'] = htmlentities($customer->getLastname());
+        if (!$customer->getId()) {
+            $arr['payer']['email'] = htmlentities($billingAddress['email']);
+            $arr['payer']['first_name'] = htmlentities($billingAddress['firstname']);
+            $arr['payer']['last_name'] = htmlentities($billingAddress['lastname']);
+        } else {
+            $arr['payer']['email'] = htmlentities($customer->getEmail());
+            $arr['payer']['first_name'] = htmlentities($customer->getFirstname());
+            $arr['payer']['last_name'] = htmlentities($customer->getLastname());
+        }
 
         if (isset($payment['additional_information']['doc_number']) && $payment['additional_information']['doc_number'] != "") {
             $arr['payer']['identification'] = [
@@ -300,8 +306,8 @@ class Payment
         }
 
         $arr['payer']['address'] = [
-            "zip_code"      => $billing_address['postcode'],
-            "street_name"   => $billing_address['street'] . " - " . $billing_address['city'] . " - " . $billing_address['country_id'],
+            "zip_code"      => $billingAddress['postcode'],
+            "street_name"   => $billingAddress['street'] . " - " . $billingAddress['city'] . " - " . $billingAddress['country_id'],
             "street_number" => ""
         ];
 
