@@ -83,7 +83,6 @@ class CustomConfigProvider
         \Magento\Framework\View\Asset\Repository $assetRepo,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
-        \Magento\Framework\Composer\ComposerInformation $composerInformation,
         \MercadoPago\Core\Helper\Data $coreHelper
     )
     {
@@ -96,7 +95,6 @@ class CustomConfigProvider
         $this->_context = $context;
         $this->_productMetaData = $productMetadata;
         $this->_moduleContext = $moduleContext;
-        $this->_composerInformation = $composerInformation;
         $this->_coreHelper = $coreHelper;
     }
 
@@ -112,7 +110,7 @@ class CustomConfigProvider
         if (!$this->methodInstance->isAvailable()) {
             return [];
         }
-        $magentoPackages = $this->_composerInformation->getInstalledMagentoPackages();
+
         return [
             'payment' => [
                 $this->methodCode => [
@@ -134,7 +132,7 @@ class CustomConfigProvider
                     'text-installment' => __('Enter the card number'),
                     'logoUrl'          => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'platform_version' => $this->_productMetaData->getVersion(),
-                    'module_version'   => $magentoPackages['mercadopago/magento2-plugin']['version']
+                    'module_version'   => $this->_coreHelper->getModuleVersion()
                 ],
             ],
         ];
