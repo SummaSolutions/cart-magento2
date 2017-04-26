@@ -93,21 +93,6 @@ class Page
     }
 
     /**
-     * Send new order Mail
-     */
-    protected function _sendNewOrderMail()
-    {
-        $order = $this->_getOrder();
-        if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
-            try {
-                $this->_orderSender->send($order);
-            } catch (\Exception $e) {
-                $this->_logger->critical($e);
-            }
-        }
-    }
-
-    /**
      * @return \Magento\Sales\Model\Order
      */
     protected function _getOrder()
@@ -123,11 +108,10 @@ class Page
      */
     public function execute()
     {
-        //$this->_sendNewOrderMail();
+        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
 
-        $order = $this->_getOrder();
-        $infoPayment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
-        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+            $order = $this->_getOrder();
+            $info_payment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
 
             $status = null;
 
