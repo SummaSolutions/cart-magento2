@@ -491,7 +491,7 @@ class StatusUpdate
 
     protected function _handleTwoCards(&$payment, $infoPayments)
     {
-        if (isset($infoPayments['second_card_token'])) {
+        if (isset($infoPayments['second_card_token']) && !empty($infoPayments['second_card_token'])) {
             $payment['total_paid_amount'] = $infoPayments['total_paid_amount'];
             $payment['transaction_amount'] = $infoPayments['transaction_amount'];
             $payment['status'] = $infoPayments['status'];
@@ -560,7 +560,7 @@ class StatusUpdate
                 ];
 
                 foreach ($additionalFields as $field) {
-                    if (isset($data[$field]) && !isset($paymentAdditionalInfo['second_card_token'])) {
+                    if (isset($data[$field]) && empty($paymentAdditionalInfo['second_card_token'])) {
                         $paymentOrder->setAdditionalInformation($field, $data[$field]);
                     }
                 }

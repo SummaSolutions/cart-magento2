@@ -2,9 +2,10 @@
 define(
     [
         'Magento_Checkout/js/view/payment/default',
-        'MPcheckout',
+        'MercadoPago_Core/js/model/set-analytics-information',
+        'MPcheckout'
     ],
-    function (Component) {
+    function (Component, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
@@ -62,7 +63,12 @@ define(
              */
             placePendingPaymentOrder: function () {
                 this.placeOrder();
+            },
+            initialize: function () {
+                this._super();
+                setAnalyticsInformation.beforePlaceOrder(this.getCode());
             }
+
         });
     }
 );

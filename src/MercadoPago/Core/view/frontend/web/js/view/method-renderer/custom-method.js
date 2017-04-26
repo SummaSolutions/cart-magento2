@@ -10,13 +10,16 @@ define(
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Checkout/js/action/set-payment-information',
         'Magento_Checkout/js/action/place-order',
+        'Magento_Customer/js/model/customer',
+        'MercadoPago_Core/js/model/set-analytics-information',
         'mage/translate',
         'meli',
         'tinyj',
         'MPcustom',
-        'tiny'
+        'tiny',
+        'MPanalytics'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
@@ -269,6 +272,7 @@ define(
                 return dataObj;
             },
             afterPlaceOrder: function () {
+                setAnalyticsInformation.afterPlaceOrder(this.getCode());
                 window.location = this.getSuccessUrl();
             },
             validate: function () {
@@ -330,8 +334,12 @@ define(
                 return $.when(
                     placeOrderAction(this.getData(), this.messageContainer)
                 );
-            }
+            },
 
+            initialize: function () {
+                this._super();
+                setAnalyticsInformation.beforePlaceOrder(this.getCode());
+            }
 
         });
     }

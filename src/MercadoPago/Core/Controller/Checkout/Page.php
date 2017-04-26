@@ -1,5 +1,7 @@
 <?php
+
 namespace MercadoPago\Core\Controller\Checkout;
+
 use MercadoPago\Core\Model\Core;
 
 
@@ -44,6 +46,11 @@ class Page
     protected $_core;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $_catalogSession;
+
+    /**
      * Page constructor.
      *
      * @param Core                                                $core
@@ -65,7 +72,8 @@ class Page
         \Psr\Log\LoggerInterface $logger,
         \MercadoPago\Core\Helper\Data $helperData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Model\Core $core
+        \MercadoPago\Core\Model\Core $core,
+        \Magento\Catalog\Model\Session $catalogSession
     )
     {
 
@@ -76,6 +84,7 @@ class Page
         $this->_helperData = $helperData;
         $this->_scopeConfig = $scopeConfig;
         $this->_core = $core;
+        $this->_catalogSession = $catalogSession;
 
         parent::__construct(
             $context
@@ -103,15 +112,16 @@ class Page
 
             $order = $this->_getOrder();
             $info_payment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
+
             $status = null;
 
             //checkout Custom Credit Card
-            if (!empty($info_payment['status']['value'])){
-                $status = $info_payment['status']['value'];
+            if (!empty($infoPayment['status']['value'])) {
+                $status = $infoPayment['status']['value'];
                 //$detail = $info_payment['status_detail']['value'];
             }
             //checkout redirect
-            if ($status == 'approved' || $status == 'pending'){
+            if ($status == 'approved' || $status == 'pending') {
                 $this->_view->loadLayout(['default', 'checkout_onepage_success']);
                 $this->_view->renderLayout();
             } else {
@@ -119,7 +129,10 @@ class Page
                 $this->_view->renderLayout();
             }
 
-        } else{
+        } else {
+            //set data for mp analytics
+            $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
+
             $checkoutTypeHandle = $this->getCheckoutHandle();
             $this->_view->loadLayout(['default', $checkoutTypeHandle]);
             $this->_eventManager->dispatch(
