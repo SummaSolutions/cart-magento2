@@ -6,14 +6,15 @@
 define(
     [
         'jquery',
-        'Magento_Customer/js/model/customer'
+        'Magento_Customer/js/model/customer',
+        'Magento_Checkout/js/model/payment-service'
     ],
-    function ($, customer) {
+    function ($, customer, paymentService) {
         return {
             beforePlaceOrder: function (code) {
-                if (window.checkoutConfig.payment[code] != undefined) {
+                if (window.checkoutConfig.payment[code] !== undefined) {
                     var MA = ModuleAnalytics;
-                    if (window.checkoutConfig.payment[code]['public_key'] != '') {
+                    if (window.checkoutConfig.payment[code]['public_key'] !== undefined) {
                         MA.setPublicKey(window.checkoutConfig.payment[code]['public_key']);
                     } else {
                         MA.setToken(window.checkoutConfig.payment[code]['analytics_key']);
@@ -21,20 +22,18 @@ define(
                     MA.setPlatform("Magento");
                     MA.setPlatformVersion(window.checkoutConfig.payment[code]['platform_version']);
                     MA.setModuleVersion(window.checkoutConfig.payment[code]['module_version']);
-                    MA.setPayerEmail(customer.isLoggedIn() ? window.checkoutConfig.payment[code]['customer']['email'] : '');
+                    MA.setPayerEmail(customer.isLoggedIn() ? customer.customerData.email : '');
                     MA.setUserLogged(customer.isLoggedIn() ? 1 : 0);
-                    MA.setInstalledModules("magento_mercadopago_module");
+                    var paymentMethods = [];
+                    paymentService.getAvailablePaymentMethods().forEach(function (elem) {
+                        paymentMethods.push(elem.method);
+                    });
+                    MA.setInstalledModules(paymentMethods.join());
                     MA.post();
                 }
             },
             afterPlaceOrder: function (code) {
-                if (window.checkoutConfig.payment[code] != undefined) {
-                    var MA = ModuleAnalytics;
-                    MA.setPublicKey(window.checkoutConfig.payment[code]['public_key']);
-                    MA.setPaymentType("credit_card");
-                    MA.setCheckoutType("custom");
-                    MA.put();
-                }
+
             }
         }
     }
