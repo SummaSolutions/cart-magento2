@@ -464,6 +464,27 @@ var MercadoPagoCustom = (function () {
             TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(value);
             TinyJ('.tea-info-first-card').html(TinyJ(self.selectors.installments).getSelectedOption().attribute('tea'));
             TinyJ('.cft-info-first-card').html(TinyJ(self.selectors.installments).getSelectedOption().attribute('cft'));
+
+            var baseUrl = TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.baseUrl).val();
+            var url = baseUrl+self.url.subtotals+'?cost='+value;
+            tiny.ajax( url , {
+                method: http.method.GET,
+                timeout: 5000,
+                success: function (response, status, xhr) {
+                    //TinyJ(self.selectors.checkoutCustom).getElem(self.selectors.totalAmount).val(value);
+                    var deferred = self.jqObject.Deferred();
+                    self.totalAction([], deferred);
+                    self.jqObject.when(deferred).done(function() {
+                        self.paymentService.setPaymentMethods(
+                            self.paymentMethodList()
+                        );
+                    });
+                    self.fullScreenLoader.stopLoader();
+                },
+                error: function (status, response) {
+                    self.fullScreenLoader.stopLoader();
+                }
+            });
         }
 
         function defineInputs() {
