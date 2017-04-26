@@ -506,7 +506,7 @@ class Data
         if ($order->getPayment()->getData('method')) {
             $methodCode = $order->getPayment()->getData('method');
             $analyticsData = [
-                'payment_id'    => isset($additionalInfo['payment_id_detail']) ? $order->getPayment()->getData('additional_information')['payment_id_detail'] : '489923371',
+                'payment_id'    => isset($additionalInfo['payment_id_detail']) ? $order->getPayment()->getData('additional_information')['payment_id_detail'] : '',
                 'payment_type'  => 'credit_card',
                 'checkout_type' => 'custom'
             ];
