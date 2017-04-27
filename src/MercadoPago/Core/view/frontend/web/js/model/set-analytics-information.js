@@ -16,8 +16,10 @@ define(
                     var MA = ModuleAnalytics;
                     if (window.checkoutConfig.payment[code]['public_key'] !== undefined) {
                         MA.setPublicKey(window.checkoutConfig.payment[code]['public_key']);
+                        MA.setToken(null);
                     } else {
                         MA.setToken(window.checkoutConfig.payment[code]['analytics_key']);
+                        MA.setPublicKey(null);
                     }
                     MA.setPlatform("Magento");
                     MA.setPlatformVersion(window.checkoutConfig.payment[code]['platform_version']);
