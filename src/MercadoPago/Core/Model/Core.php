@@ -272,6 +272,14 @@ class Core
             }
         }
 
+        if ($payment->getAdditionalInformation('payer_identification_type') != "") {
+            $text = __($payment->getAdditionalInformation('payer_identification_type'), $payment->getAdditionalInformation('payer_identification_number'));
+            $info_payments[$payment->getAdditionalInformation('payer_identification_type')] = array(
+                "text"  => $text,
+                "value" => $payment->getAdditionalInformation('payer_identification_number')
+            );
+        }
+
         return $info_payments;
     }
 
