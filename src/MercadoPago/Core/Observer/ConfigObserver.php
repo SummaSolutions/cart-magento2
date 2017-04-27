@@ -342,29 +342,31 @@ class ConfigObserver
 
     protected function checkAnalyticsData()
     {
-        $clientId = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
+        $accessToken = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
-        $clientSecret = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode
-        );
-        if (!empty($clientId) && !empty($clientSecret)) {
-            $this->sendAnalyticsData($this->coreHelper->getApiInstance($clientId, $clientSecret));
-        } else {
-            $accessToken = $this->_scopeConfig->getValue(
-                \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
+        if (!$this->coreHelper->isValidAccessToken($accessToken)) {
+            $clientId = $this->_scopeConfig->getValue(
+                \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
                 \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
                 $this->_scopeCode
             );
-            if (!empty($accessToken)) {
-                $this->sendAnalyticsData($this->coreHelper->getApiInstance($accessToken));
-            }
+            $clientSecret = $this->_scopeConfig->getValue(
+                \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
+                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                $this->_scopeCode
+            );
+
+            $this->sendAnalyticsData($this->coreHelper->getApiInstance($clientId, $clientSecret));
+
+        } else {
+
+            $this->sendAnalyticsData($this->coreHelper->getApiInstance($accessToken));
 
         }
+
 
     }
 
@@ -409,9 +411,9 @@ class ConfigObserver
         $request['data']['checkout_custom_credit_card_coupon'] = $customCoupon == 1 ? 'true' : 'false';
         $request['data']['checkout_custom_ticket_coupon'] = $customTicketCoupon == 1 ? 'true' : 'false';
 
-        $account_settings = $api->post("/modules/tracking/settings", $request['data']);
-        if ($account_settings['status'] == 200) {
-            return true;
-        }
+        $this->coreHelper->log("Analytics settings request sent /modules/tracking/settings", self::LOG_NAME, $request);
+        $response = $api->post("/modules/tracking/settings", $request['data']);
+        $this->coreHelper->log("Analytics settings response", self::LOG_NAME, $response);
+
     }
 }
