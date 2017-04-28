@@ -527,7 +527,9 @@ class StatusUpdate
 
             $order->setState($this->_getAssignedState($statusOrder));
             $order->addStatusToHistory($statusOrder, $message, true);
-            $this->_orderSender->send($order, true, $message);
+            if (!$order->getEmailSent()){
+                $this->_orderSender->send($order, true, $message);
+            }
         }
     }
     /**
