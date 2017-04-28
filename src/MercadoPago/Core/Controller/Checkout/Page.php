@@ -111,22 +111,20 @@ class Page
         if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
 
             $order = $this->_getOrder();
-            $info_payment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
+            $infoPayment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
 
             $status = null;
 
             //checkout Custom Credit Card
             if (!empty($infoPayment['status']['value'])) {
                 $status = $infoPayment['status']['value'];
-                //$detail = $info_payment['status_detail']['value'];
+                //$detail = $infoPayment['status_detail']['value'];
             }
             //checkout redirect
-            if ($status == 'approved' || $status == 'pending') {
-                $this->_view->loadLayout(['default', 'checkout_onepage_success']);
-                $this->_view->renderLayout();
+            if ($status == 'approved' || $status == 'pending'){
+                $this->_redirect('checkout/onepage/success');
             } else {
-                $this->_view->loadLayout(['default', 'checkout_onepage_failure']);
-                $this->_view->renderLayout();
+                $this->_redirect('checkout/onepage/failure/');
             }
 
         } else {
