@@ -23,6 +23,7 @@ Offers a fully customized checkout to your brand experience with our simple-to-u
 * Accept tickets in addition to cards.
 * Accept MercadoPago's discount coupons.
 * Improve conversion rate.
+* Accept Payment with two cards <sup>*</sup>
 * Debug Mode.
 
 *Available for Argentina, Brazil, Chile, Colombia, Mexico, Peru and Venezuela**
@@ -70,6 +71,12 @@ This feature allows to add an installment calculator within Magento pages.
 It can be enabled/disabled from the Magento admin panel.
 The calculator can be visualized within product, cart, or both pages.
 The customer can use the installment calculator to see the financing options available and the final amount to be paid.
+
+**Split payments in custom checkout**<sup>*</sup>
+
+This feature allows customer to split Custom Checkout payments by using two different cards.
+This payment modality behaves in the same way as the equivalent payment mode in the classic checkout.
+This functionality can also be enabled/disabled from Magento plugin configuration.
 
 <a name="composer_installation"></a>
 ## Installation using composer:
