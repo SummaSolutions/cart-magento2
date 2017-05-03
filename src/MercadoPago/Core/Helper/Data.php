@@ -210,7 +210,7 @@ class Data
     {
         $params = func_num_args();
         if ($params > 2 || $params < 1) {
-            throw new \Magento\Framework\Exception\LocalizedException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
+            throw new \Magento\Framework\Exception\LocalizedException(__('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN'));
         }
         if ($params == 1) {
             $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0));
