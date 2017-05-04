@@ -378,7 +378,6 @@ class StatusUpdate
             "coupon_amount",
             "installments",
             "shipping_cost",
-            "refunds",
             "amount_refunded"
         ];
 
@@ -392,12 +391,34 @@ class StatusUpdate
             }
         }
 
+        if (isset($payment['refunds'])) {
+            foreach ($payment['refunds'] as $refund) {
+                if (isset($data['refunds'])) {
+                    $data['refunds'] .= " | " . $refund['id'];
+                } else {
+                    $data['refunds'] = $refund['id'];
+                }
+            }
+        }
+
         $data = $this->_updateAtributesData($data, $payment);
 
         $data['external_reference'] = $payment['external_reference'];
         $data['payer_first_name'] = $payment['payer']['first_name'];
         $data['payer_last_name'] = $payment['payer']['last_name'];
         $data['payer_email'] = $payment['payer']['email'];
+
+        if (isset($data['payer_identification_type'])) {
+            $data['payer_identification_type'] .= " | " . $payment['payer']['identification']['type'];
+        } else {
+            $data['payer_identification_type'] = $payment['payer']['identification']['type'];
+        }
+
+        if (isset($data['payer_identification_number'])) {
+            $data['payer_identification_number'] .= " | " . $payment['payer']['identification']['number'];
+        } else {
+            $data['payer_identification_number'] = $payment['payer']['identification']['number'];
+        }
 
         return $data;
     }
@@ -558,13 +579,25 @@ class StatusUpdate
                     'cardholderName',
                     'installments',
                     'statement_descriptor',
-                    'trunc_card'
+                    'trunc_card',
+                    'payer_identification_type',
+                    'payer_identification_number'
+
                 ];
+
 
                 foreach ($additionalFields as $field) {
                     if (isset($data[$field]) && empty($paymentAdditionalInfo['second_card_token'])) {
                         $paymentOrder->setAdditionalInformation($field, $data[$field]);
                     }
+                }
+
+                if (isset($data['id'])) {
+                    $paymentOrder->setAdditionalInformation('payment_id_detail', $data['id']);
+                }
+
+                if (isset($data['payer_identification_type']) & isset($data['payer_identification_number'])) {
+                    $paymentOrder->setAdditionalInformation($data['payer_identification_type'], $data['payer_identification_number']);
                 }
 
                 if (isset($data['payment_method_id'])) {

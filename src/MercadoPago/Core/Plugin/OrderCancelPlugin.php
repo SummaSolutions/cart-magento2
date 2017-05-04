@@ -65,9 +65,15 @@ class OrderCancelPlugin
         }
 
         $orderStatus = $this->order->getData('status');
-        $orderPaymentStatus = $this->order->getPayment()->getData('additional_information')['status'];
+        $additionalInformation = $this->order->getPayment()->getAdditionalInformation();
 
-        $paymentID = $this->order->getPayment()->getData('additional_information')['payment_id_detail'];
+        $orderPaymentStatus = isset($additionalInformation['status']) ? $additionalInformation['status'] : null ;
+        $paymentID = isset($additionalInformation['payment_id_detail']) ? $additionalInformation['payment_id_detail'] : null ;
+
+        if ($this->dataHelper->isRefundAvailable() & $paymentID == null){
+            $this->messageManager->addWarningMessage(__('The cancellation will be made through Magento. It was\'t possible to cancel on MercadoPago'));
+            return;
+        }
 
         $isValidBasicData = $this->checkCancelationBasicData($paymentID, $paymentMethod);
         $isValidaData = $this->checkCancelationData($orderStatus, $orderPaymentStatus);
