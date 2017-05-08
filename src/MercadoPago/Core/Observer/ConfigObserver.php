@@ -334,7 +334,7 @@ class ConfigObserver
                 \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
                 $this->_scopeCode
             );
-            if (!($maxDays !== 0) && !($maxRefunds !== 0)) {
+            if (($maxDays === 0) || ($maxRefunds === 0)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - If refunds are available, you must set \'Maximum amount of partial refunds on the same order\' and \'Maximum amount of days until refund is not accepted\''));
             }
         }
