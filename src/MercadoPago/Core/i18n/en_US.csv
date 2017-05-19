@@ -200,3 +200,5 @@
 "Order payment wasn't made by Mercado Pago. The refund will be made through Magento", "Order payment wasn't made by Mercado Pago. The refund will be made through Magento"
 "Mercado Pago refunds are disabled. The refund will be made through Magento","Mercado Pago refunds are disabled. The refund will be made through Magento"
 "No payment is recorded. You can\'t make a refund on a unpaid order","No payment is recorded. You can\'t make a refund on a unpaid order"
+"Consider Discounts","Consider Discounts"
+"Consider discount of Mercado Pago to invoicing","Consider discount of Mercado Pago to invoicing"

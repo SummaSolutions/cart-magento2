@@ -81,6 +81,8 @@ class Data
      */
     const XML_PATH_SPONSOR_ID = 'payment/mercadopago/sponsor_id';
 
+    const XML_PATH_CONSIDER_DISCOUNT = 'payment/mercadopago/consider_discount';
+
 
     /**
      *api platform openplatform
@@ -328,7 +330,8 @@ class Data
 
         $couponAmount = $this->_getMultiCardValue($data, 'coupon_amount');
         $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
-        if ($couponAmount) {
+        if ($couponAmount
+            && $this->_scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE) {
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);
             $balance = $balance - ($transactionAmount - $couponAmount + $shippingCost);
