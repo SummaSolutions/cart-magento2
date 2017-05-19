@@ -18,17 +18,23 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-                <field id="heading_order_status_cron" translate="label" sortOrder="8" showInDefault="1" showInWebsite="1">
+                <field id="consider_discount" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Consider Discounts</label>
+                    <comment>Consider discount of Mercado Pago to invoicing</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="heading_order_status_cron" translate="label" sortOrder="13" showInDefault="1" showInWebsite="1">
                     <label>Order Status Update - Cron Configuration</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                     <attribute type="shared">1</attribute>
                 </field>
 
-                <field id="time_between_verifications" translate="label" type="text" sortOrder="9" showInDefault="1" showInStore="0" showInWebsite="0">
+                <field id="time_between_verifications" translate="label" type="text" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="0">
                     <label>Time between verifications</label>
                 </field>
                 <!-- requiere verificacion de, vacio, y que solo sea nuemeros-->
-                <field id="number_of_hours" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="0">
+                <field id="number_of_hours" translate="label comment" type="text" sortOrder="18" showInDefault="1" showInStore="0" showInWebsite="0">
                     <label>Number of hours</label>
                     <comment>Try to update all the orders created 'Amount of hours' before time to the moment to execute the cron</comment>
                 </field>
