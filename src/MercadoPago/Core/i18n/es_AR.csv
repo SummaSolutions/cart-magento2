@@ -389,3 +389,5 @@ Es un requisito que usted cuente con un certificado SSL, y que el formulario de 
 "Order Status Update - Cron Configuration","Chequeo del estado de las Ordenes - Configuración del Cron"
 
 "Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN", "Argumentos no válidos. Verifique CLIENT_ID y CLIENT SECRET o ACCESS_TOKEN"
+"Consider Discounts","Considerar descuentos"
+"Consider discount of Mercado Pago to invoicing","Considerar descuento de Mercado Pago en la facturación"
