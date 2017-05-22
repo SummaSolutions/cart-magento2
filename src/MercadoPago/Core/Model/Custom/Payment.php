@@ -306,6 +306,8 @@ class Payment
                         'first_payment_status_detail'  => $paymentFirstCard['status_detail'] . ' | ' . $paymentSecondCard['status_detail'],
                         'total_paid_amount'            => $paymentFirstCard['transaction_details']['total_paid_amount'] . '|' . $paymentSecondCard['transaction_details']['total_paid_amount'],
                         'transaction_amount'           => $paymentFirstCard['transaction_amount'] . '|' . $paymentSecondCard['transaction_amount'],
+                        'payer_identification_type'    => $paymentFirstCard['payer']['identification']['type']. '|' . $paymentSecondCard['payer']['identification']['type'],
+                        'payer_identification_number'  => $paymentFirstCard['payer']['identification']['number'] . '|' . $paymentSecondCard['payer']['identification']['number']
                     ];
 
                     foreach ($additionalInfo as $infoKey => $infoValue) {
@@ -338,7 +340,8 @@ class Payment
                 $infoInstance->setAdditionalInformation('status', $payment['status']);
                 $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
                 $infoInstance->setAdditionalInformation('status_detail', $payment['status_detail']);
-
+                $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
+                $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
                 return true;
             }
         }
