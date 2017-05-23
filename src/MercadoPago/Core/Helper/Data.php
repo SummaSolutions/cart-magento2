@@ -331,7 +331,7 @@ class Data
         $couponAmount = $this->_getMultiCardValue($data, 'coupon_amount');
         $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
         if ($couponAmount
-            && $this->_scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE) {
+            && $this->_scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);
             $balance = $balance - ($transactionAmount - $couponAmount + $shippingCost);
