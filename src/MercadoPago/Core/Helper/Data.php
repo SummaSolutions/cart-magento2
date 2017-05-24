@@ -314,34 +314,37 @@ class Data
      */
     public function setOrderSubtotals($data, $order)
     {
+        $couponAmount = $this->_getMultiCardValue($data, 'coupon_amount');
+        $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
+        
         if (isset($data['total_paid_amount'])) {
-            $balance = $this->_getMultiCardValue($data, 'total_paid_amount');
+            $paidAmount = $this->_getMultiCardValue($data, 'total_paid_amount');
         } else {
-            $balance = $data['transaction_details']['total_paid_amount'];
+            $paidAmount = $data['transaction_details']['total_paid_amount'];
         }
-        $shippingCost = $this->_getMultiCardValue($data, 'shipping_cost');
 
-        $order->setGrandTotal($balance);
-        $order->setBaseGrandTotal($balance);
+        $shippingCost = $this->_getMultiCardValue($data, 'shipping_cost');
+        $originalAmount = $transactionAmount + $shippingCost;
+
+        if ($couponAmount
+            && $this->_scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+            $order->setDiscountCouponAmount($couponAmount * -1);
+            $order->setBaseDiscountCouponAmount($couponAmount * -1);
+        }
+
+        //if a discount was applied  should be considered to get financing cost
+        $paidAmount += $couponAmount;
+        $financingCost = $paidAmount - $originalAmount;
+
         if ($shippingCost > 0) {
             $order->setBaseShippingAmount($shippingCost);
             $order->setShippingAmount($shippingCost);
         }
 
-        $couponAmount = $this->_getMultiCardValue($data, 'coupon_amount');
-        $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
-        if ($couponAmount
-            && $this->_scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
-            $order->setDiscountCouponAmount($couponAmount * -1);
-            $order->setBaseDiscountCouponAmount($couponAmount * -1);
-            $balance = $balance - ($transactionAmount - $couponAmount + $shippingCost);
-        } else {
-            $balance = $balance - $transactionAmount - $shippingCost;
-        }
 
-        if (\Zend_Locale_Math::round($balance, 4) > 0) {
-            $order->setFinanceCostAmount($balance);
-            $order->setBaseFinanceCostAmount($balance);
+        if (\Zend_Locale_Math::round($financingCost, 4) > 0) {
+            $order->setFinanceCostAmount($financingCost);
+            $order->setBaseFinanceCostAmount($financingCost);
         }
 
         $order->save();
