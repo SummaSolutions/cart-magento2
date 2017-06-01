@@ -355,15 +355,12 @@ var MercadoPagoCustom = (function () {
             releaseEventCreateCardToken();
         }
 
-
-
         function initSecondCardOCP() {
             TinyJ(self.selectors.secondCardCardId).change(cardsHandlerSecondCard);
             TinyJ(self.selectors.secondCardUseOtherCard).click(actionUseOneClickPayOrNoSecondCard);
             TinyJ(self.selectors.secondCardReturnToCardList).click(actionUseOneClickPayOrNoSecondCard);
             actionUseOneClickPayOrNoSecondCard();
         }
-
 
         //init one click pay
         function initMercadoPagoOCP() {
@@ -619,7 +616,6 @@ var MercadoPagoCustom = (function () {
                     TinyJ(elPai).hide();
                 }
             }
-
 
             //Show inputs
             showLogMercadoPago(dataInputs);
@@ -1307,10 +1303,7 @@ var MercadoPagoCustom = (function () {
 
         function getInstallments(options) {
 
-
             showLogMercadoPago(self.messages.getInstallment);
-
-            hideMessageError();
             showLoading();
 
             var route = TinyJ(self.selectors.mercadoRoute).val();
@@ -1370,7 +1363,6 @@ var MercadoPagoCustom = (function () {
 
         function getInstallmentsSecondCard(options) {
 
-            hideMessageError();
             showLoading();
 
             var route = TinyJ(self.selectors.mercadoRoute).val();
@@ -1516,17 +1508,11 @@ var MercadoPagoCustom = (function () {
             showLogMercadoPago(self.messages.releaseCardTokenEvent);
 
             var dataCheckout = TinyJ(self.selectors.dataCheckout);
-            //var dataCheckoutSecondCard = TinyJ(self.selectors.dataCheckoutSecondCard);
 
             if (Array.isArray(dataCheckout)) {
                 for (var x = 0; x < dataCheckout.length; x++) {
-                    if ((dataCheckout[x].getElem().id).indexOf("second") >= 0) {
-                        dataCheckout[x].focusout(checkCreateCardTokenSecondCard);
-                        dataCheckout[x].change(checkCreateCardTokenSecondCard);
-                    } else {
                         dataCheckout[x].focusout(checkCreateCardToken);
                         dataCheckout[x].change(checkCreateCardToken);
-                    }
                 }
             } else {
                 dataCheckout.focusout(checkCreateCardToken);
@@ -1562,6 +1548,10 @@ var MercadoPagoCustom = (function () {
                 showLoading();
                 Mercadopago.createToken(TinyJ(selector).getElem(), sdkResponseHandler);
             }
+
+            if (isSecondCardUsed) {
+                checkCreateCardTokenSecondCard();
+            }
         }
 
         function checkCreateCardTokenSecondCard() {
@@ -1587,12 +1577,13 @@ var MercadoPagoCustom = (function () {
 
             if (submit) {
                 var oneClickPay = TinyJ(self.selectors.secondCardOneClickPayment).val();
-                var selector = TinyJ(self.selectors.secondCardOneClickPayment).val() == true ? self.selectors.ocpSecondCard : self.selectors.secondCardCustomCard;
+                var selector = oneClickPay == true ? self.selectors.ocpSecondCard : self.selectors.secondCardCustomCard;
                 showLoading();
                 console.log(TinyJ(selector).getElem());
                 Mercadopago.clearSession();
                 Mercadopago.createToken(TinyJ(selector).getElem(), sdkResponseHandlerSecondCard);
             }
+
         }
 
         function sdkResponseHandler(status, response) {
