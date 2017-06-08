@@ -3,7 +3,8 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'MercadoPago_Core/js/model/set-analytics-information',
-        'MPcheckout'
+        'MPcheckout',
+        'MPanalytics'
     ],
     function (Component, setAnalyticsInformation) {
         'use strict';

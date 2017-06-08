@@ -114,7 +114,7 @@ class OrderCancelPlugin
         $refundAvailable = $this->dataHelper->isRefundAvailable();
 
         if (!$refundAvailable) {
-            $this->messageManager->addWarningMessage(__('Mercado Pago cancellation are disabled. The cancellation will be made through Magento'));
+            $this->messageManager->addWarningMessage(__('Mercado Pago cancellation is disabled. The cancellation will be made through Magento'));
             return false;
         }
 

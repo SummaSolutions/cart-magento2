@@ -4,7 +4,8 @@ define(
         'ko',
         'MercadoPago_Core/js/model/iframe',
         'Magento_Checkout/js/model/full-screen-loader',
-        'MercadoPago_Core/js/model/set-analytics-information'
+        'MercadoPago_Core/js/model/set-analytics-information',
+        'MPanalytics'
     ],
     function (Component, ko, iframe, fullScreenLoader, setAnalyticsInformation) {
         'use strict';
