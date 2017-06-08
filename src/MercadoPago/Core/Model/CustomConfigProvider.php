@@ -127,7 +127,7 @@ class CustomConfigProvider
                     'customer'         => $this->methodInstance->getCustomerAndCards(),
                     'loading_gif'      => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'text-currency'    => __('$'),
-                    'text-choice'      => __('Choice'),
+                    'text-choice'      => __('Select'),
                     'default-issuer'   => __('Default issuer'),
                     'text-installment' => __('Enter the card number'),
                     'logoUrl'          => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
