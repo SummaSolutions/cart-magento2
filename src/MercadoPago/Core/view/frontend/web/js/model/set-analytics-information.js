@@ -7,7 +7,8 @@ define(
     [
         'jquery',
         'Magento_Customer/js/model/customer',
-        'Magento_Checkout/js/model/payment-service'
+        'Magento_Checkout/js/model/payment-service',
+        'MPanalytics'
     ],
     function ($, customer, paymentService) {
         return {
